@@ -12,10 +12,6 @@ const VIEWS: { id: ProgressGranularity; label: string }[] = [
   { id: 'yearly', label: 'Yearly' },
 ]
 
-function plusPrefix(n: number): string {
-  return n > 0 ? '+' : ''
-}
-
 export function Progress() {
   const { fmt } = useMoney()
   const [granularity, setGranularity] = useState<ProgressGranularity>('monthly')
@@ -26,13 +22,6 @@ export function Progress() {
       <div className="progress-header">
         <div>
           <div className="mono progress-latest">{data ? fmt(data.latest_value_idr) : '—'}</div>
-          {data && (
-            <div className="progress-delta">
-              {plusPrefix(data.delta_idr)}
-              {fmt(data.delta_idr)} ({plusPrefix(data.delta_pct)}
-              {data.delta_pct.toFixed(2)}%) vs previous period
-            </div>
-          )}
         </div>
         <div className="segmented">
           {VIEWS.map((v) => (

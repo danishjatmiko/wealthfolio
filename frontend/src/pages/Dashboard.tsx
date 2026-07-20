@@ -1,6 +1,7 @@
 import { useMoney } from '../context/MoneyVisibilityContext'
 import { useDashboard } from '../hooks/useDashboard'
 import { DonutChart } from '../components/charts/DonutChart'
+import { formatShortDate } from '../lib/format'
 import './Dashboard.css'
 
 export function Dashboard() {
@@ -35,7 +36,14 @@ export function Dashboard() {
                 ))}
               </div>
             </div>
+            <div>
+              <div className="dash-hero-footer-label">Liability</div>
+              <div className="dash-hero-footer-value mono">{fmt(equity.total_idr - equity.invested_idr)}</div>
+            </div>
           </div>
+          {equity.as_of_date && (
+            <div className="dash-updated dash-updated-hero">As of {formatShortDate(equity.as_of_date)}</div>
+          )}
         </div>
 
         <div className="card dash-mini-card">
@@ -45,6 +53,7 @@ export function Dashboard() {
           <div className="dash-mini-divider">
             Owed to me <span className="mono dash-mini-divider-val">{fmt(debt.total_receivable_idr)}</span>
           </div>
+          {debt.updated_at && <div className="dash-updated">Updated {formatShortDate(debt.updated_at)}</div>}
         </div>
 
         <div className="card dash-mini-card">
@@ -57,6 +66,7 @@ export function Dashboard() {
               style={{ width: `${Math.min(100, passivePct)}%`, background: 'var(--blue)' }}
             />
           </div>
+          {passive.updated_at && <div className="dash-updated">Updated {formatShortDate(passive.updated_at)}</div>}
         </div>
       </div>
 
@@ -70,6 +80,7 @@ export function Dashboard() {
               <div className="dash-donut-center-value mono">{fmt(equity.invested_idr)}</div>
             </div>
           </div>
+          {equity.as_of_date && <div className="dash-updated">As of {formatShortDate(equity.as_of_date)}</div>}
         </div>
 
         <div className="card">
@@ -83,6 +94,7 @@ export function Dashboard() {
               <span className="mono dash-cat-pct">{c.percent.toFixed(2)}%</span>
             </div>
           ))}
+          {equity.as_of_date && <div className="dash-updated">As of {formatShortDate(equity.as_of_date)}</div>}
         </div>
       </div>
     </div>

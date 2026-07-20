@@ -47,6 +47,14 @@ export function usdFmt(value: number): string {
   return 'Rp' + value.toLocaleString('en-US')
 }
 
+/** Formats a "YYYY-MM-DD" date string as e.g. "20 Jul 2026". */
+export function formatShortDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(
+    new Date(y, m - 1, d),
+  )
+}
+
 /** Parse a free-typed numeric string the same way the prototype does. */
 export function parseNumeric(input: string | number | null | undefined): number {
   if (typeof input === 'number') return Number.isFinite(input) ? input : 0

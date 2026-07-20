@@ -156,11 +156,13 @@ export interface Dashboard {
     mom_change_idr: number
     mom_change_pct: number
     by_category: DashboardCategoryRow[]
+    as_of_date: string | null
   }
   debt: {
     total_debt_idr: number
     total_receivable_idr: number
     ratio_pct: number
+    updated_at: string | null
   }
   passive: {
     per_year_idr: number
@@ -168,6 +170,7 @@ export interface Dashboard {
     percent: number
     per_month_idr: number
     per_month_target_idr: number
+    updated_at: string | null
   }
   allocation: DashboardCategoryRow[]
 }

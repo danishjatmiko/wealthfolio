@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"wealthfolio/backend/internal/db"
+	"wealthfolio/backend/internal/domain"
 )
 
 // DashboardService assembles the GET /dashboard payload from the latest
@@ -36,22 +37,25 @@ type EquityDTO struct {
 	MomChangeIdr   int64               `json:"mom_change_idr"`
 	MomChangePct   float64             `json:"mom_change_pct"`
 	ByCategory     []CategoryBreakdown `json:"by_category"`
+	AsOfDate       *domain.Date        `json:"as_of_date"`
 }
 
 // DebtDTO is dashboard.debt.
 type DebtDTO struct {
-	TotalDebtIdr       int64   `json:"total_debt_idr"`
-	TotalReceivableIdr int64   `json:"total_receivable_idr"`
-	RatioPct           float64 `json:"ratio_pct"`
+	TotalDebtIdr       int64        `json:"total_debt_idr"`
+	TotalReceivableIdr int64        `json:"total_receivable_idr"`
+	RatioPct           float64      `json:"ratio_pct"`
+	UpdatedAt          *domain.Date `json:"updated_at"`
 }
 
 // PassiveDTO is dashboard.passive.
 type PassiveDTO struct {
-	PerYearIdr        int64   `json:"per_year_idr"`
-	TargetPerYearIdr  int64   `json:"target_per_year_idr"`
-	Percent           float64 `json:"percent"`
-	PerMonthIdr       int64   `json:"per_month_idr"`
-	PerMonthTargetIdr int64   `json:"per_month_target_idr"`
+	PerYearIdr        int64        `json:"per_year_idr"`
+	TargetPerYearIdr  int64        `json:"target_per_year_idr"`
+	Percent           float64      `json:"percent"`
+	PerMonthIdr       int64        `json:"per_month_idr"`
+	PerMonthTargetIdr int64        `json:"per_month_target_idr"`
+	UpdatedAt         *domain.Date `json:"updated_at"`
 }
 
 // DashboardDTO is the full GET /dashboard response.
@@ -90,12 +94,18 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	}
 	targetPerYearIdr := round64(targetPerYear)
 
+	passiveUpdatedAt, err := s.repos.PassiveIncome.MaxUpdatedAt(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+
 	out.Passive = PassiveDTO{
 		PerYearIdr:        perYear,
 		TargetPerYearIdr:  targetPerYearIdr,
 		Percent:           percentOf(float64(perYear), targetPerYear),
 		PerMonthIdr:       round64(float64(perYear) / 12),
 		PerMonthTargetIdr: round64(float64(targetPerYearIdr) / 12),
+		UpdatedAt:         passiveUpdatedAt,
 	}
 
 	if len(aggs) == 0 {
@@ -139,6 +149,11 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	}
 	ratioPct := percentOf(float64(iOwe), float64(total))
 
+	debtUpdatedAt, err := s.repos.Debts.MaxUpdatedAt(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+
 	grouped := map[string]int64{}
 	for _, h := range holdings {
 		if h.IsLiability {
@@ -164,6 +179,7 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		})
 	}
 
+	asOf := latest.Snapshot.SnapshotDate
 	out.Equity = EquityDTO{
 		TotalIdr:       total,
 		InvestedIdr:    invested,
@@ -171,11 +187,13 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		MomChangeIdr:   momIdr,
 		MomChangePct:   momPct,
 		ByCategory:     byCategory,
+		AsOfDate:       &asOf,
 	}
 	out.Debt = DebtDTO{
 		TotalDebtIdr:       iOwe,
 		TotalReceivableIdr: owedToMe,
 		RatioPct:           ratioPct,
+		UpdatedAt:          debtUpdatedAt,
 	}
 	out.Allocation = byCategory
 

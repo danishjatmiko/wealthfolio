@@ -9,6 +9,21 @@ import (
 	"wealthfolio/backend/internal/domain"
 )
 
+// MaxUpdatedAt returns the most recent updated_at across the user's debts,
+// or nil if they have none yet.
+func (r *DebtsRepo) MaxUpdatedAt(ctx context.Context, userID uuid.UUID) (*domain.Date, error) {
+	var d domain.Date
+	err := r.pool.QueryRow(ctx, `
+		SELECT MAX(updated_at) FROM debts WHERE user_id = $1`, userID).Scan(&d)
+	if err != nil {
+		return nil, err
+	}
+	if d.Time.IsZero() {
+		return nil, nil
+	}
+	return &d, nil
+}
+
 // DebtsRepo manages debts rows.
 type DebtsRepo struct {
 	pool *pgxpool.Pool
