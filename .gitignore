@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+
+# Local tool/editor config (not shared)
+.claude/
+
+# Env files with real secrets (only .env.example is committed)
+.env
+.env.local
+
+# Go
+backend/*.exe
+backend/wealthfolio-api
+
+# Node (frontend has its own .gitignore too, this covers root-level runs)
+node_modules/
+dist/

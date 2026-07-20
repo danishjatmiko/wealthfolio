@@ -1,0 +1,45 @@
+.targets-header {
+  margin-bottom: 14px;
+}
+.targets-header-copy {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.target-card {
+  cursor: pointer;
+}
+.target-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.target-card-pct {
+  font-weight: 700;
+  font-size: 16px;
+}
+.target-track {
+  height: 12px;
+  margin: 14px 0 10px;
+}
+.target-card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.target-card-val {
+  color: var(--text-primary);
+}
+.target-card-togo {
+  font-size: 12px;
+  color: var(--accent-hover);
+  font-weight: 600;
+  margin-top: 8px;
+}

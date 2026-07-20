@@ -1,0 +1,28 @@
+.toast-stack {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 300;
+  max-width: min(360px, calc(100vw - 40px));
+}
+
+.toast {
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-tooltip);
+  color: #fff;
+  animation: fadeUp 0.2s ease;
+}
+
+.toast-error {
+  background: oklch(0.4 0.13 28);
+}
+
+.toast-success {
+  background: oklch(0.38 0.07 158);
+}

@@ -1,0 +1,79 @@
+.debts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.debts-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.card-title-inline {
+  font-weight: 600;
+  font-size: 14px;
+}
+.debts-card-total {
+  font-weight: 700;
+}
+
+.debt-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider);
+  cursor: pointer;
+}
+.debt-row:last-of-type {
+  border-bottom: none;
+}
+.debt-row:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+.debt-row-info {
+  flex: 1;
+}
+.debt-row-name {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.debt-row-type {
+  font-size: 11px;
+  color: var(--text-muted-2);
+}
+.debt-row-val {
+  font-size: 14px;
+  font-weight: 600;
+}
+.debt-row-val-red {
+  color: var(--red);
+}
+.debt-row-val-green {
+  color: var(--green);
+}
+
+.debt-ratio-banner {
+  background: var(--hero-grad);
+  color: #fff;
+  border-radius: var(--radius-card);
+  padding: 20px;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+.debt-ratio-label {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.debt-ratio-value {
+  font-size: 32px;
+  font-weight: 700;
+}
+.debt-ratio-note {
+  font-size: 12px;
+  opacity: 0.85;
+}

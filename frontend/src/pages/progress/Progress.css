@@ -1,0 +1,79 @@
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.progress-latest {
+  font-size: 24px;
+  font-weight: 700;
+}
+.progress-delta {
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: 9px;
+  padding: 3px;
+}
+.segmented-btn {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-body-secondary);
+}
+.segmented-btn-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.progress-chart-card {
+  padding: 22px 20px 14px;
+  margin-bottom: 14px;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-left: 9.33%; /* aligns with the chart's left Y-axis gutter (56/600) */
+}
+.progress-label {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+.line-chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #16130f;
+  color: #fff;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-tooltip);
+  z-index: 20;
+}
+.line-chart-tooltip-label {
+  color: var(--border);
+  margin-bottom: 2px;
+}
+.line-chart-tooltip-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 12.5px;
+}

@@ -1,0 +1,162 @@
+/* Shared primitives used across pages & modals, matching the design tokens. */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.btn {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: var(--radius-btn);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  padding: 9px 18px;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  border: 1px solid var(--border-2);
+  background: var(--card);
+  color: var(--text-body-secondary);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--content-bg);
+}
+
+.btn-dashed {
+  width: 100%;
+  border: 1px dashed var(--scrollbar-thumb);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  padding: 9px;
+  border-radius: var(--radius-btn);
+}
+.btn-dashed:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-body-secondary);
+  font-weight: 600;
+}
+
+.field-input,
+.field select,
+select.field-input,
+input.field-input {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-input);
+  padding: 10px;
+  font-size: 13.5px;
+  background: var(--input-bg);
+  outline: none;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+.field-input:focus {
+  border-color: var(--accent);
+}
+
+.field-row {
+  display: flex;
+  gap: 10px;
+}
+.field-row > .field {
+  flex: 1;
+}
+
+.computed-box {
+  background: var(--content-bg);
+  border: 1px solid var(--divider-2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.computed-box-label {
+  font-size: 11px;
+  color: var(--text-muted-2);
+}
+.computed-box-value {
+  font-size: 17px;
+  font-weight: 700;
+}
+.computed-box-note {
+  font-size: 11px;
+  color: var(--text-muted-2);
+  text-align: right;
+  max-width: 150px;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-body-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-chip);
+}
+.chip-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.progress-track {
+  height: 8px;
+  background: var(--progress-track);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s;
+}
+
+.error-text {
+  font-size: 12px;
+  color: var(--red);
+  font-weight: 600;
+}
+
+.empty-state {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 24px 4px;
+  text-align: center;
+}

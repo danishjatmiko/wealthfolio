@@ -1,0 +1,68 @@
+:root {
+  /* Fonts */
+  --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Surfaces */
+  --bg: #eceae4;
+  --content-bg: #f6f5f2;
+  --card: #fff;
+  --sidebar-bg: #fbfaf7;
+  --input-bg: #fbfaf7;
+
+  /* Text */
+  --text-primary: #1a1c19;
+  --text-muted: #8a8d88;
+  --text-muted-2: #9a9d97;
+  --text-body-secondary: #5b5f5a;
+  --text-faint: #a2a5a0;
+
+  /* Borders */
+  --border: #e7e5df;
+  --border-2: #e2e0d9;
+  --divider: #f2f0ea;
+  --divider-2: #eeece6;
+  --scrollbar-thumb: #d6d3cb;
+
+  /* Accent (brand green) */
+  --accent: oklch(0.52 0.09 158);
+  --accent-hover: oklch(0.44 0.09 158);
+  --accent-soft: oklch(0.52 0.09 158 / 0.1);
+  --hero-grad: linear-gradient(155deg, oklch(0.42 0.07 158), oklch(0.34 0.06 160));
+
+  /* Semantic accents */
+  --blue: oklch(0.6 0.1 248);
+  --red: oklch(0.55 0.13 28);
+  --green: oklch(0.5 0.11 152);
+  --green-alt: oklch(0.6 0.1 152);
+  --progress-track: #eceae4;
+
+  /* Category palette (fallback; prefer category.color_oklch from the API) */
+  --cat-logam-mulia: oklch(0.76 0.11 84);
+  --cat-saham: oklch(0.6 0.1 152);
+  --cat-bonds-usd: oklch(0.6 0.1 248);
+  --cat-properti: oklch(0.62 0.11 34);
+  --cat-uang-tunai: oklch(0.66 0.09 196);
+  --cat-us-etf: oklch(0.58 0.11 292);
+  --cat-crypto: oklch(0.7 0.12 56);
+  --cat-reksa-dana: oklch(0.66 0.07 322);
+  --cat-liabilitas: oklch(0.58 0.13 28);
+
+  /* Radii */
+  --radius-card: 16px;
+  --radius-card-lg: 18px;
+  --radius-input: 9px;
+  --radius-btn: 9px;
+  --radius-chip: 99px;
+
+  /* Shadows */
+  --shadow-frame: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --shadow-modal: 0 30px 80px rgba(0, 0, 0, 0.35);
+  --shadow-tooltip: 0 12px 34px rgba(0, 0, 0, 0.3);
+
+  /* Scrim */
+  --scrim: rgba(20, 17, 14, 0.45);
+
+  /* Sidebar width */
+  --sidebar-width: 238px;
+}
