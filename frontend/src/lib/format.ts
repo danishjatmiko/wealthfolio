@@ -6,18 +6,17 @@
 // per 1 USD (use usdFmt for that one field only).
 
 /**
- * Format an IDR amount given in THOUSANDS of rupiah into the shortened
- * Indonesian form used throughout the app (e.g. "Rp3.75 M", "Rp202 jt",
- * "Rp16.8 jt", "Rp800 rb"). Mirrors the prototype's `money()`/`fmtIdr()`.
+ * Format an IDR amount given in THOUSANDS of rupiah into the shortened form
+ * used throughout the app (e.g. "Rp3.75 B", "Rp202.00 mn", "Rp16.80 mn",
+ * "Rp800 rb"). Mirrors the prototype's `money()`/`fmtIdr()`.
  */
 export function fmtIdr(value: number): string {
   const neg = value < 0
-  let v = Math.abs(value)
+  const v = Math.abs(value)
   const j = v / 1000
   let s: string
-  if (j >= 1000) s = 'Rp' + (j / 1000).toFixed(2) + ' M'
-  else if (j >= 100) s = 'Rp' + Math.round(j) + ' jt'
-  else if (j >= 1) s = 'Rp' + j.toFixed(1) + ' jt'
+  if (j >= 1000) s = 'Rp' + (j / 1000).toFixed(2) + ' B'
+  else if (j >= 1) s = 'Rp' + j.toFixed(2) + ' mn'
   else s = 'Rp' + Math.round(v) + ' rb'
   return (neg ? '−' : '') + s
 }
@@ -33,10 +32,10 @@ export function money(value: number, hidden: boolean): string {
 
 /**
  * Gold price per gram. Input is in THOUSANDS of IDR (same unit as all other
- * money fields except usd_idr). Output e.g. "Rp2.65 jt/g".
+ * money fields except usd_idr). Output e.g. "Rp2.65 mn/g".
  */
 export function goldFmt(value: number): string {
-  return 'Rp' + (value / 1000).toFixed(2) + ' jt/g'
+  return 'Rp' + (value / 1000).toFixed(2) + ' mn/g'
 }
 
 /**

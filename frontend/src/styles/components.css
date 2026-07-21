@@ -46,6 +46,16 @@
   background: var(--content-bg);
 }
 
+.btn-danger {
+  border: 1px solid var(--red);
+  background: var(--card);
+  color: var(--red);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--red);
+  color: #fff;
+}
+
 .btn-dashed {
   width: 100%;
   border: 1px dashed var(--scrollbar-thumb);
@@ -58,6 +68,10 @@
 .btn-dashed:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.02);
 }
+.btn-dashed:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .field {
   display: flex;
@@ -66,6 +80,22 @@
   font-size: 12px;
   color: var(--text-body-secondary);
   font-weight: 600;
+}
+
+.field-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-body-secondary);
+  cursor: pointer;
+}
+.field-checkbox input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .field-input,
@@ -159,4 +189,77 @@ input.field-input {
   color: var(--text-muted);
   padding: 24px 4px;
   text-align: center;
+}
+
+/* Snapshot-picker toolbar, shared by Assets and Debt & Loans. */
+.row-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.assets-toolbar {
+  margin-bottom: 14px;
+}
+
+.snapshot-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-input);
+  padding: 7px 12px;
+}
+.snapshot-pill-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.snapshot-pill-select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.assets-footnote {
+  font-size: 12px;
+  color: var(--text-muted-2);
+  margin-top: 10px;
+}
+
+.snap-copy-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 12.5px;
+  color: var(--text-body-secondary);
+}
+.snap-copy-note {
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+}
+
+@container (max-width: 560px) {
+  .row-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn-group {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .btn-group button {
+    flex: 1 1 140px;
+  }
 }

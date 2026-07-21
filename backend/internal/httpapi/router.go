@@ -47,14 +47,20 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 		r.Get("/snapshots/{date}", h.getSnapshotByDate)
 		r.Get("/snapshots/{date}/holdings", h.listHoldingsForDate)
 		r.Post("/snapshots/{date}/holdings", h.createHolding)
+		r.Delete("/snapshots/{id}", h.deleteSnapshot)
 
 		r.Put("/holdings/{id}", h.updateHolding)
 		r.Delete("/holdings/{id}", h.deleteHolding)
 
-		r.Get("/debts", h.listDebts)
-		r.Post("/debts", h.createDebt)
-		r.Put("/debts/{id}", h.updateDebt)
-		r.Delete("/debts/{id}", h.deleteDebt)
+		r.Get("/debt-snapshots", h.listDebtSnapshots)
+		r.Get("/debt-snapshots/latest", h.getLatestDebtSnapshot)
+		r.Post("/debt-snapshots", h.createDebtSnapshot)
+		r.Get("/debt-snapshots/{date}", h.getDebtSnapshotByDate)
+		r.Post("/debt-snapshots/{date}/entries", h.createDebtEntry)
+		r.Delete("/debt-snapshots/{id}", h.deleteDebtSnapshot)
+
+		r.Put("/debt-entries/{id}", h.updateDebtEntry)
+		r.Delete("/debt-entries/{id}", h.deleteDebtEntry)
 
 		r.Get("/passive-income", h.listPassiveIncome)
 		r.Post("/passive-income", h.createPassiveIncome)
@@ -68,6 +74,7 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 
 		r.Get("/dashboard", h.getDashboard)
 		r.Get("/progress", h.getProgress)
+		r.Get("/debt-progress", h.getDebtProgress)
 	})
 
 	return r

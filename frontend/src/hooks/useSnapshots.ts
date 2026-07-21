@@ -36,3 +36,19 @@ export function useCreateSnapshot() {
     },
   })
 }
+
+export function useDeleteSnapshot() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.snapshots.remove(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['snapshots'] })
+      // refetchType: 'all' so the cache entry for whichever date the UI
+      // falls back to (not necessarily the currently-mounted one) is
+      // refetched too, not just left stale until something re-observes it.
+      qc.invalidateQueries({ queryKey: ['snapshot'], refetchType: 'all' })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+      qc.invalidateQueries({ queryKey: ['progress'] })
+    },
+  })
+}

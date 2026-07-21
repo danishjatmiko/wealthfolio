@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -106,17 +107,43 @@ func (s *SnapshotsService) ListHoldingsForDate(ctx context.Context, userID uuid.
 	return s.repos.Holdings.ListBySnapshot(ctx, snap.ID)
 }
 
-// Create makes a new snapshot for the user on the given date. The date may
-// be anything not already used by an existing snapshot — including a date
-// before the current latest, to backfill older history. "Latest"/editable
-// status is always derived dynamically from MAX(snapshot_date), so backfilled
-// snapshots correctly come back locked. If copyFromLatest is true and a
+// holdingRequestFromHolding rebuilds a HoldingRequest from an existing
+// holding so it can be re-submitted through CreateUnlocked. Routing the copy
+// through the normal create path (rather than a raw SQL duplicate) means
+// gold and USD-linked holdings get repriced against the latest rate entry
+// instead of carrying over a stale value_idr.
+func holdingRequestFromHolding(h domain.Holding) HoldingRequest {
+	valueIdr := float64(h.ValueIdr)
+	detail := h.Detail
+	return HoldingRequest{
+		CategoryID: h.CategoryID,
+		Name:       h.Name,
+		Gram:       h.Gram,
+		Qty:        h.Qty,
+		Brand:      h.Brand,
+		UsdValue:   h.UsdValue,
+		Currency:   h.Currency,
+		ValueIdr:   &valueIdr,
+		Detail:     &detail,
+	}
+}
+
+// Create makes a new snapshot for the user on the given date. The date must
+// be today or later (ErrSnapshotDateInPast otherwise) and not already used
+// by an existing snapshot. "Latest"/editable status is always derived
+// dynamically from MAX(snapshot_date). If copyFromLatest is true and a
 // previous latest snapshot exists, every one of its holdings is duplicated
 // into the new snapshot. initialHoldings, if non-empty, are written directly
 // into the new snapshot regardless of whether it ends up being the latest —
-// this is the only way to populate a backfilled (non-latest) snapshot, since
-// every other holdings write path requires the target snapshot to be latest.
+// this is the only way to populate a snapshot dated ahead of an
+// already-future latest, since every other holdings write path requires the
+// target snapshot to be latest.
 func (s *SnapshotsService) Create(ctx context.Context, userID uuid.UUID, date domain.Date, copyFromLatest bool, initialHoldings []HoldingRequest) (SnapshotDetail, error) {
+	today := domain.NewDate(time.Now())
+	if date.Time.Before(today.Time) {
+		return SnapshotDetail{}, ErrSnapshotDateInPast
+	}
+
 	latest, err := s.repos.Snapshots.GetLatest(ctx, userID)
 	hasLatest := true
 	if err != nil {
@@ -139,8 +166,14 @@ func (s *SnapshotsService) Create(ctx context.Context, userID uuid.UUID, date do
 	}
 
 	if copyFromLatest && hasLatest {
-		if err := s.repos.Holdings.CopyFromSnapshot(ctx, latest.ID, newSnap.ID); err != nil {
+		sourceHoldings, err := s.repos.Holdings.ListBySnapshot(ctx, latest.ID)
+		if err != nil {
 			return SnapshotDetail{}, err
+		}
+		for _, h := range sourceHoldings {
+			if _, err := s.holdings.CreateUnlocked(ctx, userID, newSnap.ID, holdingRequestFromHolding(h)); err != nil {
+				return SnapshotDetail{}, err
+			}
 		}
 	}
 
@@ -163,4 +196,13 @@ func (s *SnapshotsService) Create(ctx context.Context, userID uuid.UUID, date do
 		IsEditable:   isEditable,
 		Holdings:     holdings,
 	}, nil
+}
+
+// Delete soft-deletes a snapshot (and, implicitly, its holdings become
+// unreachable — the rows aren't touched). Any snapshot may be deleted, not
+// just the latest; deleting the current latest simply makes the
+// next-most-recent remaining snapshot latest/editable again. Returns
+// db.ErrNotFound if the snapshot doesn't exist or isn't owned by userID.
+func (s *SnapshotsService) Delete(ctx context.Context, userID, id uuid.UUID) error {
+	return s.repos.Snapshots.Delete(ctx, userID, id)
 }

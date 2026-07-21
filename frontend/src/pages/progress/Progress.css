@@ -51,9 +51,34 @@
   margin-top: 8px;
   padding-left: 9.33%; /* aligns with the chart's left Y-axis gutter (56/600) */
 }
+.progress-labels-dual {
+  padding-right: 9.33%; /* the debt chart also reserves a right-side axis gutter (56/600) */
+}
 .progress-label {
   font-size: 10px;
   color: var(--text-faint);
+}
+
+.progress-chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 11.5px;
+  color: var(--text-body-secondary);
+}
+.progress-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.progress-chart-legend-swatch {
+  width: 14px;
+  height: 0;
+  border-top-width: 2.5px;
+  border-top-style: solid;
+}
+.progress-chart-legend-swatch-dashed {
+  border-top-style: dashed;
 }
 
 .line-chart-tooltip {
@@ -76,4 +101,10 @@
   color: #fff;
   font-weight: 600;
   font-size: 12.5px;
+}
+.line-chart-tooltip-secondary {
+  color: var(--border);
+  font-weight: 500;
+  font-size: 11px;
+  margin-top: 1px;
 }

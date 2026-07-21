@@ -167,14 +167,3 @@ func (r *HoldingsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 	return nil
 }
-
-// CopyFromSnapshot duplicates every holding of fromSnapshotID into
-// toSnapshotID, generating fresh ids/timestamps.
-func (r *HoldingsRepo) CopyFromSnapshot(ctx context.Context, fromSnapshotID, toSnapshotID uuid.UUID) error {
-	_, err := r.pool.Exec(ctx, `
-		INSERT INTO holdings (snapshot_id, category_id, name, detail, value_idr, is_liability, gram, qty, brand, usd_value, currency)
-		SELECT $2, category_id, name, detail, value_idr, is_liability, gram, qty, brand, usd_value, currency
-		FROM holdings
-		WHERE snapshot_id = $1`, fromSnapshotID, toSnapshotID)
-	return err
-}

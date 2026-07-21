@@ -13,6 +13,14 @@ const queryClient = new QueryClient({
       staleTime: 30_000,
       refetchOnWindowFocus: false,
       retry: 1,
+      // This app only ever talks to a same-machine backend, so there's no
+      // meaningful "offline" state to design around — always attempt
+      // fetches rather than letting the browser's online/offline signal
+      // (which can get stuck stale in some environments) pause them.
+      networkMode: 'always',
+    },
+    mutations: {
+      networkMode: 'always',
     },
   },
 })

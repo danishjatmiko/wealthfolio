@@ -31,6 +31,13 @@
 .debt-row:hover {
   background: rgba(0, 0, 0, 0.015);
 }
+.debt-row-locked {
+  cursor: default;
+  opacity: 0.65;
+}
+.debt-row-locked:hover {
+  background: none;
+}
 .debt-row-info {
   flex: 1;
 }

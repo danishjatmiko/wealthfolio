@@ -17,10 +17,13 @@ var (
 	ErrSnapshotLocked = errors.New("snapshot is locked; only the latest snapshot is editable")
 
 	// ErrSnapshotDateExists: a snapshot already exists for the requested
-	// date (snapshots can be created for any date — past, to backfill
-	// history, or future — as long as it isn't a duplicate). Maps to
-	// HTTP 409.
+	// date. Maps to HTTP 409.
 	ErrSnapshotDateExists = errors.New("a snapshot already exists for this date")
+
+	// ErrSnapshotDateInPast: an attempt to create a snapshot dated before
+	// today. New snapshots may only be created today or in the future.
+	// Maps to HTTP 400.
+	ErrSnapshotDateInPast = errors.New("snapshot date must be today or later")
 
 	// ErrInvalidCategory: the category_id on a holdings/passive-income
 	// write doesn't exist. Maps to HTTP 400.

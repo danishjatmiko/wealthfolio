@@ -64,14 +64,24 @@ type Holding struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-// Debt mirrors the debts table.
-type Debt struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"-"`
-	Name      string    `json:"name"`
-	Type      string    `json:"type"`
-	ValueIdr  int64     `json:"value_idr"`
-	Direction string    `json:"direction"`
+// DebtSnapshot mirrors the debt_snapshots table.
+type DebtSnapshot struct {
+	ID           uuid.UUID `json:"id"`
+	UserID       uuid.UUID `json:"-"`
+	SnapshotDate Date      `json:"snapshot_date"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+// DebtEntry mirrors the debt_entries table.
+type DebtEntry struct {
+	ID             uuid.UUID `json:"id"`
+	DebtSnapshotID uuid.UUID `json:"debt_snapshot_id"`
+	Name           string    `json:"name"`
+	Type           string    `json:"type"`
+	ValueIdr       int64     `json:"value_idr"`
+	Direction      string    `json:"direction"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 // PassiveIncomeSource mirrors the passive_income_sources table.

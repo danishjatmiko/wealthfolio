@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMoney } from '../../context/MoneyVisibilityContext'
+import { errorMessage, useToast } from '../../context/ToastContext'
 import { useCategories } from '../../hooks/useCategories'
-import { useSnapshots, useLatestSnapshot, useSnapshotByDate } from '../../hooks/useSnapshots'
+import { useSnapshots, useLatestSnapshot, useSnapshotByDate, useDeleteSnapshot } from '../../hooks/useSnapshots'
 import { useLatestRate } from '../../hooks/useRates'
+import { api } from '../../lib/api'
 import { AssetModal } from './AssetModal'
 import { NewSnapshotModal } from './NewSnapshotModal'
 import type { Holding } from '../../types'
@@ -12,21 +14,24 @@ type ModalKind = 'addAsset' | 'newSnapshot' | null
 
 export function Assets() {
   const { fmt } = useMoney()
+  const { showError, showSuccess } = useToast()
   const { data: categories = [] } = useCategories()
   const { data: snapshots = [] } = useSnapshots()
   const { data: latestSnapshot } = useLatestSnapshot()
   const { data: latestRate } = useLatestRate()
+  const deleteSnapshot = useDeleteSnapshot()
 
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
   const [assetGroup, setAssetGroup] = useState<string>('all')
   const [modal, setModal] = useState<ModalKind>(null)
   const [editingHolding, setEditingHolding] = useState<Holding | null>(null)
 
-  useEffect(() => {
-    if (!selectedDate && latestSnapshot) setSelectedDate(latestSnapshot.snapshot_date)
-  }, [selectedDate, latestSnapshot])
+  const { data: snapshot, isError: snapshotMissing } = useSnapshotByDate(selectedDate)
 
-  const { data: snapshot } = useSnapshotByDate(selectedDate)
+  useEffect(() => {
+    if (!latestSnapshot) return
+    if (!selectedDate || snapshotMissing) setSelectedDate(latestSnapshot.snapshot_date)
+  }, [selectedDate, snapshotMissing, latestSnapshot])
 
   const isViewingLatest = !!snapshot && !!latestSnapshot && snapshot.snapshot_date === latestSnapshot.snapshot_date
   const isEditable = !!snapshot?.is_editable && isViewingLatest
@@ -61,6 +66,26 @@ export function Assets() {
     setEditingHolding(null)
   }
 
+  async function handleDeleteSnapshot() {
+    if (!snapshot) return
+    const label = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+      new Date(snapshot.snapshot_date),
+    )
+    if (!window.confirm(`Delete the ${label} snapshot? This removes it from your history.`)) return
+    try {
+      await deleteSnapshot.mutateAsync(snapshot.id)
+      showSuccess('Snapshot deleted.')
+      // Fetch the fresh list directly rather than waiting on background
+      // query invalidation to settle — picking the new date from
+      // possibly-still-stale cached data would just re-select what was
+      // just deleted.
+      const fresh = await api.snapshots.list()
+      setSelectedDate(fresh[0]?.snapshot_date)
+    } catch (err) {
+      showError(errorMessage(err))
+    }
+  }
+
   const defaultCategoryId =
     assetGroup !== 'all'
       ? Number(assetGroup)
@@ -88,7 +113,15 @@ export function Assets() {
         </div>
         <div className="btn-group assets-toolbar-actions">
           <button type="button" className="btn btn-secondary" onClick={() => setModal('newSnapshot')}>
-            ⧉ Create new with copy this data
+            ⧉ Create new snapshot
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleDeleteSnapshot}
+            disabled={!snapshot || deleteSnapshot.isPending}
+          >
+            🗑 Delete snapshot
           </button>
           <button type="button" className="btn btn-primary" onClick={openAddAsset} disabled={!isEditable}>
             + Add to this snapshot

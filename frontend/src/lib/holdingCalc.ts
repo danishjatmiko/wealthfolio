@@ -6,6 +6,7 @@ import type { RateEntry } from '../types'
 
 export const GOLD_CATEGORY_LABEL = 'Logam Mulia'
 export const BONDS_USD_CATEGORY_LABEL = 'Bonds USD'
+export const US_ETF_CATEGORY_LABEL = 'US ETF'
 export const CASH_CATEGORY_LABEL = 'Uang Tunai'
 
 export const GOLD_TYPES = ['Antam', 'King Halim', 'UBS'] as const
@@ -33,16 +34,17 @@ export interface AssetFormValues {
  * Live client-side preview of the IDR value (thousands) for the asset
  * add/edit form, mirroring mdComputedVal() exactly.
  */
+/** Categories that are always USD-denominated, regardless of a currency toggle. */
+function isFixedUsdCategory(categoryLabel: string): boolean {
+  return categoryLabel === BONDS_USD_CATEGORY_LABEL || categoryLabel === US_ETF_CATEGORY_LABEL
+}
+
 export function computeHoldingValue(md: AssetFormValues, latestRate: RateEntry | undefined | null): number {
   if (md.categoryLabel === GOLD_CATEGORY_LABEL) {
     const g = parseNumeric(md.gram)
     return g ? g * (parseNumeric(md.qty) || 1) * goldPrice(latestRate, md.brand) : parseNumeric(md.val)
   }
-  if (md.categoryLabel === BONDS_USD_CATEGORY_LABEL) {
-    const u = parseNumeric(md.usd)
-    return u && latestRate ? u * (latestRate.usd_idr / 1000) : parseNumeric(md.val)
-  }
-  if (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD') {
+  if (isFixedUsdCategory(md.categoryLabel) || (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD')) {
     const u = parseNumeric(md.usd)
     return u && latestRate ? u * (latestRate.usd_idr / 1000) : parseNumeric(md.val)
   }
@@ -59,9 +61,9 @@ export function isCashCategory(categoryLabel: string): boolean {
   return categoryLabel === CASH_CATEGORY_LABEL
 }
 
-/** Whether the form should show a USD input (bonds, or cash-in-USD). */
+/** Whether the form should show a USD input (bonds, US ETF, or cash-in-USD). */
 export function showsUsdInput(categoryLabel: string, currency: string): boolean {
-  return categoryLabel === BONDS_USD_CATEGORY_LABEL || (categoryLabel === CASH_CATEGORY_LABEL && currency === 'USD')
+  return isFixedUsdCategory(categoryLabel) || (categoryLabel === CASH_CATEGORY_LABEL && currency === 'USD')
 }
 
 /** Whether the form should show a direct IDR input. */
@@ -81,7 +83,7 @@ export function buildDetail(md: AssetFormValues): string {
     const q = parseNumeric(md.qty) || 1
     return q > 1 ? `${q} × ${g} g` : `${g} g`
   }
-  if (md.categoryLabel === BONDS_USD_CATEGORY_LABEL || (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD')) {
+  if (isFixedUsdCategory(md.categoryLabel) || (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD')) {
     return `${parseNumeric(md.usd)} USD`
   }
   return ''
@@ -119,7 +121,7 @@ export function prefillFromHolding(h: {
     }
   }
   if (
-    (h.category_label === BONDS_USD_CATEGORY_LABEL || h.category_label === CASH_CATEGORY_LABEL) &&
+    (isFixedUsdCategory(h.category_label) || h.category_label === CASH_CATEGORY_LABEL) &&
     !usd &&
     /usd/i.test(d)
   ) {

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 
 	"wealthfolio/backend/internal/db"
 	"wealthfolio/backend/internal/domain"
@@ -97,6 +98,21 @@ func (h *Handler) createSnapshot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusCreated, detail)
+}
+
+func (h *Handler) deleteSnapshot(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid snapshot id")
+		return
+	}
+
+	userID := currentUserID(r.Context())
+	if err := h.svc.Snapshots.Delete(r.Context(), userID, id); err != nil {
+		handleServiceError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) listHoldingsForDate(w http.ResponseWriter, r *http.Request) {

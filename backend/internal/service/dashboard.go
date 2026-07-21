@@ -108,7 +108,32 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		UpdatedAt:         passiveUpdatedAt,
 	}
 
+	// Debt snapshots run on their own independent timeline from asset
+	// snapshots, so this is computed regardless of whether the user has any
+	// asset snapshots yet.
+	var iOwe, owedToMe int64
+	var debtUpdatedAt *domain.Date
+	debtAggs, err := s.repos.DebtSnapshots.ListWithAgg(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+	if len(debtAggs) > 0 {
+		latestDebt := debtAggs[0]
+		iOwe = latestDebt.IOweIdr
+		owedToMe = latestDebt.OwedToMeIdr
+		debtUpdatedAt, err = s.repos.DebtEntries.MaxUpdatedAt(ctx, latestDebt.Snapshot.ID)
+		if err != nil {
+			return out, err
+		}
+	}
+
 	if len(aggs) == 0 {
+		out.Debt = DebtDTO{
+			TotalDebtIdr:       iOwe,
+			TotalReceivableIdr: owedToMe,
+			RatioPct:           0,
+			UpdatedAt:          debtUpdatedAt,
+		}
 		return out, nil
 	}
 
@@ -143,16 +168,7 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		momPct = percentOf(float64(momIdr), float64(prev))
 	}
 
-	iOwe, owedToMe, err := s.repos.Debts.SumByDirection(ctx, userID)
-	if err != nil {
-		return out, err
-	}
 	ratioPct := percentOf(float64(iOwe), float64(total))
-
-	debtUpdatedAt, err := s.repos.Debts.MaxUpdatedAt(ctx, userID)
-	if err != nil {
-		return out, err
-	}
 
 	grouped := map[string]int64{}
 	for _, h := range holdings {

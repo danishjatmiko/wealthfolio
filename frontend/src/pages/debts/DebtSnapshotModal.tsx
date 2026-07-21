@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react'
 import { Modal, ModalCancelButton } from '../../components/Modal'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { errorMessage, useToast } from '../../context/ToastContext'
-import { useCreateSnapshot } from '../../hooks/useSnapshots'
-import { useLatestDebtSnapshot } from '../../hooks/useDebtSnapshots'
-import type { SnapshotSummary } from '../../types'
+import { useCreateDebtSnapshot } from '../../hooks/useDebtSnapshots'
+import type { DebtSnapshotSummary } from '../../types'
 
-interface NewSnapshotModalProps {
+interface DebtSnapshotModalProps {
   open: boolean
   onClose: () => void
-  latestSnapshot: SnapshotSummary | undefined
+  latestSnapshot: DebtSnapshotSummary | undefined
   onCreated: (date: string) => void
 }
 
@@ -17,11 +16,10 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
-export function NewSnapshotModal({ open, onClose, latestSnapshot, onCreated }: NewSnapshotModalProps) {
+export function DebtSnapshotModal({ open, onClose, latestSnapshot, onCreated }: DebtSnapshotModalProps) {
   const { fmt } = useMoney()
   const { showError, showSuccess } = useToast()
-  const { data: latestDebtSnapshot } = useLatestDebtSnapshot()
-  const createSnapshot = useCreateSnapshot()
+  const createSnapshot = useCreateDebtSnapshot()
   const [date, setDate] = useState(todayIso())
   const [copyData, setCopyData] = useState(true)
 
@@ -51,7 +49,7 @@ export function NewSnapshotModal({ open, onClose, latestSnapshot, onCreated }: N
     <Modal
       open={open}
       onClose={onClose}
-      title="Create new snapshot"
+      title="Create new debt snapshot"
       subtitle="Start today (or a future date) with a copy of your current data, or blank."
       footer={
         <>
@@ -85,19 +83,18 @@ export function NewSnapshotModal({ open, onClose, latestSnapshot, onCreated }: N
         <>
           <div className="computed-box" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6 }}>
             <div className="snap-copy-row">
-              <span>Assets copied from {latestSnapshot?.snapshot_date ?? '—'}</span>
-              <b className="mono">{latestSnapshot?.holdings_count ?? 0} rows</b>
+              <span>Entries copied from {latestSnapshot?.snapshot_date ?? '—'}</span>
+              <b className="mono">{latestSnapshot?.entries_count ?? 0} rows</b>
             </div>
             <div className="snap-copy-row">
-              <span>Debts &amp; receivables (current)</span>
-              <b className="mono">{latestDebtSnapshot?.entries.length ?? 0} rows</b>
-            </div>
-            <div className="snap-copy-row">
-              <span>Starting net equity</span>
-              <b className="mono">{latestSnapshot ? fmt(latestSnapshot.net_equity_idr) : '—'}</b>
+              <span>Starting debt / owed to me</span>
+              <b className="mono">
+                {latestSnapshot ? fmt(latestSnapshot.i_owe_idr) : '—'} /{' '}
+                {latestSnapshot ? fmt(latestSnapshot.owed_to_me_idr) : '—'}
+              </b>
             </div>
           </div>
-          <div className="snap-copy-note">Values carry over so you only change what moved — no more copy-pasting tabs.</div>
+          <div className="snap-copy-note">Values carry over so you only change what moved.</div>
         </>
       )}
     </Modal>

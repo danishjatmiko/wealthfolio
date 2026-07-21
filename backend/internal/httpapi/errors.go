@@ -23,6 +23,8 @@ func handleServiceError(w http.ResponseWriter, err error) {
 		writeError(w, http.StatusConflict, err.Error())
 	case errors.Is(err, service.ErrSnapshotDateExists):
 		writeError(w, http.StatusConflict, err.Error())
+	case errors.Is(err, service.ErrSnapshotDateInPast):
+		writeError(w, http.StatusBadRequest, err.Error())
 	case errors.Is(err, service.ErrNoRateEntry):
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 	case errors.Is(err, service.ErrInvalidCategory):

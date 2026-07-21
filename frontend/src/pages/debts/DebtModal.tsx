@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Modal, ModalCancelButton } from '../../components/Modal'
 import { errorMessage, useToast } from '../../context/ToastContext'
-import { useCreateDebt, useUpdateDebt } from '../../hooks/useDebts'
+import { useCreateDebtEntry, useUpdateDebtEntry } from '../../hooks/useDebtSnapshots'
 import { parseNumeric } from '../../lib/format'
-import type { Debt, DebtDirection } from '../../types'
+import type { DebtEntry, DebtDirection } from '../../types'
 
 const DEBT_TYPES = ['KPR', 'Credit Card', 'Personal loan', 'Vehicle loan', 'Other']
 const RECEIVABLE_TYPES = ['Personal loan', 'Business', 'Other']
@@ -12,13 +12,14 @@ interface DebtModalProps {
   open: boolean
   onClose: () => void
   direction: DebtDirection
-  editingDebt: Debt | null
+  editingEntry: DebtEntry | null
+  snapshotDate: string
 }
 
-export function DebtModal({ open, onClose, direction, editingDebt }: DebtModalProps) {
+export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate }: DebtModalProps) {
   const { showError, showSuccess } = useToast()
-  const createDebt = useCreateDebt()
-  const updateDebt = useUpdateDebt()
+  const createEntry = useCreateDebtEntry()
+  const updateEntry = useUpdateDebtEntry()
   const types = direction === 'i_owe' ? DEBT_TYPES : RECEIVABLE_TYPES
 
   const [name, setName] = useState('')
@@ -27,24 +28,24 @@ export function DebtModal({ open, onClose, direction, editingDebt }: DebtModalPr
 
   useEffect(() => {
     if (!open) return
-    if (editingDebt) {
-      setName(editingDebt.name)
-      setType(editingDebt.type)
-      setAmount(String(editingDebt.value_idr))
+    if (editingEntry) {
+      setName(editingEntry.name)
+      setType(editingEntry.type)
+      setAmount(String(editingEntry.value_idr))
     } else {
       setName('')
       setType(types[0])
       setAmount('')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, editingDebt])
+  }, [open, editingEntry])
 
   const isDebt = direction === 'i_owe'
-  const title = isDebt ? (editingDebt ? 'Edit debt' : 'Add debt') : editingDebt ? 'Edit receivable' : 'Add receivable'
+  const title = isDebt ? (editingEntry ? 'Edit debt' : 'Add debt') : editingEntry ? 'Edit receivable' : 'Add receivable'
   const subtitle = isDebt ? 'Something you owe.' : 'Someone who owes you.'
   const nameLabel = isDebt ? 'Debt name' : 'Person / name'
   const namePlaceholder = isDebt ? 'e.g. OCBC KPA' : 'e.g. Edo Tole'
-  const cta = isDebt ? (editingDebt ? 'Save changes' : 'Add debt') : editingDebt ? 'Save changes' : 'Add receivable'
+  const cta = isDebt ? (editingEntry ? 'Save changes' : 'Add debt') : editingEntry ? 'Save changes' : 'Add receivable'
 
   async function handleSave() {
     if (!name.trim()) {
@@ -53,11 +54,11 @@ export function DebtModal({ open, onClose, direction, editingDebt }: DebtModalPr
     }
     const input = { name: name.trim(), type, value_idr: Math.round(parseNumeric(amount)), direction }
     try {
-      if (editingDebt) {
-        await updateDebt.mutateAsync({ id: editingDebt.id, input })
+      if (editingEntry) {
+        await updateEntry.mutateAsync({ id: editingEntry.id, input })
         showSuccess('Updated.')
       } else {
-        await createDebt.mutateAsync(input)
+        await createEntry.mutateAsync({ date: snapshotDate, input })
         showSuccess(isDebt ? 'Debt added.' : 'Receivable added.')
       }
       onClose()
@@ -66,7 +67,7 @@ export function DebtModal({ open, onClose, direction, editingDebt }: DebtModalPr
     }
   }
 
-  const saving = createDebt.isPending || updateDebt.isPending
+  const saving = createEntry.isPending || updateEntry.isPending
 
   return (
     <Modal

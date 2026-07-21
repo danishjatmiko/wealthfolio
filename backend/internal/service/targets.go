@@ -89,9 +89,13 @@ func (s *TargetsService) computeCurrentValue(ctx context.Context, userID uuid.UU
 			return 0, err
 		}
 		netEq := netEquity(holdings)
-		iOwe, _, err := s.repos.Debts.SumByDirection(ctx, userID)
+		debtAggs, err := s.repos.DebtSnapshots.ListWithAgg(ctx, userID)
 		if err != nil {
 			return 0, err
+		}
+		var iOwe int64
+		if len(debtAggs) > 0 {
+			iOwe = debtAggs[0].IOweIdr
 		}
 		return percentOf(float64(iOwe), float64(netEq)), nil
 

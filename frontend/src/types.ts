@@ -82,19 +82,57 @@ export interface HoldingInput {
 
 export type DebtDirection = 'i_owe' | 'owed_to_me'
 
-export interface Debt {
+export interface DebtSnapshotSummary {
   id: string
+  snapshot_date: string
+  is_editable: boolean
+  entries_count: number
+  i_owe_idr: number
+  owed_to_me_idr: number
+}
+
+export interface DebtEntry {
+  id: string
+  debt_snapshot_id: string
+  name: string
+  type: string
+  value_idr: number
+  direction: DebtDirection
+  created_at: string
+  updated_at: string
+}
+
+export interface DebtSnapshot {
+  id: string
+  snapshot_date: string
+  is_editable: boolean
+  entries: DebtEntry[]
+}
+
+export interface DebtEntryInput {
   name: string
   type: string
   value_idr: number
   direction: DebtDirection
 }
 
-export interface DebtInput {
-  name: string
-  type: string
-  value_idr: number
-  direction: DebtDirection
+export type DebtProgressGranularity = 'monthly' | 'quarterly' | 'yearly'
+
+export interface DebtProgressPoint {
+  label: string
+  date: string
+  debt_idr: number
+  owed_to_me_idr: number
+  ratio_pct: number
+}
+
+export interface DebtProgress {
+  granularity: DebtProgressGranularity
+  series: DebtProgressPoint[]
+  latest_debt_idr: number
+  latest_ratio_pct: number
+  delta_idr: number
+  delta_pct: number
 }
 
 export interface PassiveIncomeSource {

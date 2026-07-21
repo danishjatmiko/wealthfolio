@@ -27,7 +27,8 @@ type Repos struct {
 	Rates         *RatesRepo
 	Snapshots     *SnapshotsRepo
 	Holdings      *HoldingsRepo
-	Debts         *DebtsRepo
+	DebtSnapshots *DebtSnapshotsRepo
+	DebtEntries   *DebtEntriesRepo
 	PassiveIncome *PassiveIncomeRepo
 	Targets       *TargetsRepo
 	Pool          *pgxpool.Pool
@@ -40,7 +41,8 @@ func NewRepos(pool *pgxpool.Pool) *Repos {
 		Rates:         NewRatesRepo(pool),
 		Snapshots:     NewSnapshotsRepo(pool),
 		Holdings:      NewHoldingsRepo(pool),
-		Debts:         NewDebtsRepo(pool),
+		DebtSnapshots: NewDebtSnapshotsRepo(pool),
+		DebtEntries:   NewDebtEntriesRepo(pool),
 		PassiveIncome: NewPassiveIncomeRepo(pool),
 		Targets:       NewTargetsRepo(pool),
 		Pool:          pool,

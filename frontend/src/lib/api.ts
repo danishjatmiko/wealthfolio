@@ -1,8 +1,12 @@
 import type {
   Category,
   Dashboard,
-  Debt,
-  DebtInput,
+  DebtEntry,
+  DebtEntryInput,
+  DebtProgress,
+  DebtProgressGranularity,
+  DebtSnapshot,
+  DebtSnapshotSummary,
   Holding,
   HoldingInput,
   PassiveIncomeInput,
@@ -73,6 +77,7 @@ export const api = {
     byDate: (date: string) => get<Snapshot>(`/snapshots/${date}`),
     create: (input: { snapshot_date: string; copy_from_latest: boolean }) =>
       post<Snapshot>('/snapshots', input),
+    remove: (id: string) => del<void>(`/snapshots/${id}`),
   },
   holdings: {
     create: (date: string, input: HoldingInput) =>
@@ -80,11 +85,19 @@ export const api = {
     update: (id: string, input: HoldingInput) => put<Holding>(`/holdings/${id}`, input),
     remove: (id: string) => del<void>(`/holdings/${id}`),
   },
-  debts: {
-    list: () => get<Debt[]>('/debts'),
-    create: (input: DebtInput) => post<Debt>('/debts', input),
-    update: (id: string, input: DebtInput) => put<Debt>(`/debts/${id}`, input),
-    remove: (id: string) => del<void>(`/debts/${id}`),
+  debtSnapshots: {
+    list: () => get<DebtSnapshotSummary[]>('/debt-snapshots'),
+    latest: () => get<DebtSnapshot>('/debt-snapshots/latest'),
+    byDate: (date: string) => get<DebtSnapshot>(`/debt-snapshots/${date}`),
+    create: (input: { snapshot_date: string; copy_from_latest: boolean }) =>
+      post<DebtSnapshot>('/debt-snapshots', input),
+    remove: (id: string) => del<void>(`/debt-snapshots/${id}`),
+  },
+  debtEntries: {
+    create: (date: string, input: DebtEntryInput) =>
+      post<DebtEntry>(`/debt-snapshots/${date}/entries`, input),
+    update: (id: string, input: DebtEntryInput) => put<DebtEntry>(`/debt-entries/${id}`, input),
+    remove: (id: string) => del<void>(`/debt-entries/${id}`),
   },
   passiveIncome: {
     list: () => get<PassiveIncomeSource[]>('/passive-income'),
@@ -105,5 +118,9 @@ export const api = {
   progress: {
     get: (granularity: ProgressGranularity) =>
       get<Progress>(`/progress?granularity=${granularity}`),
+  },
+  debtProgress: {
+    get: (granularity: DebtProgressGranularity) =>
+      get<DebtProgress>(`/debt-progress?granularity=${granularity}`),
   },
 }
