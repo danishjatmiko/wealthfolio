@@ -53,9 +53,10 @@ func (r *TargetsRepo) List(ctx context.Context, userID uuid.UUID) ([]domain.Targ
 	return out, rows.Err()
 }
 
-// GetByID returns a single target. ErrNotFound if missing.
-func (r *TargetsRepo) GetByID(ctx context.Context, id uuid.UUID) (domain.Target, error) {
-	row := r.pool.QueryRow(ctx, targetSelect+` WHERE id = $1`, id)
+// GetByID returns a single target owned by userID. ErrNotFound if missing
+// or owned by someone else.
+func (r *TargetsRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (domain.Target, error) {
+	row := r.pool.QueryRow(ctx, targetSelect+` WHERE id = $1 AND user_id = $2`, id, userID)
 	t, err := scanTarget(row)
 	if err != nil {
 		return domain.Target{}, wrapNotFound(err)
@@ -73,14 +74,15 @@ func (r *TargetsRepo) Create(ctx context.Context, userID uuid.UUID, name string,
 	return scanTarget(row)
 }
 
-// Update overwrites a target's fields. ErrNotFound if the id doesn't exist.
-func (r *TargetsRepo) Update(ctx context.Context, id uuid.UUID, name string, year int, metricType string, targetValue float64, unit string, manualCurrentValue *float64) (domain.Target, error) {
+// Update overwrites a target's fields. ErrNotFound if the id doesn't exist
+// or isn't owned by userID.
+func (r *TargetsRepo) Update(ctx context.Context, userID, id uuid.UUID, name string, year int, metricType string, targetValue float64, unit string, manualCurrentValue *float64) (domain.Target, error) {
 	row := r.pool.QueryRow(ctx, `
 		UPDATE targets
 		SET name = $1, year = $2, metric_type = $3, target_value = $4, unit = $5, manual_current_value = $6, updated_at = now()
-		WHERE id = $7
+		WHERE id = $7 AND user_id = $8
 		RETURNING id, user_id, name, year, metric_type, target_value, unit, manual_current_value`,
-		name, year, metricType, targetValue, unit, manualCurrentValue, id)
+		name, year, metricType, targetValue, unit, manualCurrentValue, id, userID)
 	t, err := scanTarget(row)
 	if err != nil {
 		return domain.Target{}, wrapNotFound(err)
@@ -88,9 +90,10 @@ func (r *TargetsRepo) Update(ctx context.Context, id uuid.UUID, name string, yea
 	return t, nil
 }
 
-// Delete removes a target by id. ErrNotFound if it didn't exist.
-func (r *TargetsRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	tag, err := r.pool.Exec(ctx, `DELETE FROM targets WHERE id = $1`, id)
+// Delete removes a target by id. ErrNotFound if it didn't exist or isn't
+// owned by userID.
+func (r *TargetsRepo) Delete(ctx context.Context, userID, id uuid.UUID) error {
+	tag, err := r.pool.Exec(ctx, `DELETE FROM targets WHERE id = $1 AND user_id = $2`, id, userID)
 	if err != nil {
 		return err
 	}

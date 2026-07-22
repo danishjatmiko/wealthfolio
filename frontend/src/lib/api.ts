@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query'
 import type {
   Category,
   Dashboard,
@@ -19,7 +20,21 @@ import type {
   SnapshotSummary,
   Target,
   TargetInput,
+  User,
 } from '../types'
+
+/** react-query key for the current session (see AuthContext); exported so a
+ * 401 anywhere can invalidate it and drop the app back to the login page. */
+export const authQueryKey = ['auth', 'me'] as const
+
+let queryClient: QueryClient | undefined
+
+/** Wires in the app's QueryClient so a 401 response (session expired mid-
+ * use, not just at initial load) can invalidate the session query and drop
+ * the app back to the login screen. Call once from main.tsx. */
+export function setQueryClient(qc: QueryClient) {
+  queryClient = qc
+}
 
 const BASE = '/api/v1'
 
@@ -35,8 +50,12 @@ export class ApiError extends Error {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     ...init,
   })
+  if (res.status === 401) {
+    queryClient?.invalidateQueries({ queryKey: authQueryKey })
+  }
   if (!res.ok) {
     let message = `Request failed (${res.status})`
     try {
@@ -63,6 +82,12 @@ const put = <T>(path: string, body: unknown) =>
 const del = <T>(path: string) => request<T>(path, { method: 'DELETE' })
 
 export const api = {
+  auth: {
+    me: () => get<User>('/auth/me'),
+    googleLoginUrl: `${BASE}/auth/google/login`,
+    logout: () => request<void>('/auth/logout', { method: 'POST' }),
+    login: (email: string, password: string) => post<void>('/auth/login', { email, password }),
+  },
   categories: {
     list: () => get<Category[]>('/categories'),
   },

@@ -67,9 +67,10 @@ func (r *PassiveIncomeRepo) List(ctx context.Context, userID uuid.UUID) ([]domai
 	return out, rows.Err()
 }
 
-// GetByID returns a single passive income source. ErrNotFound if missing.
-func (r *PassiveIncomeRepo) GetByID(ctx context.Context, id uuid.UUID) (domain.PassiveIncomeSource, error) {
-	row := r.pool.QueryRow(ctx, passiveIncomeSelect+` WHERE p.id = $1`, id)
+// GetByID returns a single passive income source owned by userID.
+// ErrNotFound if missing or owned by someone else.
+func (r *PassiveIncomeRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (domain.PassiveIncomeSource, error) {
+	row := r.pool.QueryRow(ctx, passiveIncomeSelect+` WHERE p.id = $1 AND p.user_id = $2`, id, userID)
 	p, err := scanPassiveIncome(row)
 	if err != nil {
 		return domain.PassiveIncomeSource{}, wrapNotFound(err)
@@ -87,29 +88,29 @@ func (r *PassiveIncomeRepo) Create(ctx context.Context, userID uuid.UUID, catego
 	if err != nil {
 		return domain.PassiveIncomeSource{}, err
 	}
-	return r.GetByID(ctx, id)
+	return r.GetByID(ctx, userID, id)
 }
 
 // Update overwrites a passive income source's fields. ErrNotFound if the id
-// doesn't exist.
-func (r *PassiveIncomeRepo) Update(ctx context.Context, id uuid.UUID, categoryID int16, name string, perYearIdr int64) (domain.PassiveIncomeSource, error) {
+// doesn't exist or isn't owned by userID.
+func (r *PassiveIncomeRepo) Update(ctx context.Context, userID, id uuid.UUID, categoryID int16, name string, perYearIdr int64) (domain.PassiveIncomeSource, error) {
 	tag, err := r.pool.Exec(ctx, `
 		UPDATE passive_income_sources
 		SET category_id = $1, name = $2, per_year_idr = $3, updated_at = now()
-		WHERE id = $4`, categoryID, name, perYearIdr, id)
+		WHERE id = $4 AND user_id = $5`, categoryID, name, perYearIdr, id, userID)
 	if err != nil {
 		return domain.PassiveIncomeSource{}, err
 	}
 	if tag.RowsAffected() == 0 {
 		return domain.PassiveIncomeSource{}, ErrNotFound
 	}
-	return r.GetByID(ctx, id)
+	return r.GetByID(ctx, userID, id)
 }
 
 // Delete removes a passive income source by id. ErrNotFound if it didn't
-// exist.
-func (r *PassiveIncomeRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	tag, err := r.pool.Exec(ctx, `DELETE FROM passive_income_sources WHERE id = $1`, id)
+// exist or isn't owned by userID.
+func (r *PassiveIncomeRepo) Delete(ctx context.Context, userID, id uuid.UUID) error {
+	tag, err := r.pool.Exec(ctx, `DELETE FROM passive_income_sources WHERE id = $1 AND user_id = $2`, id, userID)
 	if err != nil {
 		return err
 	}

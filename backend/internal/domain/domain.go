@@ -8,6 +8,22 @@ import (
 	"github.com/google/uuid"
 )
 
+// User mirrors the users table. Email/AvatarURL/GoogleSub are nullable at
+// the column level only for the pre-auth seed user before it's claimed by
+// the first Google login (see db.UsersRepo.ClaimSeedUser); every user
+// reachable through a session has all three set. PasswordHash is nullable
+// for everyone except the one account currently opted into email/password
+// sign-in (see migrations/00006_password_auth.sql) — never serialized.
+type User struct {
+	ID           uuid.UUID `json:"id"`
+	Email        *string   `json:"-"`
+	DisplayName  string    `json:"display_name"`
+	AvatarURL    *string   `json:"-"`
+	GoogleSub    *string   `json:"-"`
+	PasswordHash *string   `json:"-"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
 // Category mirrors the categories table.
 type Category struct {
 	ID          int16  `json:"id"`

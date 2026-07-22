@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useMemo } from 'react'
 import { NAV_ITEMS, PAGE_TITLES } from './nav'
+import { useAuth } from '../../context/AuthContext'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { useDashboard } from '../../hooks/useDashboard'
 import './AppShell.css'
@@ -22,6 +23,7 @@ export function AppShell() {
   const location = useLocation()
   const { hidden, toggle, fmt } = useMoney()
   const { data: dashboard } = useDashboard()
+  const { user, logout } = useAuth()
   const todayLabel = useTodayLabel()
   const title = PAGE_TITLES[location.pathname] ?? 'Wealthfolio'
 
@@ -51,6 +53,31 @@ export function AppShell() {
             {dashboard ? fmt(dashboard.equity.total_idr) : '—'}
           </div>
         </div>
+
+        {user && (
+          <div className="sidebar-user">
+            {user.avatar_url ? (
+              <img className="sidebar-user-avatar" src={user.avatar_url} alt="" />
+            ) : (
+              <div className="sidebar-user-avatar sidebar-user-avatar-fallback">
+                {user.display_name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="sidebar-user-info">
+              <div className="sidebar-user-name">{user.display_name}</div>
+              <div className="sidebar-user-email">{user.email}</div>
+            </div>
+            <button
+              type="button"
+              className="sidebar-user-signout"
+              onClick={() => void logout()}
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              ⏻
+            </button>
+          </div>
+        )}
       </aside>
 
       <div className="content-col">

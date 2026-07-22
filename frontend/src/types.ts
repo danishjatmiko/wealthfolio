@@ -2,6 +2,13 @@
 // All monetary fields are integers representing THOUSANDS of IDR, unless
 // noted otherwise (rate.usd_idr is full IDR per 1 USD).
 
+export interface User {
+  id: string
+  email: string
+  display_name: string
+  avatar_url: string
+}
+
 export type CategoryKind = 'asset' | 'liability'
 
 export interface Category {

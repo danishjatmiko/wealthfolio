@@ -51,10 +51,15 @@ func (r *DebtEntriesRepo) ListByDebtSnapshot(ctx context.Context, debtSnapshotID
 	return out, rows.Err()
 }
 
-// GetByID returns a single debt entry (with its debt_snapshot_id) by id.
-// ErrNotFound if missing.
-func (r *DebtEntriesRepo) GetByID(ctx context.Context, id uuid.UUID) (domain.DebtEntry, error) {
-	row := r.pool.QueryRow(ctx, `SELECT `+debtEntrySelectCols+` FROM debt_entries WHERE id = $1`, id)
+// GetByID returns a single debt entry (with its debt_snapshot_id) owned by
+// userID (via its debt snapshot). ErrNotFound if missing or owned by
+// someone else.
+func (r *DebtEntriesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (domain.DebtEntry, error) {
+	row := r.pool.QueryRow(ctx, `
+		SELECT e.id, e.debt_snapshot_id, e.name, e.type, e.value_idr, e.direction, e.created_at, e.updated_at
+		FROM debt_entries e
+		JOIN debt_snapshots ds ON ds.id = e.debt_snapshot_id
+		WHERE e.id = $1 AND ds.user_id = $2`, id, userID)
 	e, err := scanDebtEntry(row)
 	if err != nil {
 		return domain.DebtEntry{}, wrapNotFound(err)
@@ -82,14 +87,15 @@ func (r *DebtEntriesRepo) Create(ctx context.Context, w DebtEntryWrite) (domain.
 }
 
 // Update overwrites an existing debt entry's mutable fields and returns the
-// refreshed row. ErrNotFound if the id doesn't exist.
-func (r *DebtEntriesRepo) Update(ctx context.Context, id uuid.UUID, w DebtEntryWrite) (domain.DebtEntry, error) {
+// refreshed row. ErrNotFound if the id doesn't exist or isn't owned by
+// userID (via its debt snapshot).
+func (r *DebtEntriesRepo) Update(ctx context.Context, userID, id uuid.UUID, w DebtEntryWrite) (domain.DebtEntry, error) {
 	row := r.pool.QueryRow(ctx, `
 		UPDATE debt_entries
 		SET name = $1, type = $2, value_idr = $3, direction = $4, updated_at = now()
-		WHERE id = $5
+		WHERE id = $5 AND debt_snapshot_id IN (SELECT id FROM debt_snapshots WHERE user_id = $6)
 		RETURNING `+debtEntrySelectCols,
-		w.Name, w.Type, w.ValueIdr, w.Direction, id)
+		w.Name, w.Type, w.ValueIdr, w.Direction, id, userID)
 	e, err := scanDebtEntry(row)
 	if err != nil {
 		return domain.DebtEntry{}, wrapNotFound(err)
@@ -97,9 +103,12 @@ func (r *DebtEntriesRepo) Update(ctx context.Context, id uuid.UUID, w DebtEntryW
 	return e, nil
 }
 
-// Delete removes a debt entry by id. ErrNotFound if it didn't exist.
-func (r *DebtEntriesRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	tag, err := r.pool.Exec(ctx, `DELETE FROM debt_entries WHERE id = $1`, id)
+// Delete removes a debt entry by id. ErrNotFound if it didn't exist or
+// isn't owned by userID (via its debt snapshot).
+func (r *DebtEntriesRepo) Delete(ctx context.Context, userID, id uuid.UUID) error {
+	tag, err := r.pool.Exec(ctx, `
+		DELETE FROM debt_entries
+		WHERE id = $1 AND debt_snapshot_id IN (SELECT id FROM debt_snapshots WHERE user_id = $2)`, id, userID)
 	if err != nil {
 		return err
 	}

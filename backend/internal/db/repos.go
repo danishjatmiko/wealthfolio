@@ -23,6 +23,8 @@ func wrapNotFound(err error) error {
 // Repos aggregates every resource repository behind a single struct so
 // callers only need to wire one value through the service layer.
 type Repos struct {
+	Users         *UsersRepo
+	Sessions      *SessionsRepo
 	Categories    *CategoriesRepo
 	Rates         *RatesRepo
 	Snapshots     *SnapshotsRepo
@@ -37,6 +39,8 @@ type Repos struct {
 // NewRepos builds a Repos bundle backed by the given connection pool.
 func NewRepos(pool *pgxpool.Pool) *Repos {
 	return &Repos{
+		Users:         NewUsersRepo(pool),
+		Sessions:      NewSessionsRepo(pool),
 		Categories:    NewCategoriesRepo(pool),
 		Rates:         NewRatesRepo(pool),
 		Snapshots:     NewSnapshotsRepo(pool),

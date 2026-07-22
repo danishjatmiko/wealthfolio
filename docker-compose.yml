@@ -24,6 +24,10 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-wealthfolio}:${POSTGRES_PASSWORD:-wealthfolio}@db:5432/${POSTGRES_DB:-wealthfolio}?sslmode=disable
       PORT: "8080"
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?set GOOGLE_CLIENT_ID in .env}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?set GOOGLE_CLIENT_SECRET in .env}
+      GOOGLE_REDIRECT_URL: ${GOOGLE_REDIRECT_URL:?set GOOGLE_REDIRECT_URL in .env}
+      APP_BASE_URL: ${APP_BASE_URL:?set APP_BASE_URL in .env}
     depends_on:
       db:
         condition: service_healthy

@@ -104,7 +104,8 @@ func (h *Handler) updatePassiveIncome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := h.repos.PassiveIncome.Update(r.Context(), id, *req.CategoryID, *req.Name, *req.PerYearIdr)
+	userID := currentUserID(r.Context())
+	p, err := h.repos.PassiveIncome.Update(r.Context(), userID, id, *req.CategoryID, *req.Name, *req.PerYearIdr)
 	if err != nil {
 		handleServiceError(w, err)
 		return
@@ -118,7 +119,8 @@ func (h *Handler) deletePassiveIncome(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid id")
 		return
 	}
-	if err := h.repos.PassiveIncome.Delete(r.Context(), id); err != nil {
+	userID := currentUserID(r.Context())
+	if err := h.repos.PassiveIncome.Delete(r.Context(), userID, id); err != nil {
 		handleServiceError(w, err)
 		return
 	}

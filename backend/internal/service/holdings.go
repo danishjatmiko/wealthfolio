@@ -143,7 +143,7 @@ func (s *HoldingsService) CreateUnlocked(ctx context.Context, userID uuid.UUID, 
 // db.ErrNotFound if the holding doesn't exist, ErrSnapshotLocked if its
 // snapshot isn't the latest.
 func (s *HoldingsService) Update(ctx context.Context, userID uuid.UUID, holdingID uuid.UUID, req HoldingRequest) (domain.Holding, error) {
-	existing, err := s.repos.Holdings.GetByID(ctx, holdingID)
+	existing, err := s.repos.Holdings.GetByID(ctx, userID, holdingID)
 	if err != nil {
 		return domain.Holding{}, err
 	}
@@ -169,13 +169,13 @@ func (s *HoldingsService) Update(ctx context.Context, userID uuid.UUID, holdingI
 		return domain.Holding{}, err
 	}
 
-	return s.repos.Holdings.Update(ctx, holdingID, writeFromRequest(existing.SnapshotID, category, req, valueIdr, detail))
+	return s.repos.Holdings.Update(ctx, userID, holdingID, writeFromRequest(existing.SnapshotID, category, req, valueIdr, detail))
 }
 
 // Delete removes a holding. Returns db.ErrNotFound if it doesn't exist,
 // ErrSnapshotLocked if its snapshot isn't the latest.
 func (s *HoldingsService) Delete(ctx context.Context, userID uuid.UUID, holdingID uuid.UUID) error {
-	existing, err := s.repos.Holdings.GetByID(ctx, holdingID)
+	existing, err := s.repos.Holdings.GetByID(ctx, userID, holdingID)
 	if err != nil {
 		return err
 	}
@@ -188,5 +188,5 @@ func (s *HoldingsService) Delete(ctx context.Context, userID uuid.UUID, holdingI
 		return ErrSnapshotLocked
 	}
 
-	return s.repos.Holdings.Delete(ctx, holdingID)
+	return s.repos.Holdings.Delete(ctx, userID, holdingID)
 }

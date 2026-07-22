@@ -127,7 +127,8 @@ wealth_management/
 │   │   └── httpapi/
 │   │       ├── router.go       # Chi router + CORS + middleware wiring
 │   │       ├── handler.go      # Handler struct
-│   │       ├── middleware.go   # CurrentUserMiddleware (injects fixed user ID)
+│   │       ├── middleware.go   # AuthMiddleware (resolves session cookie -> user ID)
+│   │       ├── auth.go         # Google OAuth login/callback/logout/me handlers
 │   │       ├── respond.go      # writeJSON / writeError helpers
 │   │       ├── errors.go       # HTTP error mapping (service/db errors → status codes)
 │   │       ├── categories.go
@@ -348,7 +349,7 @@ Chi middleware stack applied globally:
 2. `chimiddleware.Recoverer` — panic recovery.
 3. `cors.Handler` — restricts origins to `cfg.CORSOrigin`.
 
-All `/api/v1` routes additionally use `CurrentUserMiddleware` which injects the fixed user ID `00000000-0000-0000-0000-000000000001` into the request context.
+All `/api/v1` routes except `/auth/google/login`, `/auth/google/callback`, and `/auth/logout` additionally use `AuthMiddleware`, which resolves the `wf_session` cookie to a user id via the `sessions` table and injects it into the request context (401 if missing/expired).
 
 **`backend/internal/httpapi/errors.go`**
 
@@ -471,7 +472,7 @@ targets
 
 Base URL: `/api/v1`
 
-All endpoints except `/healthz` require the `CurrentUserMiddleware` (user ID is implicit — no auth token needed in the current single-user design).
+All endpoints except `/healthz` and the `/auth/google/*` and `/auth/logout` routes require a valid `wf_session` cookie (see `AuthMiddleware`); the user id is resolved from that session, not passed explicitly.
 
 ### Health
 
@@ -645,8 +646,8 @@ Asset values are never stored as a raw number typed by the user for price-linked
 - **USD Bonds** (`bonds_usd`) and **USD Cash** (`uang_tunai` + `currency=USD`): `usd_value × (usd_idr / 1000)`
 - If no rate entry exists and a derived value is required, the API returns `422 Unprocessable Entity`.
 
-### Single-User Design
-The application is currently single-user. The fixed user ID `00000000-0000-0000-0000-000000000001` is seeded in `00002_seed.sql` and injected by `CurrentUserMiddleware`. There is no authentication layer.
+### Multi-User Design
+Every account signs in with Google and gets its own isolated workspace; every table is scoped by `user_id` and every read/write path enforces it. The user ID `00000000-0000-0000-0000-000000000001` seeded in `00002_seed.sql` is claimed in place by whichever Google account logs in first (see `AuthService.upsertUser`), so pre-auth local data isn't lost. See the README's "Authentication: Google Sign-In" section for setup.
 
 ### Backfilling Snapshots
 When creating a snapshot with a date *before* the current latest, the resulting snapshot is immediately locked (`is_editable: false`). Initial holdings can still be supplied via `initial_holdings[]` in the create request — this is the only path for writing to a non-latest snapshot.

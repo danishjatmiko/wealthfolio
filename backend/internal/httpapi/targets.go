@@ -110,7 +110,8 @@ func (h *Handler) deleteTarget(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid id")
 		return
 	}
-	if err := h.svc.Targets.Delete(r.Context(), id); err != nil {
+	userID := currentUserID(r.Context())
+	if err := h.svc.Targets.Delete(r.Context(), userID, id); err != nil {
 		handleServiceError(w, err)
 		return
 	}

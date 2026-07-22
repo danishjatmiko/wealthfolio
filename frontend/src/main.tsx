@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './styles/global.css'
 import './styles/components.css'
 import App from './App.tsx'
+import { setQueryClient } from './lib/api'
+import { AuthProvider } from './context/AuthContext'
 import { MoneyVisibilityProvider } from './context/MoneyVisibilityContext'
 import { ToastProvider } from './context/ToastContext'
 
@@ -24,15 +26,18 @@ const queryClient = new QueryClient({
     },
   },
 })
+setQueryClient(queryClient)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <MoneyVisibilityProvider>
-          <App />
-        </MoneyVisibilityProvider>
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <MoneyVisibilityProvider>
+            <App />
+          </MoneyVisibilityProvider>
+        </ToastProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

@@ -170,19 +170,21 @@ func (s *TargetsService) Create(ctx context.Context, userID uuid.UUID, req Targe
 }
 
 // Update validates and overwrites a target, returning it with computed
-// fields. Returns db.ErrNotFound if the id doesn't exist.
+// fields. Returns db.ErrNotFound if the id doesn't exist or isn't owned by
+// userID.
 func (s *TargetsService) Update(ctx context.Context, userID uuid.UUID, id uuid.UUID, req TargetRequest) (domain.Target, error) {
 	if err := req.validate(); err != nil {
 		return domain.Target{}, err
 	}
-	t, err := s.repos.Targets.Update(ctx, id, req.Name, req.Year, req.MetricType, req.TargetValue, req.Unit, req.ManualCurrentValue)
+	t, err := s.repos.Targets.Update(ctx, userID, id, req.Name, req.Year, req.MetricType, req.TargetValue, req.Unit, req.ManualCurrentValue)
 	if err != nil {
 		return domain.Target{}, err
 	}
 	return s.enrich(ctx, userID, t)
 }
 
-// Delete removes a target by id. Returns db.ErrNotFound if it didn't exist.
-func (s *TargetsService) Delete(ctx context.Context, id uuid.UUID) error {
-	return s.repos.Targets.Delete(ctx, id)
+// Delete removes a target by id. Returns db.ErrNotFound if it didn't exist
+// or isn't owned by userID.
+func (s *TargetsService) Delete(ctx context.Context, userID, id uuid.UUID) error {
+	return s.repos.Targets.Delete(ctx, userID, id)
 }

@@ -6,6 +6,7 @@ A personal net-worth / asset-portfolio tracker — replaces a monthly spreadshee
 
 - **Database**: PostgreSQL (schema + seed in [`backend/migrations/`](backend/migrations/), applied automatically on API startup via [goose](https://github.com/pressly/goose))
 - **Backend**: Go, `chi` router, `pgx` (no ORM — hand-written SQL in [`backend/internal/db/`](backend/internal/db/))
+- **Auth**: Google Sign-In (OAuth 2.0 Authorization Code flow via `golang.org/x/oauth2`), server-side sessions in Postgres — see [Authentication](#authentication-google-sign-in) below
 - **Frontend**: React + TypeScript + Vite, `react-router`, `@tanstack/react-query`, hand-rolled SVG charts
 - **Deploy**: Docker Compose (Postgres + API + Caddy serving the built frontend and reverse-proxying `/api/*`)
 
@@ -13,11 +14,13 @@ A personal net-worth / asset-portfolio tracker — replaces a monthly spreadshee
 
 Every monetary field in the database and API (`value_idr`, `target_value`, `per_year_idr`, gold prices, etc.) is an integer in **thousands of IDR** — e.g. `3750000` means Rp 3,750,000,000. This matches the design prototype's internal unit exactly, so the `money()`/`goldPrice()`/derivation formulas could be ported verbatim. The one exception is `rate_entries.usd_idr`, which is full IDR per 1 USD. See the comment at the top of [`backend/migrations/00001_init.sql`](backend/migrations/00001_init.sql).
 
-## Single-user now, multi-user-ready
+## Authentication: Google Sign-In
 
-v1 has no login screen — every table has a `user_id` column, but the backend's `CurrentUserMiddleware` ([`backend/internal/httpapi/middleware.go`](backend/internal/httpapi/middleware.go)) just injects one fixed seeded user (`00000000-0000-0000-0000-000000000001`) into every request. Adding real auth later means replacing that one middleware plus adding login endpoints — no schema or handler changes needed.
+Every account signs in with Google and gets its own private, fully isolated workspace — every table is scoped by `user_id`, and every read/write path enforces it (see `internal/httpapi/middleware.go`'s `AuthMiddleware` and the ownership checks in `internal/db/*.go`). Sign-up is open: any Google account can sign in and gets a fresh, empty workspace. The very first Google login ever claims the original pre-auth seeded user in place, so existing local data isn't lost when auth is turned on.
 
-**Security note**: because there's no login, anyone with the URL can view and edit your financial data once this is on a public server. At minimum keep the URL unguessable, or put Caddy `basicauth` in front of it (see `frontend/Caddyfile`) until real per-user auth exists.
+Sessions are opaque random tokens in an `HttpOnly`/`Secure`/`SameSite=Lax` cookie, backed by a `sessions` table in Postgres (not JWTs — revocable instantly on logout). A session stays valid for 7 days of inactivity, refreshed automatically while in use, capped at 30 days from creation regardless of activity.
+
+**Setup**: create an OAuth 2.0 Client ID (type "Web application") at [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials), with an authorized redirect URI matching `GOOGLE_REDIRECT_URL` (e.g. `http://localhost:8080/api/v1/auth/google/callback` for local dev). Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URL`, and `APP_BASE_URL` (see `.env.example`) — the backend refuses to start without the client id/secret.
 
 ## Local development
 
@@ -34,6 +37,10 @@ cd backend
 DATABASE_URL="postgres://<user>@localhost:5432/wealthfolio_dev?sslmode=disable" \
 PORT=8080 \
 CORS_ORIGIN="http://localhost:5173" \
+GOOGLE_CLIENT_ID="<from Google Cloud Console>" \
+GOOGLE_CLIENT_SECRET="<from Google Cloud Console>" \
+GOOGLE_REDIRECT_URL="http://localhost:8080/api/v1/auth/google/callback" \
+APP_BASE_URL="http://localhost:5173" \
 go run ./cmd/api
 ```
 
@@ -81,4 +88,3 @@ docker-compose.yml          postgres + api + web (Caddy)
 ## What's not built yet
 
 - No CSV/spreadsheet import — the user chose to re-enter historical snapshots manually rather than build one-time import tooling.
-- No authentication (see above).

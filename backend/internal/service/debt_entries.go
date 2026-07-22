@@ -91,7 +91,7 @@ func (s *DebtEntriesService) Update(ctx context.Context, userID uuid.UUID, entry
 		return domain.DebtEntry{}, err
 	}
 
-	existing, err := s.repos.DebtEntries.GetByID(ctx, entryID)
+	existing, err := s.repos.DebtEntries.GetByID(ctx, userID, entryID)
 	if err != nil {
 		return domain.DebtEntry{}, err
 	}
@@ -104,13 +104,13 @@ func (s *DebtEntriesService) Update(ctx context.Context, userID uuid.UUID, entry
 		return domain.DebtEntry{}, ErrSnapshotLocked
 	}
 
-	return s.repos.DebtEntries.Update(ctx, entryID, debtWriteFromRequest(existing.DebtSnapshotID, req))
+	return s.repos.DebtEntries.Update(ctx, userID, entryID, debtWriteFromRequest(existing.DebtSnapshotID, req))
 }
 
 // Delete removes a debt entry. Returns db.ErrNotFound if it doesn't exist,
 // ErrSnapshotLocked if its snapshot isn't the latest.
 func (s *DebtEntriesService) Delete(ctx context.Context, userID uuid.UUID, entryID uuid.UUID) error {
-	existing, err := s.repos.DebtEntries.GetByID(ctx, entryID)
+	existing, err := s.repos.DebtEntries.GetByID(ctx, userID, entryID)
 	if err != nil {
 		return err
 	}
@@ -123,5 +123,5 @@ func (s *DebtEntriesService) Delete(ctx context.Context, userID uuid.UUID, entry
 		return ErrSnapshotLocked
 	}
 
-	return s.repos.DebtEntries.Delete(ctx, entryID)
+	return s.repos.DebtEntries.Delete(ctx, userID, entryID)
 }

@@ -21,6 +21,9 @@ func main() {
 	if cfg.DatabaseURL == "" {
 		log.Fatal("DATABASE_URL environment variable is required")
 	}
+	if cfg.GoogleClientID == "" || cfg.GoogleClientSecret == "" {
+		log.Fatal("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables are required")
+	}
 
 	log.Println("running database migrations...")
 	if err := db.RunMigrations(cfg.DatabaseURL, migrations.FS); err != nil {
@@ -37,7 +40,7 @@ func main() {
 	defer pool.Close()
 
 	repos := db.NewRepos(pool)
-	services := service.NewServices(repos)
+	services := service.NewServices(repos, cfg)
 	router := httpapi.NewRouter(cfg, repos, services)
 
 	addr := ":" + cfg.Port
