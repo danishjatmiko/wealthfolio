@@ -23,6 +23,8 @@ data class SourceRow(
 data class SettingsUiState(
     val rows: List<SourceRow> = emptyList(),
     val availableEnvelopeNames: List<String> = emptyList(),
+    val displayName: String? = null,
+    val email: String? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -38,6 +40,18 @@ class SettingsViewModel @Inject constructor(
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            // Best-effort — a failed fetch just leaves the account card
+            // blank rather than blocking the notification-source UI, which
+            // is this screen's actual reason for existing.
+            try {
+                val user = api.me().body()
+                if (user != null) {
+                    _uiState.value = _uiState.value.copy(displayName = user.displayName, email = user.email)
+                }
+            } catch (_: Exception) {
+            }
+        }
         viewModelScope.launch {
             val enabledFlows = NotificationSource.entries.map { source ->
                 sourcePreferences.isEnabled(source)
@@ -65,7 +79,15 @@ class SettingsViewModel @Inject constructor(
                     mappedEnvelopeName = mappings[source.id]?.envelopeName,
                 )
             }
-            _uiState.value = SettingsUiState(rows = rows, availableEnvelopeNames = envelopeNames, isLoading = false)
+            // .copy, not a fresh SettingsUiState — this races the profile
+            // fetch above and a wholesale replace would blank out
+            // displayName/email if this collector wins the race.
+            _uiState.value = _uiState.value.copy(
+                rows = rows,
+                availableEnvelopeNames = envelopeNames,
+                isLoading = false,
+                error = null,
+            )
         } catch (e: Exception) {
             _uiState.value = _uiState.value.copy(isLoading = false, error = e.message ?: "Failed to load settings")
         }

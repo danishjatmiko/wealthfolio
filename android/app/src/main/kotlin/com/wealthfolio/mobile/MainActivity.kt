@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import com.wealthfolio.mobile.auth.TokenStore
 import com.wealthfolio.mobile.sync.SyncScheduler
 import com.wealthfolio.mobile.ui.WealthfolioRoot
+import com.wealthfolio.mobile.ui.theme.EthernaColorScheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
         syncScheduler.schedulePeriodicSweep()
 
         setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = EthernaColorScheme) {
                 // Android 15+ (targetSdk 36 here) forces edge-to-edge
                 // drawing — content renders behind the status bar/camera
                 // cutout/nav bar by default. Without safeDrawingPadding,

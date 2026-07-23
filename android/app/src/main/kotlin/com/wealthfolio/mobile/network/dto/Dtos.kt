@@ -4,6 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 data class LoginRequest(val email: String, val password: String)
 
+data class UserDto(
+    val id: String,
+    val email: String,
+    @SerializedName("display_name") val displayName: String,
+    @SerializedName("avatar_url") val avatarUrl: String,
+)
+
 data class LoginResponse(
     val token: String,
     @SerializedName("expires_at") val expiresAt: String,

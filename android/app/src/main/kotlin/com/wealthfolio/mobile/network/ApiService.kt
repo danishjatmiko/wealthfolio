@@ -7,6 +7,7 @@ import com.wealthfolio.mobile.network.dto.IngestExpenseResponse
 import com.wealthfolio.mobile.network.dto.LoginRequest
 import com.wealthfolio.mobile.network.dto.LoginResponse
 import com.wealthfolio.mobile.network.dto.UpsertSourceMappingRequest
+import com.wealthfolio.mobile.network.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -20,6 +21,9 @@ interface ApiService {
 
     @POST("auth/logout")
     suspend fun logout(): Response<Unit>
+
+    @GET("auth/me")
+    suspend fun me(): Response<UserDto>
 
     @GET("expense-periods/latest")
     suspend fun latestPeriod(): Response<ExpensePeriodDetailDto>
