@@ -31,7 +31,7 @@ export function AppShell() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="brand-mark">₩</div>
+          <img className="brand-mark" src="/brand-mark.svg" alt="" />
           <div className="brand-name">Etherna</div>
         </div>
         <nav className="sidebar-nav">

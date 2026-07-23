@@ -56,7 +56,7 @@ export function Login() {
     <div className="login-screen">
       <div className="login-card card">
         <div className="login-brand">
-          <div className="brand-mark">₩</div>
+          <img className="brand-mark" src="/brand-mark.svg" alt="" />
           <div className="brand-name">Etherna</div>
         </div>
         <p className="login-subtitle">

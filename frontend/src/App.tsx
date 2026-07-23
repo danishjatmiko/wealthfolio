@@ -17,7 +17,7 @@ function App() {
   if (isLoading) {
     return (
       <div className="auth-loading-screen">
-        <div className="brand-mark">₩</div>
+        <img className="brand-mark" src="/brand-mark.svg" alt="" />
       </div>
     )
   }

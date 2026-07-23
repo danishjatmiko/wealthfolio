@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#3c6b56"/>
-  <text x="16" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="18" fill="#ffffff">₩</text>
+  <rect width="32" height="32" rx="8" fill="#17301f"/>
+  <rect x="8" y="8" width="4.5" height="16.5" rx="2.25" fill="#f4ead0"/>
+  <rect x="15" y="8" width="6.5" height="4" rx="2" fill="#c08a2e"/>
+  <rect x="15" y="14" width="9.5" height="4" rx="2" fill="#d8b064"/>
+  <rect x="15" y="20.5" width="12.5" height="4" rx="2" fill="#f0dfae"/>
 </svg>
