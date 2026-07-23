@@ -86,10 +86,38 @@ export function AppShell() {
             <div className="content-title">{title}</div>
             <div className="content-subtitle">{todayLabel}</div>
           </div>
-          <button type="button" className="hide-toggle" onClick={toggle}>
-            <span className="hide-toggle-icon">◉</span>
-            {hidden ? 'Show' : 'Hide'} values
-          </button>
+          <div className="content-header-actions">
+            <button type="button" className="hide-toggle" onClick={toggle}>
+              <span className="hide-toggle-icon">◉</span>
+              {hidden ? 'Show' : 'Hide'} values
+            </button>
+            {/* window.WealthfolioNative only exists inside the Android
+                app's Web tab (injected by WebTabScreen.kt), so these are
+                invisible on desktop/mobile web — sign-in there has no
+                native counterpart to redirect to, and signing out is
+                deliberately native-app-only now (see SettingsScreen.kt
+                on the Android side). */}
+            {window.WealthfolioNative && (
+              <>
+                <button
+                  type="button"
+                  className="header-native-link"
+                  onClick={() => window.WealthfolioNative?.openNative('sync')}
+                  title="Sync status"
+                >
+                  ⟳
+                </button>
+                <button
+                  type="button"
+                  className="header-native-link"
+                  onClick={() => window.WealthfolioNative?.openNative('settings')}
+                  title="Settings"
+                >
+                  ⚙
+                </button>
+              </>
+            )}
+          </div>
         </header>
 
         <main className="content-area pg" key={location.pathname}>

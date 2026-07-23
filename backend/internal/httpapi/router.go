@@ -92,6 +92,10 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Get("/expense-categories", h.listExpenseCategories)
 			r.Post("/expense-categories", h.createExpenseCategory)
 
+			r.Get("/expense-source-mappings", h.listExpenseSourceMappings)
+			r.Put("/expense-source-mappings/{source}", h.upsertExpenseSourceMapping)
+			r.Post("/expense-ingestions", h.ingestExpense)
+
 			r.Get("/passive-income", h.listPassiveIncome)
 			r.Post("/passive-income", h.createPassiveIncome)
 			r.Put("/passive-income/{id}", h.updatePassiveIncome)

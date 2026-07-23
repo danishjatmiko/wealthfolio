@@ -2,6 +2,11 @@
   display: flex;
   height: 100vh;
   height: 100dvh;
+  /* Wins over both when index.html's inline script has run (see there for
+     why) — kept as the last declaration so it overrides the vh/dvh
+     fallbacks above wherever --app-vh is set, without removing them as a
+     safety net for contexts where that script somehow didn't run. */
+  height: var(--app-vh, 100dvh);
   background: var(--content-bg);
   /* Single container-query context for the whole app: every responsive
      rule in the app (sidebar/bottom-nav, chips/select, table wrapping, …)
@@ -188,6 +193,33 @@
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
+}
+
+.content-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.header-native-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-2);
+  background: var(--card);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 15px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.header-native-link:hover {
+  background: var(--divider);
+  color: var(--text-primary);
 }
 
 .hide-toggle {

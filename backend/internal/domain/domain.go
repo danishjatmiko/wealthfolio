@@ -158,6 +158,41 @@ type FixedExpense struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+// ExpenseSourceMapping mirrors the expense_source_mappings table: which
+// envelope (by name — envelopes are period-scoped, so a fixed id would go
+// stale next period) a notification source's captured expenses auto-file
+// into. Configured once per source in the Android app's Settings screen.
+type ExpenseSourceMapping struct {
+	ID           uuid.UUID `json:"id"`
+	UserID       uuid.UUID `json:"-"`
+	Source       string    `json:"source"`
+	EnvelopeName string    `json:"envelope_name"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+// NotificationExpenseEvent mirrors the notification_expense_events table:
+// one row per notification-ingestion attempt, keyed by a client-generated
+// idempotency_key so retries never duplicate. Recorded whether or not
+// parsing succeeded (ParseStatus "created" vs "ignored") — the raw_*
+// fields double as the sample data the notificationparse parsers get
+// developed against.
+type NotificationExpenseEvent struct {
+	ID             uuid.UUID  `json:"id"`
+	UserID         uuid.UUID  `json:"-"`
+	IdempotencyKey string     `json:"idempotency_key"`
+	Source         string     `json:"source"`
+	RawTitle       *string    `json:"raw_title"`
+	RawText        *string    `json:"raw_text"`
+	RawBigText     *string    `json:"raw_big_text"`
+	OccurredAt     time.Time  `json:"occurred_at"`
+	ParseStatus    string     `json:"parse_status"`
+	AmountIdr      *int64     `json:"amount_idr"`
+	MerchantName   *string    `json:"merchant_name"`
+	EnvelopeID     *uuid.UUID `json:"envelope_id"`
+	FixedExpenseID *uuid.UUID `json:"fixed_expense_id"`
+	CreatedAt      time.Time  `json:"created_at"`
+}
+
 // Target mirrors the targets table plus the server-computed fields.
 type Target struct {
 	ID                 uuid.UUID `json:"id"`

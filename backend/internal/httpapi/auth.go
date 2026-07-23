@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"wealthfolio/backend/internal/service"
@@ -13,9 +14,24 @@ import (
 // in-flight login attempt; scoped to the auth/google path prefix only.
 const oauthStateCookieName = "wf_oauth_state"
 
+// oauthPlatformCookieName remembers, across the redirect to Google and
+// back, that this login was started by the Android app (?platform=android)
+// rather than the web frontend — same lifecycle as oauthStateCookieName,
+// just a second cookie alongside it, so googleCallback knows which of the
+// two very different "hand the session back" mechanisms to use.
+const oauthPlatformCookieName = "wf_oauth_platform"
+
+// mobileAuthCallbackScheme is the custom URI scheme the Android app
+// registers an intent-filter for for receiving its session token — see
+// googleCallback's "android" branch below.
+const mobileAuthCallbackScheme = "wealthfolio://auth-callback"
+
 // googleLogin starts the Authorization Code flow: stash a random state
 // value in a short-lived cookie, then redirect the browser to Google's
-// consent screen with that same state.
+// consent screen with that same state. ?platform=android marks this as a
+// mobile-app login (opened in a Chrome Custom Tab, not a full web
+// navigation) so googleCallback hands the token back via a deep link
+// instead of a cookie.
 func (h *Handler) googleLogin(w http.ResponseWriter, r *http.Request) {
 	state, err := service.NewState()
 	if err != nil {
@@ -31,12 +47,26 @@ func (h *Handler) googleLogin(w http.ResponseWriter, r *http.Request) {
 		Secure:   h.cookieSecure,
 		SameSite: http.SameSiteLaxMode,
 	})
+	if r.URL.Query().Get("platform") == "android" {
+		http.SetCookie(w, &http.Cookie{
+			Name:     oauthPlatformCookieName,
+			Value:    "android",
+			Path:     "/api/v1/auth/google",
+			MaxAge:   int((10 * time.Minute).Seconds()),
+			HttpOnly: true,
+			Secure:   h.cookieSecure,
+			SameSite: http.SameSiteLaxMode,
+		})
+	}
 	http.Redirect(w, r, h.svc.Auth.AuthCodeURL(state), http.StatusFound)
 }
 
 // googleCallback completes the flow: verify the state matches what we
-// handed out, exchange the code, upsert the user, set the session cookie,
-// and send the browser back to the frontend.
+// handed out, exchange the code, upsert the user, and send the caller back
+// with a session — as a cookie + web redirect normally, or as a
+// wealthfolio://auth-callback deep link carrying the token when this login
+// was started by the Android app. The registered Google redirect URI is
+// unchanged either way; the branch happens entirely on our side.
 func (h *Handler) googleCallback(w http.ResponseWriter, r *http.Request) {
 	stateCookie, err := r.Cookie(oauthStateCookieName)
 	if err != nil || stateCookie.Value == "" || r.URL.Query().Get("state") != stateCookie.Value {
@@ -44,6 +74,12 @@ func (h *Handler) googleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	clearStateCookie(w, h.cookieSecure)
+
+	isMobile := false
+	if platformCookie, err := r.Cookie(oauthPlatformCookieName); err == nil && platformCookie.Value == "android" {
+		isMobile = true
+		clearPlatformCookie(w, h.cookieSecure)
+	}
 
 	code := r.URL.Query().Get("code")
 	if code == "" {
@@ -58,6 +94,12 @@ func (h *Handler) googleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if isMobile {
+		dest := mobileAuthCallbackScheme + "?token=" + url.QueryEscape(token) + "&expires_at=" + url.QueryEscape(expiresAt.Format(time.RFC3339))
+		http.Redirect(w, r, dest, http.StatusFound)
+		return
+	}
+
 	setSessionCookie(w, token, expiresAt, h.cookieSecure)
 	http.Redirect(w, r, h.appBaseURL, http.StatusFound)
 }
@@ -67,10 +109,22 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
+type loginResponse struct {
+	Token     string    `json:"token"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
 // login handles email+password sign-in. Only the one account seeded by
 // migrations/00006_password_auth.sql can currently succeed here — everyone
 // else gets the same generic invalid-credentials response as a wrong
 // password, whether or not their email exists.
+//
+// Sets the session cookie (what the web frontend relies on) and also
+// returns the raw token in the JSON body, so the Android app — which has
+// no cookie jar shared with this response — can pull it out and attach it
+// as `Cookie: wf_session=<token>` on its own requests. AuthMiddleware
+// doesn't care where that header came from, so no other backend change is
+// needed for the app to use the exact same session mechanism as the web.
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
 	if err := decodeJSON(r, &req); err != nil {
@@ -94,12 +148,24 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	setSessionCookie(w, token, expiresAt, h.cookieSecure)
-	w.WriteHeader(http.StatusNoContent)
+	writeJSON(w, http.StatusOK, loginResponse{Token: token, ExpiresAt: expiresAt})
 }
 
 func clearStateCookie(w http.ResponseWriter, secure bool) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     oauthStateCookieName,
+		Value:    "",
+		Path:     "/api/v1/auth/google",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+func clearPlatformCookie(w http.ResponseWriter, secure bool) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     oauthPlatformCookieName,
 		Value:    "",
 		Path:     "/api/v1/auth/google",
 		MaxAge:   -1,

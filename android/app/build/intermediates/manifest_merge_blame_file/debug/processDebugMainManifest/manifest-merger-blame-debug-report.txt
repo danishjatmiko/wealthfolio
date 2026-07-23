@@ -1,0 +1,334 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3  Debug-only override, merged into the main manifest by AGP: allows plain
+4  HTTP to the dev backend (AppConfig.API_BASE_URL / WEB_ORIGIN, both
+5  http://, not https://). The main manifest keeps
+6  usesCleartextTraffic="false" for release builds — this relaxation never
+7  ships.
+8-->
+9<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+10    package="com.wealthfolio.mobile"
+11    android:versionCode="1"
+12    android:versionName="1.0" >
+13
+14    <uses-sdk
+15        android:minSdkVersion="26"
+16        android:targetSdkVersion="36" />
+17
+18    <uses-permission android:name="android.permission.INTERNET" />
+18-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:4:5-67
+18-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:4:22-64
+19    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+19-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:5:5-79
+19-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:5:22-76
+20    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+20-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:6:5-77
+20-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:6:22-74
+21    <uses-permission android:name="android.permission.WAKE_LOCK" />
+21-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:23:5-68
+21-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:23:22-65
+22    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+22-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:25:5-81
+22-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:25:22-78
+23
+24    <permission
+24-->[androidx.core:core:1.17.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/cd4e1f1f152bb58a93bf9ca7930746ff/transformed/core-1.17.0/AndroidManifest.xml:22:5-24:47
+25        android:name="com.wealthfolio.mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+25-->[androidx.core:core:1.17.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/cd4e1f1f152bb58a93bf9ca7930746ff/transformed/core-1.17.0/AndroidManifest.xml:23:9-81
+26        android:protectionLevel="signature" />
+26-->[androidx.core:core:1.17.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/cd4e1f1f152bb58a93bf9ca7930746ff/transformed/core-1.17.0/AndroidManifest.xml:24:9-44
+27
+28    <uses-permission android:name="com.wealthfolio.mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+28-->[androidx.core:core:1.17.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/cd4e1f1f152bb58a93bf9ca7930746ff/transformed/core-1.17.0/AndroidManifest.xml:26:5-97
+28-->[androidx.core:core:1.17.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/cd4e1f1f152bb58a93bf9ca7930746ff/transformed/core-1.17.0/AndroidManifest.xml:26:22-94
+29
+30    <application
+30-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:8:5-70:19
+31        android:name="com.wealthfolio.mobile.WealthfolioApp"
+31-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:9:9-39
+32        android:allowBackup="true"
+32-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:10:9-35
+33        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+33-->[androidx.core:core:1.17.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/cd4e1f1f152bb58a93bf9ca7930746ff/transformed/core-1.17.0/AndroidManifest.xml:28:18-86
+34        android:dataExtractionRules="@xml/data_extraction_rules"
+34-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:11:9-65
+35        android:debuggable="true"
+36        android:extractNativeLibs="false"
+37        android:fullBackupContent="@xml/backup_rules"
+37-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:12:9-54
+38        android:icon="@mipmap/ic_launcher"
+38-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:13:9-43
+39        android:label="@string/app_name"
+39-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:14:9-41
+40        android:testOnly="true"
+41        android:theme="@style/Theme.Wealthfolio"
+41-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:15:9-49
+42        android:usesCleartextTraffic="true" >
+42-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:16:9-45
+43        <activity
+43-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:18:9-27:20
+44            android:name="com.wealthfolio.mobile.MainActivity"
+44-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:19:13-41
+45            android:exported="true"
+45-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:20:13-36
+46            android:launchMode="singleTop"
+46-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:21:13-43
+47            android:theme="@style/Theme.Wealthfolio" >
+47-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:22:13-53
+48            <intent-filter>
+48-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:23:13-26:29
+49                <action android:name="android.intent.action.MAIN" />
+49-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:24:17-69
+49-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:24:25-66
+50
+51                <category android:name="android.intent.category.LAUNCHER" />
+51-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:25:17-77
+51-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:25:27-74
+52            </intent-filter>
+53        </activity>
+54        <!--
+55          Receives the wealthfolio://auth-callback?token=...&expires_at=...
+56          deep link the backend's googleCallback redirects to for mobile
+57          Google logins (see backend httpapi/auth.go's isMobile branch).
+58          A separate, no-UI activity rather than handling this intent in
+59          MainActivity keeps the "who am I, what intent launched me" logic
+60          simple on both sides.
+61        -->
+62        <activity
+62-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:37:9-48:20
+63            android:name="com.wealthfolio.mobile.auth.AuthCallbackActivity"
+63-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:38:13-54
+64            android:exported="true"
+64-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:39:13-36
+65            android:launchMode="singleTask"
+65-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:40:13-44
+66            android:theme="@style/Theme.Wealthfolio.Transparent" >
+66-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:41:13-65
+67            <intent-filter>
+67-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:42:13-47:29
+68                <action android:name="android.intent.action.VIEW" />
+68-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:43:17-69
+68-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:43:25-66
+69
+70                <category android:name="android.intent.category.DEFAULT" />
+70-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:44:17-76
+70-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:44:27-73
+71                <category android:name="android.intent.category.BROWSABLE" />
+71-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:45:17-78
+71-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:45:27-75
+72
+73                <data
+73-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:46:17-83
+74                    android:host="auth-callback"
+74-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:46:52-80
+75                    android:scheme="wealthfolio" />
+75-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:46:23-51
+76            </intent-filter>
+77        </activity>
+78        <!--
+79          Notification access is a special, system-wide OS permission the
+80          user grants once via Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+81          (deep-linked from the Settings screen) — it is not requestable via
+82          a normal runtime permission dialog. Once granted, the OS delivers
+83          every notification on the device to onNotificationPosted; this
+84          service's own package-name filter (checked against which sources
+85          are toggled on) is what actually limits what we read — see
+86          TransactionNotificationListener.
+87        -->
+88        <service
+88-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:60:9-68:19
+89            android:name="com.wealthfolio.mobile.notifications.TransactionNotificationListener"
+89-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:61:13-74
+90            android:exported="true"
+90-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:62:13-36
+91            android:label="@string/app_name"
+91-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:63:13-45
+92            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
+92-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:64:13-87
+93            <intent-filter>
+93-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:65:13-67:29
+94                <action android:name="android.service.notification.NotificationListenerService" />
+94-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:66:17-99
+94-->/Users/danishjatmiko/Projects/wealth_management/android/app/src/main/AndroidManifest.xml:66:25-96
+95            </intent-filter>
+96        </service>
+97
+98        <provider
+98-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:29:9-37:20
+99            android:name="androidx.startup.InitializationProvider"
+99-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:30:13-67
+100            android:authorities="com.wealthfolio.mobile.androidx-startup"
+100-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:31:13-68
+101            android:exported="false" >
+101-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:32:13-37
+102            <meta-data
+102-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:34:13-36:52
+103                android:name="androidx.work.WorkManagerInitializer"
+103-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:35:17-68
+104                android:value="androidx.startup" />
+104-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:36:17-49
+105            <meta-data
+105-->[androidx.emoji2:emoji2:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/e0ed778394bdac21b6440fae84a05c0c/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+106                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+106-->[androidx.emoji2:emoji2:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/e0ed778394bdac21b6440fae84a05c0c/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+107                android:value="androidx.startup" />
+107-->[androidx.emoji2:emoji2:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/e0ed778394bdac21b6440fae84a05c0c/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+108            <meta-data
+108-->[androidx.lifecycle:lifecycle-process:2.9.4] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/b1398527468e312f6861f2d92eb79f59/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:29:13-31:52
+109                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+109-->[androidx.lifecycle:lifecycle-process:2.9.4] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/b1398527468e312f6861f2d92eb79f59/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:30:17-78
+110                android:value="androidx.startup" />
+110-->[androidx.lifecycle:lifecycle-process:2.9.4] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/b1398527468e312f6861f2d92eb79f59/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:31:17-49
+111            <meta-data
+111-->[com.squareup.okhttp3:okhttp-android:5.3.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/b5a5b5b79467121ee656eca14a4d6abb/transformed/okhttp-release/AndroidManifest.xml:16:13-18:52
+112                android:name="okhttp3.internal.platform.PlatformInitializer"
+112-->[com.squareup.okhttp3:okhttp-android:5.3.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/b5a5b5b79467121ee656eca14a4d6abb/transformed/okhttp-release/AndroidManifest.xml:17:17-77
+113                android:value="androidx.startup" />
+113-->[com.squareup.okhttp3:okhttp-android:5.3.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/b5a5b5b79467121ee656eca14a4d6abb/transformed/okhttp-release/AndroidManifest.xml:18:17-49
+114            <meta-data
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+115                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+115-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+116                android:value="androidx.startup" />
+116-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+117        </provider>
+118
+119        <service
+119-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:39:9-45:35
+120            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+120-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:40:13-84
+121            android:directBootAware="false"
+121-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:41:13-44
+122            android:enabled="@bool/enable_system_job_service_default"
+122-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:42:13-70
+123            android:exported="true"
+123-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:43:13-36
+124            android:permission="android.permission.BIND_JOB_SERVICE" />
+124-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:44:13-69
+125        <service
+125-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:46:9-52:35
+126            android:name="androidx.work.impl.foreground.SystemForegroundService"
+126-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:47:13-81
+127            android:directBootAware="false"
+127-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:48:13-44
+128            android:enabled="@bool/enable_system_foreground_service_default"
+128-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:49:13-77
+129            android:exported="false" />
+129-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:50:13-37
+130
+131        <receiver
+131-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:54:9-59:35
+132            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+132-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:55:13-88
+133            android:directBootAware="false"
+133-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:56:13-44
+134            android:enabled="true"
+134-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:57:13-35
+135            android:exported="false" />
+135-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:58:13-37
+136        <receiver
+136-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:60:9-69:20
+137            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+137-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:61:13-88
+138            android:directBootAware="false"
+138-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:62:13-44
+139            android:enabled="false"
+139-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:63:13-36
+140            android:exported="false" >
+140-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:64:13-37
+141            <intent-filter>
+141-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:66:13-68:29
+142                <action android:name="android.intent.action.BOOT_COMPLETED" />
+142-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:67:17-79
+142-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:67:25-76
+143            </intent-filter>
+144        </receiver>
+145        <receiver
+145-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:70:9-80:20
+146            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+146-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:71:13-78
+147            android:directBootAware="false"
+147-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:72:13-44
+148            android:enabled="true"
+148-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:73:13-35
+149            android:exported="true"
+149-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:74:13-36
+150            android:permission="android.permission.DUMP" >
+150-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:75:13-57
+151            <intent-filter>
+151-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:77:13-79:29
+152                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+152-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:78:17-88
+152-->[androidx.work:work-runtime:2.11.1] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/4c26ef3fcbce0f5c936c180b0c9e217b/transformed/work-runtime-2.11.1/AndroidManifest.xml:78:25-85
+153            </intent-filter>
+154        </receiver>
+155
+156        <activity
+156-->[androidx.compose.ui:ui-tooling-android:1.11.4] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/8dd33bef4b0a2293fc8902a5344d701c/transformed/ui-tooling/AndroidManifest.xml:23:9-25:39
+157            android:name="androidx.compose.ui.tooling.PreviewActivity"
+157-->[androidx.compose.ui:ui-tooling-android:1.11.4] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/8dd33bef4b0a2293fc8902a5344d701c/transformed/ui-tooling/AndroidManifest.xml:24:13-71
+158            android:exported="true" />
+158-->[androidx.compose.ui:ui-tooling-android:1.11.4] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/8dd33bef4b0a2293fc8902a5344d701c/transformed/ui-tooling/AndroidManifest.xml:25:13-36
+159
+160        <uses-library
+160-->[androidx.window:window:1.5.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/094915b0c27c79b4a7e36197fbdd5806/transformed/window-1.5.0/AndroidManifest.xml:23:9-25:40
+161            android:name="androidx.window.extensions"
+161-->[androidx.window:window:1.5.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/094915b0c27c79b4a7e36197fbdd5806/transformed/window-1.5.0/AndroidManifest.xml:24:13-54
+162            android:required="false" />
+162-->[androidx.window:window:1.5.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/094915b0c27c79b4a7e36197fbdd5806/transformed/window-1.5.0/AndroidManifest.xml:25:13-37
+163        <uses-library
+163-->[androidx.window:window:1.5.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/094915b0c27c79b4a7e36197fbdd5806/transformed/window-1.5.0/AndroidManifest.xml:26:9-28:40
+164            android:name="androidx.window.sidecar"
+164-->[androidx.window:window:1.5.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/094915b0c27c79b4a7e36197fbdd5806/transformed/window-1.5.0/AndroidManifest.xml:27:13-51
+165            android:required="false" />
+165-->[androidx.window:window:1.5.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/094915b0c27c79b4a7e36197fbdd5806/transformed/window-1.5.0/AndroidManifest.xml:28:13-37
+166
+167        <service
+167-->[androidx.room:room-runtime-android:2.8.2] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/ea99160d2f4d77536fc6a2d8129607a2/transformed/room-runtime/AndroidManifest.xml:24:9-28:63
+168            android:name="androidx.room.MultiInstanceInvalidationService"
+168-->[androidx.room:room-runtime-android:2.8.2] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/ea99160d2f4d77536fc6a2d8129607a2/transformed/room-runtime/AndroidManifest.xml:25:13-74
+169            android:directBootAware="true"
+169-->[androidx.room:room-runtime-android:2.8.2] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/ea99160d2f4d77536fc6a2d8129607a2/transformed/room-runtime/AndroidManifest.xml:26:13-43
+170            android:exported="false" />
+170-->[androidx.room:room-runtime-android:2.8.2] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/ea99160d2f4d77536fc6a2d8129607a2/transformed/room-runtime/AndroidManifest.xml:27:13-37
+171
+172        <receiver
+172-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+173            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+173-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+174            android:directBootAware="false"
+174-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+175            android:enabled="true"
+175-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+176            android:exported="true"
+176-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+177            android:permission="android.permission.DUMP" >
+177-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+178            <intent-filter>
+178-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+179                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+179-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+179-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+180            </intent-filter>
+181            <intent-filter>
+181-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+182                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+182-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+182-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+183            </intent-filter>
+184            <intent-filter>
+184-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+185                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+185-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+185-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+186            </intent-filter>
+187            <intent-filter>
+187-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+188                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+188-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+188-->[androidx.profileinstaller:profileinstaller:1.4.0] /Users/danishjatmiko/.gradle/caches/9.5.1/transforms/561bb5d2177bf4417a8592bef46314b1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+189            </intent-filter>
+190        </receiver>
+191    </application>
+192
+193</manifest>

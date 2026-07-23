@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only override, merged into the main manifest by AGP: allows plain
+  HTTP to the dev backend (AppConfig.API_BASE_URL / WEB_ORIGIN, both
+  http://, not https://). The main manifest keeps
+  usesCleartextTraffic="false" for release builds — this relaxation never
+  ships.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application
+        android:usesCleartextTraffic="true"
+        tools:replace="android:usesCleartextTraffic" />
+</manifest>

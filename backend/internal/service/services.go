@@ -20,6 +20,9 @@ type Services struct {
 	Dashboard         *DashboardService
 	Progress          *ProgressService
 	Targets           *TargetsService
+
+	ExpenseSourceMappings *ExpenseSourceMappingsService
+	ExpenseIngestion      *ExpenseIngestionService
 }
 
 // NewServices builds a Services bundle backed by the given repositories.
@@ -39,5 +42,8 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 		Dashboard:         NewDashboardService(repos),
 		Progress:          NewProgressService(repos),
 		Targets:           NewTargetsService(repos),
+
+		ExpenseSourceMappings: NewExpenseSourceMappingsService(repos),
+		ExpenseIngestion:      NewExpenseIngestionService(repos),
 	}
 }

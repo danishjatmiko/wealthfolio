@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:name=".WealthfolioApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Wealthfolio"
+        android:usesCleartextTraffic="false">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Wealthfolio">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Receives the wealthfolio://auth-callback?token=...&expires_at=...
+          deep link the backend's googleCallback redirects to for mobile
+          Google logins (see backend httpapi/auth.go's isMobile branch).
+          A separate, no-UI activity rather than handling this intent in
+          MainActivity keeps the "who am I, what intent launched me" logic
+          simple on both sides.
+        -->
+        <activity
+            android:name=".auth.AuthCallbackActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Wealthfolio.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wealthfolio" android:host="auth-callback" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Notification access is a special, system-wide OS permission the
+          user grants once via Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+          (deep-linked from the Settings screen) — it is not requestable via
+          a normal runtime permission dialog. Once granted, the OS delivers
+          every notification on the device to onNotificationPosted; this
+          service's own package-name filter (checked against which sources
+          are toggled on) is what actually limits what we read — see
+          TransactionNotificationListener.
+        -->
+        <service
+            android:name=".notifications.TransactionNotificationListener"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

@@ -31,6 +31,12 @@ func handleServiceError(w http.ResponseWriter, err error) {
 		writeError(w, http.StatusConflict, err.Error())
 	case errors.Is(err, service.ErrNoRateEntry):
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
+	case errors.Is(err, service.ErrNoActivePeriod):
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
+	case errors.Is(err, service.ErrNoSourceMapping):
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
+	case errors.Is(err, service.ErrEnvelopeNotFound):
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
 	case errors.Is(err, service.ErrInvalidCategory):
 		writeError(w, http.StatusBadRequest, err.Error())
 	case errors.Is(err, service.ErrInvalidInput):

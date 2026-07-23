@@ -56,7 +56,11 @@ type Repos struct {
 	ExpenseCategories *ExpenseCategoriesRepo
 	PassiveIncome     *PassiveIncomeRepo
 	Targets           *TargetsRepo
-	Pool              *pgxpool.Pool
+
+	ExpenseSourceMappings     *ExpenseSourceMappingsRepo
+	NotificationExpenseEvents *NotificationExpenseEventsRepo
+
+	Pool *pgxpool.Pool
 }
 
 // NewRepos builds a Repos bundle backed by the given connection pool.
@@ -76,6 +80,10 @@ func NewRepos(pool *pgxpool.Pool) *Repos {
 		ExpenseCategories: NewExpenseCategoriesRepo(pool),
 		PassiveIncome:     NewPassiveIncomeRepo(pool),
 		Targets:           NewTargetsRepo(pool),
-		Pool:              pool,
+
+		ExpenseSourceMappings:     NewExpenseSourceMappingsRepo(pool),
+		NotificationExpenseEvents: NewNotificationExpenseEventsRepo(pool),
+
+		Pool: pool,
 	}
 }

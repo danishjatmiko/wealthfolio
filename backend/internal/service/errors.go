@@ -33,6 +33,19 @@ var (
 	// write doesn't exist. Maps to HTTP 400.
 	ErrInvalidCategory = errors.New("invalid category_id")
 
+	// ErrNoActivePeriod: a notification-expense ingestion landed on a date
+	// with no expense period covering it yet. Retryable — resolves once
+	// the user starts that period as usual. Maps to HTTP 422.
+	ErrNoActivePeriod = errors.New("no expense period covers this date yet")
+
+	// ErrNoSourceMapping: a notification-expense ingestion arrived for a
+	// source with no configured envelope mapping. Maps to HTTP 422.
+	ErrNoSourceMapping = errors.New("no envelope mapping configured for this source")
+
+	// ErrEnvelopeNotFound: a notification-expense ingestion's mapped
+	// envelope name doesn't exist in the current period. Maps to HTTP 422.
+	ErrEnvelopeNotFound = errors.New("mapped envelope not found in the current period")
+
 	// ErrInvalidInput: generic request validation failure. Maps to HTTP
 	// 400; wrap with fmt.Errorf("%w: ...", ErrInvalidInput) for a more
 	// specific message.
