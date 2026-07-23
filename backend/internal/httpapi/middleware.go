@@ -10,6 +10,20 @@ import (
 	"wealthfolio/backend/internal/domain"
 )
 
+// maxRequestBodyBytes caps every request body (including the unauthenticated
+// login route) well above any legitimate payload this API ever receives, so
+// an oversized body fails fast instead of exhausting server memory.
+const maxRequestBodyBytes = 1 << 20 // 1 MiB
+
+// BodyLimit wraps every request body in http.MaxBytesReader so decodeJSON's
+// json.Decoder can't be driven to allocate unbounded memory on a huge body.
+func BodyLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)
+		next.ServeHTTP(w, r)
+	})
+}
+
 // sessionCookieName holds the opaque session token (see
 // service.AuthService) — never any user data itself, so a leaked cookie is
 // a revocable pointer, not readable information.

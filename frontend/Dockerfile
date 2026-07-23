@@ -8,6 +8,10 @@ COPY . .
 RUN npm run build
 
 FROM caddy:2-alpine
+RUN addgroup -S caddy && adduser -S caddy -G caddy && \
+    mkdir -p /data/caddy /config/caddy && \
+    chown -R caddy:caddy /data /config
 COPY --from=build /src/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
+USER caddy
 EXPOSE 80 443

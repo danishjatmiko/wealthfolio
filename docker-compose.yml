@@ -38,6 +38,8 @@ services:
       args:
         VITE_API_BASE_URL: /api/v1
     restart: unless-stopped
+    cap_add:
+      - NET_BIND_SERVICE
     environment:
       DOMAIN: ${DOMAIN:-:80}
     depends_on:
