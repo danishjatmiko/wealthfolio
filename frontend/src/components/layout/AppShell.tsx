@@ -120,6 +120,33 @@ export function AppShell() {
           </div>
         </header>
 
+        {user && (
+          <div className="mobile-user-bar">
+            {user.avatar_url ? (
+              <img className="sidebar-user-avatar" src={user.avatar_url} alt="" />
+            ) : (
+              <div className="sidebar-user-avatar sidebar-user-avatar-fallback">
+                {user.display_name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="sidebar-user-email">{user.email}</div>
+            {/* Same native-vs-web split as the header sync/settings buttons
+                above: inside the Android WebView, sign-out is native-app-only
+                (SettingsScreen.kt), so this button would have nothing to do. */}
+            {!window.WealthfolioNative && (
+              <button
+                type="button"
+                className="sidebar-user-signout"
+                onClick={() => void logout()}
+                title="Sign out"
+                aria-label="Sign out"
+              >
+                ⏻
+              </button>
+            )}
+          </div>
+        )}
+
         <main className="content-area pg" key={location.pathname}>
           <Outlet />
         </main>

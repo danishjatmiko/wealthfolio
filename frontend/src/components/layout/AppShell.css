@@ -240,6 +240,20 @@
   padding: 22px 24px 32px;
 }
 
+.mobile-user-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar-bg);
+  flex-shrink: 0;
+}
+.mobile-user-bar .sidebar-user-email {
+  flex: 1;
+  min-width: 0;
+}
+
 .bottom-nav {
   display: none;
   flex-shrink: 0;
@@ -276,6 +290,9 @@
     display: none;
   }
   .bottom-nav {
+    display: flex;
+  }
+  .mobile-user-bar {
     display: flex;
   }
   .content-header {
