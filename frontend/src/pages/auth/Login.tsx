@@ -57,7 +57,7 @@ export function Login() {
       <div className="login-card card">
         <div className="login-brand">
           <div className="brand-mark">₩</div>
-          <div className="brand-name">Wealthfolio</div>
+          <div className="brand-name">Etherna</div>
         </div>
         <p className="login-subtitle">
           Sign in to see your own net worth. Each account has its own private data — no one else

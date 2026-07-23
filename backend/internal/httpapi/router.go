@@ -13,7 +13,7 @@ import (
 	"wealthfolio/backend/internal/service"
 )
 
-// NewRouter builds the full Wealthfolio HTTP router: /healthz (no auth, no
+// NewRouter builds the full Etherna HTTP router: /healthz (no auth, no
 // prefix) plus every /api/v1 resource route, with CORS restricted to
 // cfg.CORSOrigin (with credentials, since the session lives in a cookie)
 // and AuthMiddleware applied to every route except the Google OAuth

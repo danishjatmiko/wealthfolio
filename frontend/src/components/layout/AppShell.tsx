@@ -25,14 +25,14 @@ export function AppShell() {
   const { data: dashboard } = useDashboard()
   const { user, logout } = useAuth()
   const todayLabel = useTodayLabel()
-  const title = PAGE_TITLES[location.pathname] ?? 'Wealthfolio'
+  const title = PAGE_TITLES[location.pathname] ?? 'Etherna'
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-mark">₩</div>
-          <div className="brand-name">Wealthfolio</div>
+          <div className="brand-name">Etherna</div>
         </div>
         <nav className="sidebar-nav">
           {NAV_ITEMS.map((item) => (

@@ -1,4 +1,4 @@
-// Package service contains Wealthfolio's business logic: value derivation
+// Package service contains Etherna's business logic: value derivation
 // for holdings, snapshot mutability rules, dashboard/progress aggregation,
 // and target progress computation.
 package service

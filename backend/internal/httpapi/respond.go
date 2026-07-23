@@ -1,5 +1,5 @@
 // Package httpapi wires the chi router, request/response JSON handling, and
-// per-resource HTTP handlers for the Wealthfolio API.
+// per-resource HTTP handlers for the Etherna API.
 package httpapi
 
 import (

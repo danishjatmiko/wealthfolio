@@ -1,4 +1,4 @@
-# Wealthfolio
+# Etherna
 
 A personal net-worth / asset-portfolio tracker — replaces a monthly spreadsheet workflow with a real app you can update from your phone or laptop. PostgreSQL + Go backend + React frontend, built from the design in [`design_handoff_portfolio_app/`](design_handoff_portfolio_app/).
 

@@ -1,4 +1,4 @@
-# Wealthfolio — Codebase Documentation
+# Etherna — Codebase Documentation
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@
 
 ## 1. Project Overview
 
-**Wealthfolio** is a personal net-worth and wealth-tracking application designed for Indonesian users. It lets a single user record monthly portfolio snapshots, track debts, log passive income sources, and set financial targets — all denominated in Indonesian Rupiah (IDR), with special handling for gold prices and USD-denominated assets.
+**Etherna** is a personal net-worth and wealth-tracking application designed for Indonesian users. It lets a single user record monthly portfolio snapshots, track debts, log passive income sources, and set financial targets — all denominated in Indonesian Rupiah (IDR), with special handling for gold prices and USD-denominated assets.
 
 **Tech stack:**
 

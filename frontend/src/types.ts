@@ -1,4 +1,4 @@
-// Core API types, matching the Wealthfolio backend contract (v1).
+// Core API types, matching the Etherna backend contract (v1).
 // All monetary fields are integers representing THOUSANDS of IDR, unless
 // noted otherwise (rate.usd_idr is full IDR per 1 USD).
 

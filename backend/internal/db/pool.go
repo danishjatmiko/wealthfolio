@@ -1,6 +1,6 @@
 // Package db contains the pgxpool connection setup, the goose migration
 // runner, and hand-written repository methods (plain SQL, no ORM) for every
-// Wealthfolio resource.
+// Etherna resource.
 package db
 
 import (

@@ -1,4 +1,4 @@
-// Command api is the Wealthfolio backend HTTP server. On startup it applies
+// Command api is the Etherna backend HTTP server. On startup it applies
 // any pending goose migrations, opens a pgx connection pool, and serves the
 // REST API described in the project spec.
 package main
@@ -44,7 +44,7 @@ func main() {
 	router := httpapi.NewRouter(cfg, repos, services)
 
 	addr := ":" + cfg.Port
-	log.Printf("wealthfolio api listening on %s (cors origin: %s)", addr, cfg.CORSOrigin)
+	log.Printf("etherna api listening on %s (cors origin: %s)", addr, cfg.CORSOrigin)
 	if err := http.ListenAndServe(addr, router); err != nil {
 		log.Fatalf("server error: %v", err)
 	}

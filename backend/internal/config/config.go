@@ -1,4 +1,4 @@
-// Package config loads Wealthfolio's runtime configuration from environment
+// Package config loads Etherna's runtime configuration from environment
 // variables.
 package config
 
