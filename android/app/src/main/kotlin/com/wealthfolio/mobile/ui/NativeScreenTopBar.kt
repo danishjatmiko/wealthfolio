@@ -21,7 +21,7 @@ fun NativeScreenTopBar(title: String, onBack: () -> Unit) {
         title = { Text(title) },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to Wealthfolio")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to Etherna")
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),

@@ -2,6 +2,7 @@ package com.wealthfolio.mobile.auth
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,10 +25,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.wealthfolio.mobile.R
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
@@ -39,7 +43,13 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("Wealthfolio", style = MaterialTheme.typography.headlineMedium)
+        Image(
+            painter = painterResource(R.drawable.ic_brand_mark),
+            contentDescription = null,
+            modifier = Modifier.size(56.dp),
+        )
+        Spacer(Modifier.height(12.dp))
+        Text("Etherna", style = MaterialTheme.typography.headlineMedium)
         Text(
             "Sign in with the same account you use on the web.",
             style = MaterialTheme.typography.bodyMedium,
