@@ -1,1 +1,0 @@
--keep,allowobfuscation,allowshrinking class com.wealthfolio.mobile.settings.SettingsViewModel
