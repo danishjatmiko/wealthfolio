@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -164,7 +166,7 @@ private fun ErrorNote(message: String) {
             .padding(10.dp),
     ) {
         Icon(
-            androidx.compose.material.icons.Icons.Filled.WarningAmber,
+            Icons.Filled.WarningAmber,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(14.dp),
