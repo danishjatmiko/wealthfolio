@@ -5,6 +5,7 @@ import { Dashboard } from './pages/Dashboard'
 import { Login } from './pages/auth/Login'
 import { Assets } from './pages/assets/Assets'
 import { Debts } from './pages/debts/Debts'
+import { MonthlyExpenses } from './pages/expenses/MonthlyExpenses'
 import { PassiveIncome } from './pages/passive/PassiveIncome'
 import { Targets } from './pages/targets/Targets'
 import { Progress } from './pages/progress/Progress'
@@ -32,6 +33,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/assets" element={<Assets />} />
           <Route path="/debts" element={<Debts />} />
+          <Route path="/expenses" element={<MonthlyExpenses />} />
           <Route path="/passive-income" element={<PassiveIncome />} />
           <Route path="/targets" element={<Targets />} />
           <Route path="/progress" element={<Progress />} />

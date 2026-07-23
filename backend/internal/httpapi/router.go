@@ -75,6 +75,23 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Put("/debt-entries/{id}", h.updateDebtEntry)
 			r.Delete("/debt-entries/{id}", h.deleteDebtEntry)
 
+			r.Get("/expense-periods", h.listExpensePeriods)
+			r.Get("/expense-periods/latest", h.getLatestExpensePeriod)
+			r.Post("/expense-periods", h.createExpensePeriod)
+			r.Get("/expense-periods/{id}", h.getExpensePeriod)
+			r.Delete("/expense-periods/{id}", h.deleteExpensePeriod)
+			r.Post("/expense-periods/{periodId}/envelopes", h.createBudgetEnvelope)
+			r.Post("/expense-periods/{periodId}/fixed-expenses", h.createFixedExpense)
+
+			r.Put("/budget-envelopes/{id}", h.updateBudgetEnvelope)
+			r.Delete("/budget-envelopes/{id}", h.deleteBudgetEnvelope)
+
+			r.Put("/fixed-expenses/{id}", h.updateFixedExpense)
+			r.Delete("/fixed-expenses/{id}", h.deleteFixedExpense)
+
+			r.Get("/expense-categories", h.listExpenseCategories)
+			r.Post("/expense-categories", h.createExpenseCategory)
+
 			r.Get("/passive-income", h.listPassiveIncome)
 			r.Post("/passive-income", h.createPassiveIncome)
 			r.Put("/passive-income/{id}", h.updatePassiveIncome)

@@ -111,6 +111,53 @@ type PassiveIncomeSource struct {
 	PerYearIdr    int64     `json:"per_year_idr"`
 }
 
+// ExpensePeriod mirrors the expense_periods table: a custom pay-cycle
+// window (25th of one month through the 24th of the next) rather than a
+// calendar month. Never locks — every period stays editable indefinitely.
+type ExpensePeriod struct {
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"-"`
+	StartDate Date      `json:"start_date"`
+	EndDate   Date      `json:"end_date"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// ExpenseCategory mirrors the expense_categories table: a free-form,
+// user-created grouping for budget envelopes (1 envelope has 1 category;
+// 1 category can have many envelopes).
+type ExpenseCategory struct {
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"-"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// BudgetEnvelope mirrors the budget_envelopes table: a monthly spending
+// target that bundles multiple FixedExpense rows. CategoryName is joined
+// for convenience, same pattern as Holding.CategoryKey/CategoryLabel.
+type BudgetEnvelope struct {
+	ID                 uuid.UUID `json:"id"`
+	PeriodID           uuid.UUID `json:"period_id"`
+	CategoryID         uuid.UUID `json:"category_id"`
+	CategoryName       string    `json:"category_name"`
+	Name               string    `json:"name"`
+	CommittedAmountIdr int64     `json:"committed_amount_idr"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
+// FixedExpense mirrors the fixed_expenses table. Every fixed expense
+// belongs to a BudgetEnvelope — there's no more "standalone" expense.
+type FixedExpense struct {
+	ID         uuid.UUID `json:"id"`
+	PeriodID   uuid.UUID `json:"period_id"`
+	EnvelopeID uuid.UUID `json:"envelope_id"`
+	Name       string    `json:"name"`
+	AmountIdr  int64     `json:"amount_idr"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
 // Target mirrors the targets table plus the server-computed fields.
 type Target struct {
 	ID                 uuid.UUID `json:"id"`

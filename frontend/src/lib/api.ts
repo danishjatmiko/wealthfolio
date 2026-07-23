@@ -1,6 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type {
+  BudgetEnvelope,
+  BudgetEnvelopeInput,
   Category,
+  CreateExpensePeriodInput,
   Dashboard,
   DebtEntry,
   DebtEntryInput,
@@ -8,6 +11,12 @@ import type {
   DebtProgressGranularity,
   DebtSnapshot,
   DebtSnapshotSummary,
+  ExpenseCategory,
+  ExpenseCategoryInput,
+  ExpensePeriodDetail,
+  ExpensePeriodSummary,
+  FixedExpense,
+  FixedExpenseInput,
   Holding,
   HoldingInput,
   PassiveIncomeInput,
@@ -123,6 +132,30 @@ export const api = {
       post<DebtEntry>(`/debt-snapshots/${date}/entries`, input),
     update: (id: string, input: DebtEntryInput) => put<DebtEntry>(`/debt-entries/${id}`, input),
     remove: (id: string) => del<void>(`/debt-entries/${id}`),
+  },
+  expensePeriods: {
+    list: () => get<ExpensePeriodSummary[]>('/expense-periods'),
+    latest: () => get<ExpensePeriodDetail>('/expense-periods/latest'),
+    byId: (id: string) => get<ExpensePeriodDetail>(`/expense-periods/${id}`),
+    create: (input: CreateExpensePeriodInput) => post<ExpensePeriodDetail>('/expense-periods', input),
+    remove: (id: string) => del<void>(`/expense-periods/${id}`),
+  },
+  budgetEnvelopes: {
+    create: (periodId: string, input: BudgetEnvelopeInput) =>
+      post<BudgetEnvelope>(`/expense-periods/${periodId}/envelopes`, input),
+    update: (id: string, input: BudgetEnvelopeInput) =>
+      put<BudgetEnvelope>(`/budget-envelopes/${id}`, input),
+    remove: (id: string) => del<void>(`/budget-envelopes/${id}`),
+  },
+  fixedExpenses: {
+    create: (periodId: string, input: FixedExpenseInput) =>
+      post<FixedExpense>(`/expense-periods/${periodId}/fixed-expenses`, input),
+    update: (id: string, input: FixedExpenseInput) => put<FixedExpense>(`/fixed-expenses/${id}`, input),
+    remove: (id: string) => del<void>(`/fixed-expenses/${id}`),
+  },
+  expenseCategories: {
+    list: () => get<ExpenseCategory[]>('/expense-categories'),
+    create: (input: ExpenseCategoryInput) => post<ExpenseCategory>('/expense-categories', input),
   },
   passiveIncome: {
     list: () => get<PassiveIncomeSource[]>('/passive-income'),

@@ -142,6 +142,84 @@ export interface DebtProgress {
   delta_pct: number
 }
 
+export interface ExpenseCategory {
+  id: string
+  name: string
+  created_at: string
+}
+
+export interface ExpenseCategoryInput {
+  name: string
+}
+
+export interface ExpensePeriodSummary {
+  id: string
+  start_date: string
+  end_date: string
+  label: string
+  actual_total_idr: number
+  committed_total_idr: number
+}
+
+export interface FixedExpense {
+  id: string
+  period_id: string
+  envelope_id: string
+  name: string
+  amount_idr: number
+  created_at: string
+  updated_at: string
+}
+
+export interface BudgetEnvelope {
+  id: string
+  period_id: string
+  category_id: string
+  category_name: string
+  name: string
+  committed_amount_idr: number
+  created_at: string
+  updated_at: string
+}
+
+export interface BudgetEnvelopeDetail {
+  id: string
+  category_id: string
+  category_name: string
+  name: string
+  committed_amount_idr: number
+  actual_total_idr: number
+  fixed_expenses: FixedExpense[]
+}
+
+export interface ExpensePeriodDetail {
+  id: string
+  start_date: string
+  end_date: string
+  label: string
+  envelopes: BudgetEnvelopeDetail[]
+  actual_total_idr: number
+  committed_total_idr: number
+}
+
+export interface BudgetEnvelopeInput {
+  category_id: string
+  name: string
+  committed_amount_idr: number
+}
+
+export interface FixedExpenseInput {
+  name: string
+  amount_idr: number
+  envelope_id: string
+}
+
+export interface CreateExpensePeriodInput {
+  year: number
+  month: number
+  copy_envelopes: boolean
+}
+
 export interface PassiveIncomeSource {
   id: string
   category_id: number
@@ -215,6 +293,14 @@ export interface Dashboard {
     percent: number
     per_month_idr: number
     per_month_target_idr: number
+    updated_at: string | null
+  }
+  expense: {
+    period_label: string
+    actual_total_idr: number
+    committed_total_idr: number
+    actual_by_category: DashboardCategoryRow[]
+    committed_by_category: DashboardCategoryRow[]
     updated_at: string | null
   }
   allocation: DashboardCategoryRow[]

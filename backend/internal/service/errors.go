@@ -25,6 +25,10 @@ var (
 	// Maps to HTTP 400.
 	ErrSnapshotDateInPast = errors.New("snapshot date must be today or later")
 
+	// ErrPeriodMonthExists: an expense period already exists for the
+	// requested year/month. Maps to HTTP 409.
+	ErrPeriodMonthExists = errors.New("a period already exists for this month")
+
 	// ErrInvalidCategory: the category_id on a holdings/passive-income
 	// write doesn't exist. Maps to HTTP 400.
 	ErrInvalidCategory = errors.New("invalid category_id")
