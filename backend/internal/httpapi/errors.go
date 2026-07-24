@@ -19,8 +19,6 @@ func handleServiceError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, db.ErrNotFound):
 		writeError(w, http.StatusNotFound, "not found")
-	case errors.Is(err, db.ErrDuplicateName):
-		writeError(w, http.StatusConflict, err.Error())
 	case errors.Is(err, service.ErrSnapshotLocked):
 		writeError(w, http.StatusConflict, err.Error())
 	case errors.Is(err, service.ErrSnapshotDateExists):

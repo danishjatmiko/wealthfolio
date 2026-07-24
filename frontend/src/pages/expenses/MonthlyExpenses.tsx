@@ -141,7 +141,6 @@ export function MonthlyExpenses() {
             <div className="card" key={env.id}>
               <div className="expense-card-head" onClick={() => openEditEnvelope(env)}>
                 <div>
-                  <div className="expense-card-category">{env.category_name}</div>
                   <div className="expense-card-title">{env.name}</div>
                 </div>
                 <div className="mono expense-card-total">{fmt(env.actual_total_idr)}</div>

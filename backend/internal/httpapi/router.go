@@ -90,9 +90,6 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Put("/fixed-expenses/{id}", h.updateFixedExpense)
 			r.Delete("/fixed-expenses/{id}", h.deleteFixedExpense)
 
-			r.Get("/expense-categories", h.listExpenseCategories)
-			r.Post("/expense-categories", h.createExpenseCategory)
-
 			r.Get("/expense-source-mappings", h.listExpenseSourceMappings)
 			r.Put("/expense-source-mappings/{source}", h.upsertExpenseSourceMapping)
 			r.Post("/expense-ingestions", h.ingestExpense)

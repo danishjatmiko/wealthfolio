@@ -6,7 +6,6 @@ import {
   useDeleteBudgetEnvelope,
   useUpdateBudgetEnvelope,
 } from '../../hooks/useBudgetEnvelopes'
-import { useCreateExpenseCategory, useExpenseCategories } from '../../hooks/useExpenseCategories'
 import { parseNumeric } from '../../lib/format'
 import type { BudgetEnvelopeDetail } from '../../types'
 
@@ -17,56 +16,32 @@ interface BudgetEnvelopeModalProps {
   editingEnvelope: BudgetEnvelopeDetail | null
 }
 
-const NEW_CATEGORY_VALUE = '__new__'
-
 export function BudgetEnvelopeModal({ open, onClose, periodId, editingEnvelope }: BudgetEnvelopeModalProps) {
   const { showError, showSuccess } = useToast()
   const createEnvelope = useCreateBudgetEnvelope()
   const updateEnvelope = useUpdateBudgetEnvelope()
   const deleteEnvelope = useDeleteBudgetEnvelope()
-  const { data: categories = [] } = useExpenseCategories()
-  const createCategory = useCreateExpenseCategory()
 
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
-  const [categoryId, setCategoryId] = useState('')
-  const [newCategoryName, setNewCategoryName] = useState('')
 
   useEffect(() => {
     if (!open) return
-    setNewCategoryName('')
     if (editingEnvelope) {
       setName(editingEnvelope.name)
       setAmount(String(editingEnvelope.committed_amount_idr))
-      setCategoryId(editingEnvelope.category_id)
     } else {
       setName('')
       setAmount('')
-      setCategoryId(categories[0]?.id ?? NEW_CATEGORY_VALUE)
     }
-  }, [open, editingEnvelope, categories])
+  }, [open, editingEnvelope])
 
   async function handleSave() {
     if (!name.trim()) {
       showError('Give it a name.')
       return
     }
-    let resolvedCategoryId = categoryId
-    if (categoryId === NEW_CATEGORY_VALUE) {
-      if (!newCategoryName.trim()) {
-        showError('Give the new category a name.')
-        return
-      }
-      try {
-        const created = await createCategory.mutateAsync({ name: newCategoryName.trim() })
-        resolvedCategoryId = created.id
-      } catch (err) {
-        showError(errorMessage(err))
-        return
-      }
-    }
     const input = {
-      category_id: resolvedCategoryId,
       name: name.trim(),
       committed_amount_idr: Math.round(parseNumeric(amount)),
     }
@@ -101,7 +76,7 @@ export function BudgetEnvelopeModal({ open, onClose, periodId, editingEnvelope }
     }
   }
 
-  const saving = createEnvelope.isPending || updateEnvelope.isPending || createCategory.isPending
+  const saving = createEnvelope.isPending || updateEnvelope.isPending
 
   return (
     <Modal
@@ -138,28 +113,6 @@ export function BudgetEnvelopeModal({ open, onClose, periodId, editingEnvelope }
           placeholder="e.g. Kebutuhan Keluarga Inti"
         />
       </label>
-      <label className="field">
-        Category
-        <select className="field-input" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-          <option value={NEW_CATEGORY_VALUE}>+ New category…</option>
-        </select>
-      </label>
-      {categoryId === NEW_CATEGORY_VALUE && (
-        <label className="field">
-          New category name
-          <input
-            className="field-input"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            placeholder="e.g. Kebutuhan Pokok"
-          />
-        </label>
-      )}
       <label className="field">
         Committed target (rb Rp)
         <input

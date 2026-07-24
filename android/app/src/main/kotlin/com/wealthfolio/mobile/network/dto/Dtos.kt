@@ -18,8 +18,6 @@ data class LoginResponse(
 
 data class BudgetEnvelopeDetailDto(
     val id: String,
-    @SerializedName("category_id") val categoryId: String,
-    @SerializedName("category_name") val categoryName: String,
     val name: String,
 )
 

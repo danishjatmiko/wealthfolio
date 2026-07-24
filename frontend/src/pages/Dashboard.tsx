@@ -100,10 +100,10 @@ export function Dashboard() {
       <div className="dash-section">
         <div className="dash-expense-grid">
           <div className="card dash-donut-card">
-            <div className="card-title">Expenses — Spent by Category</div>
+            <div className="card-title">Expenses — Spent by Envelope</div>
             <div className="dash-donut-wrap">
               <DonutChart
-                data={expense.actual_by_category.map((c) => ({ value: c.value_idr, color: c.color_oklch, label: c.label }))}
+                data={expense.actual_by_envelope.map((c) => ({ value: c.value_idr, color: c.color_oklch, label: c.label }))}
                 onHover={setHoverSpent}
               />
               <div className="dash-donut-center">
@@ -113,10 +113,10 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-            {expense.actual_by_category.length === 0 && (
+            {expense.actual_by_envelope.length === 0 && (
               <div className="empty-state">No expenses logged yet.</div>
             )}
-            {expense.actual_by_category.map((c) => (
+            {expense.actual_by_envelope.map((c) => (
               <div className="dash-cat-row" key={c.category_key}>
                 <span className="dash-cat-swatch" style={{ background: c.color_oklch }} />
                 <span className="dash-cat-name">{c.label}</span>
@@ -127,10 +127,10 @@ export function Dashboard() {
           </div>
 
           <div className="card dash-donut-card">
-            <div className="card-title">Expenses — Committed by Category</div>
+            <div className="card-title">Expenses — Committed by Envelope</div>
             <div className="dash-donut-wrap">
               <DonutChart
-                data={expense.committed_by_category.map((c) => ({
+                data={expense.committed_by_envelope.map((c) => ({
                   value: c.value_idr,
                   color: c.color_oklch,
                   label: c.label,
@@ -144,10 +144,10 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-            {expense.committed_by_category.length === 0 && (
+            {expense.committed_by_envelope.length === 0 && (
               <div className="empty-state">No budget envelopes yet.</div>
             )}
-            {expense.committed_by_category.map((c) => (
+            {expense.committed_by_envelope.map((c) => (
               <div className="dash-cat-row" key={c.category_key}>
                 <span className="dash-cat-swatch" style={{ background: c.color_oklch }} />
                 <span className="dash-cat-name">{c.label}</span>

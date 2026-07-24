@@ -11,8 +11,6 @@ import type {
   DebtProgressGranularity,
   DebtSnapshot,
   DebtSnapshotSummary,
-  ExpenseCategory,
-  ExpenseCategoryInput,
   ExpensePeriodDetail,
   ExpensePeriodSummary,
   FixedExpense,
@@ -152,10 +150,6 @@ export const api = {
       post<FixedExpense>(`/expense-periods/${periodId}/fixed-expenses`, input),
     update: (id: string, input: FixedExpenseInput) => put<FixedExpense>(`/fixed-expenses/${id}`, input),
     remove: (id: string) => del<void>(`/fixed-expenses/${id}`),
-  },
-  expenseCategories: {
-    list: () => get<ExpenseCategory[]>('/expense-categories'),
-    create: (input: ExpenseCategoryInput) => post<ExpenseCategory>('/expense-categories', input),
   },
   passiveIncome: {
     list: () => get<PassiveIncomeSource[]>('/passive-income'),

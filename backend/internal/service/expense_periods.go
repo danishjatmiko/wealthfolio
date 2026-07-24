@@ -38,8 +38,6 @@ type ExpensePeriodSummary struct {
 // computed actual total, within period detail.
 type BudgetEnvelopeDetail struct {
 	ID                 uuid.UUID             `json:"id"`
-	CategoryID         uuid.UUID             `json:"category_id"`
-	CategoryName       string                `json:"category_name"`
 	Name               string                `json:"name"`
 	CommittedAmountIdr int64                 `json:"committed_amount_idr"`
 	ActualTotalIdr     int64                 `json:"actual_total_idr"`
@@ -111,8 +109,6 @@ func (s *ExpensePeriodsService) detailFromPeriod(ctx context.Context, period dom
 		committedTotal += env.CommittedAmountIdr
 		envelopeDetails = append(envelopeDetails, BudgetEnvelopeDetail{
 			ID:                 env.ID,
-			CategoryID:         env.CategoryID,
-			CategoryName:       env.CategoryName,
 			Name:               env.Name,
 			CommittedAmountIdr: env.CommittedAmountIdr,
 			ActualTotalIdr:     envActual,

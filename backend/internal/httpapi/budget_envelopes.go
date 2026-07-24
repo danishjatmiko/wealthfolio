@@ -10,9 +10,8 @@ import (
 )
 
 type budgetEnvelopeRequest struct {
-	CategoryID         *uuid.UUID `json:"category_id"`
-	Name               *string    `json:"name"`
-	CommittedAmountIdr *int64     `json:"committed_amount_idr"`
+	Name               *string `json:"name"`
+	CommittedAmountIdr *int64  `json:"committed_amount_idr"`
 }
 
 func (req budgetEnvelopeRequest) toServiceRequest() service.BudgetEnvelopeRequest {
@@ -24,11 +23,7 @@ func (req budgetEnvelopeRequest) toServiceRequest() service.BudgetEnvelopeReques
 	if req.CommittedAmountIdr != nil {
 		amount = *req.CommittedAmountIdr
 	}
-	var categoryID uuid.UUID
-	if req.CategoryID != nil {
-		categoryID = *req.CategoryID
-	}
-	return service.BudgetEnvelopeRequest{CategoryID: categoryID, Name: name, CommittedAmountIdr: amount}
+	return service.BudgetEnvelopeRequest{Name: name, CommittedAmountIdr: amount}
 }
 
 func (h *Handler) createBudgetEnvelope(w http.ResponseWriter, r *http.Request) {

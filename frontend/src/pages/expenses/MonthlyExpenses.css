@@ -18,14 +18,6 @@
   margin-bottom: 8px;
   cursor: pointer;
 }
-.expense-card-category {
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted-2);
-  margin-bottom: 2px;
-}
 .expense-card-title {
   font-weight: 600;
   font-size: 14px;

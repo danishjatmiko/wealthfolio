@@ -142,16 +142,6 @@ export interface DebtProgress {
   delta_pct: number
 }
 
-export interface ExpenseCategory {
-  id: string
-  name: string
-  created_at: string
-}
-
-export interface ExpenseCategoryInput {
-  name: string
-}
-
 export interface ExpensePeriodSummary {
   id: string
   start_date: string
@@ -174,8 +164,6 @@ export interface FixedExpense {
 export interface BudgetEnvelope {
   id: string
   period_id: string
-  category_id: string
-  category_name: string
   name: string
   committed_amount_idr: number
   created_at: string
@@ -184,8 +172,6 @@ export interface BudgetEnvelope {
 
 export interface BudgetEnvelopeDetail {
   id: string
-  category_id: string
-  category_name: string
   name: string
   committed_amount_idr: number
   actual_total_idr: number
@@ -203,7 +189,6 @@ export interface ExpensePeriodDetail {
 }
 
 export interface BudgetEnvelopeInput {
-  category_id: string
   name: string
   committed_amount_idr: number
 }
@@ -299,8 +284,8 @@ export interface Dashboard {
     period_label: string
     actual_total_idr: number
     committed_total_idr: number
-    actual_by_category: DashboardCategoryRow[]
-    committed_by_category: DashboardCategoryRow[]
+    actual_by_envelope: DashboardCategoryRow[]
+    committed_by_envelope: DashboardCategoryRow[]
     updated_at: string | null
   }
   allocation: DashboardCategoryRow[]

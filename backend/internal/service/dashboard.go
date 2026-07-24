@@ -61,22 +61,22 @@ type PassiveDTO struct {
 
 // ExpenseDTO is dashboard.expense. ActualTotalIdr sums every fixed expense
 // in the latest period; CommittedTotalIdr sums every envelope's target.
-// ActualByCategory/CommittedByCategory break both down by the envelopes'
-// categories, for the two Dashboard pie charts.
+// ActualByEnvelope/CommittedByEnvelope break both down per envelope, for
+// the two Dashboard pie charts.
 type ExpenseDTO struct {
 	PeriodLabel         string              `json:"period_label"`
 	ActualTotalIdr      int64               `json:"actual_total_idr"`
 	CommittedTotalIdr   int64               `json:"committed_total_idr"`
-	ActualByCategory    []CategoryBreakdown `json:"actual_by_category"`
-	CommittedByCategory []CategoryBreakdown `json:"committed_by_category"`
+	ActualByEnvelope    []CategoryBreakdown `json:"actual_by_envelope"`
+	CommittedByEnvelope []CategoryBreakdown `json:"committed_by_envelope"`
 	UpdatedAt           *domain.Date        `json:"updated_at"`
 }
 
-// expenseCategoryPalette assigns a chart color to each user-created expense
-// category, cycled in first-seen order (categories have no seeded color of
-// their own, unlike Asset categories). Same OKLCH style/ranges as the
-// seeded Asset palette (migrations/00002_seed.sql) for visual consistency.
-var expenseCategoryPalette = []string{
+// expenseEnvelopePalette assigns a chart color to each envelope, cycled in
+// creation order (envelopes have no seeded color of their own, unlike
+// Asset categories). Same OKLCH style/ranges as the seeded Asset palette
+// (migrations/00002_seed.sql) for visual consistency.
+var expenseEnvelopePalette = []string{
 	"oklch(0.62 0.11 34)",
 	"oklch(0.60 0.10 152)",
 	"oklch(0.60 0.10 248)",
@@ -100,8 +100,8 @@ func emptyDashboard() DashboardDTO {
 	return DashboardDTO{
 		Equity: EquityDTO{ByCategory: []CategoryBreakdown{}},
 		Expense: ExpenseDTO{
-			ActualByCategory:    []CategoryBreakdown{},
-			CommittedByCategory: []CategoryBreakdown{},
+			ActualByEnvelope:    []CategoryBreakdown{},
+			CommittedByEnvelope: []CategoryBreakdown{},
 		},
 		Allocation: []CategoryBreakdown{},
 	}
@@ -164,12 +164,11 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	// Expense periods run on their own independent timeline too, computed
 	// regardless of whether the user has any asset snapshots yet.
 	// ActualTotalIdr/CommittedTotalIdr sum every fixed expense/envelope
-	// target in the latest period; ActualByCategory/CommittedByCategory
-	// break both down by the envelopes' categories (every envelope has
-	// exactly one; multiple envelopes can share a category).
+	// target in the latest period; ActualByEnvelope/CommittedByEnvelope
+	// break both down per envelope.
 	expense := ExpenseDTO{
-		ActualByCategory:    []CategoryBreakdown{},
-		CommittedByCategory: []CategoryBreakdown{},
+		ActualByEnvelope:    []CategoryBreakdown{},
+		CommittedByEnvelope: []CategoryBreakdown{},
 	}
 	latestPeriod, err := s.repos.ExpensePeriods.GetLatest(ctx, userID)
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
@@ -197,44 +196,28 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 			}
 		}
 
-		type catAgg struct {
-			name         string
-			actualIdr    int64
-			committedIdr int64
-		}
-		byCategory := map[uuid.UUID]*catAgg{}
-		var categoryOrder []uuid.UUID
 		var committedTotal int64
 		for _, env := range envelopes {
 			committedTotal += env.CommittedAmountIdr
-			agg, ok := byCategory[env.CategoryID]
-			if !ok {
-				agg = &catAgg{name: env.CategoryName}
-				byCategory[env.CategoryID] = agg
-				categoryOrder = append(categoryOrder, env.CategoryID)
-			}
-			agg.actualIdr += actualByEnvelope[env.ID]
-			agg.committedIdr += env.CommittedAmountIdr
 		}
 
-		actualByCategory := make([]CategoryBreakdown, 0, len(categoryOrder))
-		committedByCategory := make([]CategoryBreakdown, 0, len(categoryOrder))
-		for i, catID := range categoryOrder {
-			agg := byCategory[catID]
-			color := expenseCategoryPalette[i%len(expenseCategoryPalette)]
-			actualByCategory = append(actualByCategory, CategoryBreakdown{
-				CategoryKey: catID.String(),
-				Label:       agg.name,
+		actualByEnv := make([]CategoryBreakdown, 0, len(envelopes))
+		committedByEnv := make([]CategoryBreakdown, 0, len(envelopes))
+		for i, env := range envelopes {
+			color := expenseEnvelopePalette[i%len(expenseEnvelopePalette)]
+			actualByEnv = append(actualByEnv, CategoryBreakdown{
+				CategoryKey: env.ID.String(),
+				Label:       env.Name,
 				ColorOKLCH:  color,
-				ValueIdr:    agg.actualIdr,
-				Percent:     percentOf(float64(agg.actualIdr), float64(actualTotal)),
+				ValueIdr:    actualByEnvelope[env.ID],
+				Percent:     percentOf(float64(actualByEnvelope[env.ID]), float64(actualTotal)),
 			})
-			committedByCategory = append(committedByCategory, CategoryBreakdown{
-				CategoryKey: catID.String(),
-				Label:       agg.name,
+			committedByEnv = append(committedByEnv, CategoryBreakdown{
+				CategoryKey: env.ID.String(),
+				Label:       env.Name,
 				ColorOKLCH:  color,
-				ValueIdr:    agg.committedIdr,
-				Percent:     percentOf(float64(agg.committedIdr), float64(committedTotal)),
+				ValueIdr:    env.CommittedAmountIdr,
+				Percent:     percentOf(float64(env.CommittedAmountIdr), float64(committedTotal)),
 			})
 		}
 
@@ -242,8 +225,8 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 			PeriodLabel:         periodLabel(latestPeriod.EndDate),
 			ActualTotalIdr:      actualTotal,
 			CommittedTotalIdr:   committedTotal,
-			ActualByCategory:    actualByCategory,
-			CommittedByCategory: committedByCategory,
+			ActualByEnvelope:    actualByEnv,
+			CommittedByEnvelope: committedByEnv,
 			UpdatedAt:           expenseUpdatedAt,
 		}
 	}
