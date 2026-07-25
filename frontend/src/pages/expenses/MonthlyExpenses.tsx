@@ -11,7 +11,7 @@ import { api } from '../../lib/api'
 import { NewPeriodModal } from './NewPeriodModal'
 import { BudgetEnvelopeModal } from './BudgetEnvelopeModal'
 import { FixedExpenseModal } from './FixedExpenseModal'
-import { formatShortDate } from '../../lib/format'
+import { formatShortDate, formatTimestamp } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
 
@@ -163,12 +163,20 @@ export function MonthlyExpenses() {
               </div>
 
               {env.fixed_expenses.length === 0 && <div className="empty-state">No expenses logged yet.</div>}
-              {env.fixed_expenses.map((fe) => (
-                <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
-                  <div className="expense-row-name">{fe.name}</div>
-                  <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
-                </div>
-              ))}
+              {env.fixed_expenses.map((fe) => {
+                const edited = fe.updated_at !== fe.created_at
+                return (
+                  <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
+                    <div className="expense-row-info">
+                      <div className="expense-row-name">{fe.name}</div>
+                      <div className="expense-row-date">
+                        {edited ? 'Updated' : 'Added'} {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
+                      </div>
+                    </div>
+                    <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
+                  </div>
+                )
+              })}
               <button type="button" className="btn-dashed" onClick={() => openAddExpense(env.id)}>
                 + Add expense
               </button>

@@ -54,7 +54,7 @@ func (r *BudgetEnvelopesRepo) ListByPeriod(ctx context.Context, periodID uuid.UU
 // ErrNotFound if missing or owned by someone else.
 func (r *BudgetEnvelopesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (domain.BudgetEnvelope, error) {
 	row := r.pool.QueryRow(ctx, `
-		SELECT `+budgetEnvelopeSelectCols+`
+		SELECT e.id, e.period_id, e.name, e.committed_amount_idr, e.created_at, e.updated_at
 		FROM budget_envelopes e
 		JOIN expense_periods p ON p.id = e.period_id
 		WHERE e.id = $1 AND p.user_id = $2`, id, userID)

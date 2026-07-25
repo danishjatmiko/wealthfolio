@@ -54,6 +54,13 @@ export function formatShortDate(dateStr: string): string {
   )
 }
 
+/** Formats an ISO 8601 timestamp (e.g. created_at/updated_at) as e.g. "20 Jul 2026". */
+export function formatTimestamp(isoStr: string): string {
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(
+    new Date(isoStr),
+  )
+}
+
 /** Parse a free-typed numeric string the same way the prototype does. */
 export function parseNumeric(input: string | number | null | undefined): number {
   if (typeof input === 'number') return Number.isFinite(input) ? input : 0

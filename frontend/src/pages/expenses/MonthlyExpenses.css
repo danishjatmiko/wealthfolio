@@ -59,10 +59,18 @@
 .expense-row:hover {
   background: rgba(0, 0, 0, 0.015);
 }
-.expense-row-name {
+.expense-row-info {
   flex: 1;
+  min-width: 0;
+}
+.expense-row-name {
   font-size: 13.5px;
   font-weight: 500;
+}
+.expense-row-date {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  margin-top: 2px;
 }
 .expense-row-val {
   font-size: 14px;
