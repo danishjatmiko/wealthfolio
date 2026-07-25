@@ -62,7 +62,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.wealthfolio.mobile.notifications.NotificationSource
 import com.wealthfolio.mobile.ui.NativeScreenTopBar
 import com.wealthfolio.mobile.ui.theme.EthernaForest
 import com.wealthfolio.mobile.ui.theme.EthernaGoldSoft
@@ -150,8 +149,8 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
 
                 item {
                     Text(
-                        "Only GoPay, DANA and BCA notifications are ever read — everything else on your " +
-                            "phone is ignored.",
+                        "Only notifications from the sources listed above are ever read — everything else " +
+                            "on your phone is ignored.",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline,
                     )
@@ -293,8 +292,8 @@ private fun PermissionCard(granted: Boolean, onOpenSystemSettings: () -> Unit) {
                             color = Color.White,
                         )
                         Text(
-                            "So Etherna can auto-capture expenses from GoPay, DANA and BCA. Only those " +
-                                "three apps are read — nothing else, ever.",
+                            "So Etherna can auto-capture expenses from the sources you enable below. " +
+                                "Only those are read — nothing else, ever.",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White.copy(alpha = 0.78f),
                         )
@@ -344,18 +343,13 @@ private fun SourceCard(
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 InitialsBadge(
-                    letter = row.source.displayName().first().toString(),
-                    background = row.source.chipColor(),
+                    letter = row.source.displayName.first().toString(),
+                    background = sourceChipColor(row.source.source),
                     modifier = Modifier.size(32.dp),
                 )
                 Spacer(Modifier.width(11.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(row.source.displayName(), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    Text(
-                        row.source.category(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    Text(row.source.displayName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                 }
                 Switch(
                     checked = row.enabled,
@@ -422,19 +416,18 @@ private fun SourceCard(
     }
 }
 
-private fun NotificationSource.displayName(): String = when (this) {
-    NotificationSource.GOPAY -> "GoPay"
-    NotificationSource.DANA -> "DANA"
-    NotificationSource.BCA -> "BCA / m-BCA"
-}
+/** Fixed palette a source's chip color is picked from, keyed by a hash of
+ * its `source` id — works for any source the backend catalog returns, not
+ * just the ones known when this screen was written, so a new app added
+ * server-side never needs a code change here. */
+private val sourceChipColorPalette = listOf(
+    Color(0xFF5B7FA6),
+    Color(0xFF8A76B0),
+    Color(0xFFB3402F),
+    Color(0xFF4E8B5C),
+    Color(0xFFB08C3E),
+    Color(0xFF3E7CB0),
+)
 
-private fun NotificationSource.category(): String = when (this) {
-    NotificationSource.GOPAY, NotificationSource.DANA -> "E-wallet transactions"
-    NotificationSource.BCA -> "Bank transactions"
-}
-
-private fun NotificationSource.chipColor(): Color = when (this) {
-    NotificationSource.GOPAY -> Color(0xFF5B7FA6)
-    NotificationSource.DANA -> Color(0xFF8A76B0)
-    NotificationSource.BCA -> Color(0xFFB3402F)
-}
+private fun sourceChipColor(source: String): Color =
+    sourceChipColorPalette[Math.floorMod(source.hashCode(), sourceChipColorPalette.size)]

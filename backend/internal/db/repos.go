@@ -39,6 +39,8 @@ type Repos struct {
 
 	ExpenseSourceMappings     *ExpenseSourceMappingsRepo
 	NotificationExpenseEvents *NotificationExpenseEventsRepo
+	NotificationApps          *NotificationAppsRepo
+	NotificationPatterns      *NotificationPatternsRepo
 
 	Pool *pgxpool.Pool
 }
@@ -62,6 +64,8 @@ func NewRepos(pool *pgxpool.Pool) *Repos {
 
 		ExpenseSourceMappings:     NewExpenseSourceMappingsRepo(pool),
 		NotificationExpenseEvents: NewNotificationExpenseEventsRepo(pool),
+		NotificationApps:          NewNotificationAppsRepo(pool),
+		NotificationPatterns:      NewNotificationPatternsRepo(pool),
 
 		Pool: pool,
 	}

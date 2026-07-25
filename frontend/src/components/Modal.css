@@ -13,7 +13,14 @@
   background: var(--card);
   border-radius: var(--radius-card-lg);
   width: min(440px, 100%);
-  max-height: 88vh;
+  /* `%` instead of `vh` deliberately — some WebViews (confirmed: Android
+     System WebView, at least the version this app's Web tab runs on)
+     resolve `vh` units to 0 for elements mounted after initial page load,
+     collapsing this modal to zero height with no visible error. `%` here
+     resolves against .modal-scrim's own height, which is a real, already-
+     laid-out `position: fixed; inset: 0` box, so it isn't subject to the
+     same bug. */
+  max-height: 88%;
   overflow-y: auto;
   box-shadow: var(--shadow-modal);
 }

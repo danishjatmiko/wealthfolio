@@ -22,12 +22,14 @@ type Services struct {
 
 	ExpenseSourceMappings *ExpenseSourceMappingsService
 	ExpenseIngestion      *ExpenseIngestionService
+	NotificationCatalog   *NotificationCatalogService
 }
 
 // NewServices builds a Services bundle backed by the given repositories.
 func NewServices(repos *db.Repos, cfg config.Config) *Services {
 	holdings := NewHoldingsService(repos)
 	debtEntries := NewDebtEntriesService(repos)
+	notificationCatalog := NewNotificationCatalogService(repos)
 	return &Services{
 		Auth:            NewAuthService(repos, cfg),
 		Holdings:        holdings,
@@ -42,6 +44,7 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 		Targets:         NewTargetsService(repos),
 
 		ExpenseSourceMappings: NewExpenseSourceMappingsService(repos),
-		ExpenseIngestion:      NewExpenseIngestionService(repos),
+		ExpenseIngestion:      NewExpenseIngestionService(repos, notificationCatalog),
+		NotificationCatalog:   notificationCatalog,
 	}
 }

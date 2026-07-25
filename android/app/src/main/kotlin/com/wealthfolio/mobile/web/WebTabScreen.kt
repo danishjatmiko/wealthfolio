@@ -3,8 +3,11 @@ package com.wealthfolio.mobile.web
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,11 +73,49 @@ fun WebTabScreen(tokenStore: TokenStore, onNavigateNative: (String) -> Unit) {
                 // site's responsive CSS.
                 settings.useWideViewPort = true
                 settings.loadWithOverviewMode = true
+                // Without these two plus webChromeClient's onCreateWindow
+                // below, a page calling window.open() (JS-triggered
+                // popups — as opposed to a plain <a> navigation, which
+                // shouldOverrideUrlLoading already keeps in this WebView)
+                // has nowhere to go and is silently dropped: WebView
+                // supports no popups at all out of the box.
+                settings.setSupportMultipleWindows(true)
+                settings.javaScriptCanOpenWindowsAutomatically = true
                 addJavascriptInterface(WealthfolioJsBridge(onNavigateNative), "WealthfolioNative")
+                webChromeClient = object : WebChromeClient() {
+                    // The site is single-origin (see shouldOverrideUrlLoading
+                    // below), so a "popup" should just navigate this same
+                    // WebView rather than opening a second one: hand
+                    // WebView a disposable throwaway WebView to satisfy
+                    // the API, capture the URL it's asked to load, then
+                    // load that URL here instead and discard the
+                    // throwaway.
+                    override fun onCreateWindow(
+                        view: WebView,
+                        isDialog: Boolean,
+                        isUserGesture: Boolean,
+                        resultMsg: Message,
+                    ): Boolean {
+                        val popup = WebView(view.context)
+                        popup.webViewClient = object : WebViewClient() {
+                            override fun shouldOverrideUrlLoading(
+                                popupView: WebView,
+                                request: WebResourceRequest,
+                            ): Boolean {
+                                view.loadUrl(request.url.toString())
+                                return true
+                            }
+                        }
+                        val transport = resultMsg.obj as WebView.WebViewTransport
+                        transport.webView = popup
+                        resultMsg.sendToTarget()
+                        return true
+                    }
+                }
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(
                         view: WebView,
-                        request: android.webkit.WebResourceRequest,
+                        request: WebResourceRequest,
                     ): Boolean {
                         // Keep navigation inside this WebView — the site
                         // is single-origin, so anything else (e.g. the

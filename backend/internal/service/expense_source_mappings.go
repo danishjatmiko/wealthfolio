@@ -8,7 +8,6 @@ import (
 
 	"wealthfolio/backend/internal/db"
 	"wealthfolio/backend/internal/domain"
-	"wealthfolio/backend/internal/service/notificationparse"
 )
 
 // ExpenseSourceMappingsService implements plain CRUD for the per-source
@@ -22,23 +21,21 @@ func NewExpenseSourceMappingsService(repos *db.Repos) *ExpenseSourceMappingsServ
 	return &ExpenseSourceMappingsService{repos: repos}
 }
 
-func isKnownSource(source string) bool {
-	switch source {
-	case notificationparse.SourceGoPay, notificationparse.SourceDANA, notificationparse.SourceBCA:
-		return true
-	default:
-		return false
-	}
-}
-
 // List returns every source mapping the user has configured.
 func (s *ExpenseSourceMappingsService) List(ctx context.Context, userID uuid.UUID) ([]domain.ExpenseSourceMapping, error) {
 	return s.repos.ExpenseSourceMappings.ListByUser(ctx, userID)
 }
 
 // Upsert sets which envelope a source's captured expenses auto-file into.
+// A source is valid to map as long as it exists in the notification_apps
+// catalog — even if currently disabled, since a disabled entry can still
+// legitimately have an old mapping.
 func (s *ExpenseSourceMappingsService) Upsert(ctx context.Context, userID uuid.UUID, source, envelopeName string) (domain.ExpenseSourceMapping, error) {
-	if !isKnownSource(source) {
+	known, err := s.repos.NotificationApps.ExistsSource(ctx, source)
+	if err != nil {
+		return domain.ExpenseSourceMapping{}, err
+	}
+	if !known {
 		return domain.ExpenseSourceMapping{}, fmt.Errorf("%w: unknown source %q", ErrInvalidInput, source)
 	}
 	if envelopeName == "" {

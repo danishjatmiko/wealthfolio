@@ -2,6 +2,8 @@ package com.wealthfolio.mobile.di
 
 import android.content.Context
 import androidx.room.Room
+import com.wealthfolio.mobile.data.notificationcatalog.NotificationCatalogDao
+import com.wealthfolio.mobile.data.notificationcatalog.NotificationCatalogDatabase
 import com.wealthfolio.mobile.data.outbox.OutboxDao
 import com.wealthfolio.mobile.data.outbox.OutboxDatabase
 import dagger.Module
@@ -22,4 +24,13 @@ object DatabaseModule {
 
     @Provides
     fun provideOutboxDao(database: OutboxDatabase): OutboxDao = database.outboxDao()
+
+    @Provides
+    @Singleton
+    fun provideNotificationCatalogDatabase(@ApplicationContext context: Context): NotificationCatalogDatabase =
+        Room.databaseBuilder(context, NotificationCatalogDatabase::class.java, "wealthfolio_notification_catalog.db").build()
+
+    @Provides
+    fun provideNotificationCatalogDao(database: NotificationCatalogDatabase): NotificationCatalogDao =
+        database.notificationCatalogDao()
 }

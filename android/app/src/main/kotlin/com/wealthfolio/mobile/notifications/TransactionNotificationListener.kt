@@ -3,6 +3,7 @@ package com.wealthfolio.mobile.notifications
 import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import com.wealthfolio.mobile.data.notificationcatalog.NotificationCatalogCache
 import com.wealthfolio.mobile.data.outbox.OutboxExpense
 import com.wealthfolio.mobile.data.outbox.OutboxRepository
 import com.wealthfolio.mobile.settings.SourcePreferences
@@ -26,7 +27,9 @@ import kotlinx.coroutines.launch
  * on-device; that's the backend's job (see notificationparse and the
  * plan's rationale for why). Everything else — every notification from
  * every other app on the phone — is ignored in the very first check of
- * onNotificationPosted, before any of its content is read.
+ * onNotificationPosted, before any of its content is read; that check is
+ * a synchronous NotificationCatalogCache lookup rather than a Room query,
+ * so it stays on this fast path (see the cache's own doc comment).
  *
  * The OS's "notification access" permission this service requires is
  * granted once, system-wide, covering every app's notifications; the
@@ -35,6 +38,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class TransactionNotificationListener : NotificationListenerService() {
 
+    @Inject lateinit var catalogCache: NotificationCatalogCache
     @Inject lateinit var sourcePreferences: SourcePreferences
     @Inject lateinit var outboxRepository: OutboxRepository
     @Inject lateinit var syncScheduler: SyncScheduler
@@ -42,7 +46,7 @@ class TransactionNotificationListener : NotificationListenerService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
-        val source = NotificationSource.forPackageName(sbn.packageName) ?: return
+        val source = catalogCache.sourceForPackage(sbn.packageName) ?: return
 
         serviceScope.launch {
             // Read fresh on every notification rather than cached across
@@ -56,12 +60,12 @@ class TransactionNotificationListener : NotificationListenerService() {
             val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
             val bigText = extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString()
 
-            val idempotencyKey = buildIdempotencyKey(source.id, sbn.packageName, title, text, sbn.postTime)
+            val idempotencyKey = buildIdempotencyKey(source, sbn.packageName, title, text, sbn.postTime)
 
             outboxRepository.enqueue(
                 OutboxExpense(
                     idempotencyKey = idempotencyKey,
-                    source = source.id,
+                    source = source,
                     rawTitle = title,
                     rawText = text,
                     rawBigText = bigText,

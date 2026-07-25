@@ -9,18 +9,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import com.wealthfolio.mobile.auth.TokenStore
+import com.wealthfolio.mobile.data.notificationcatalog.NotificationCatalogRepository
 import com.wealthfolio.mobile.sync.SyncScheduler
 import com.wealthfolio.mobile.ui.WealthfolioRoot
 import com.wealthfolio.mobile.ui.theme.EthernaColorScheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var tokenStore: TokenStore
     @Inject lateinit var syncScheduler: SyncScheduler
+    @Inject lateinit var notificationCatalogRepository: NotificationCatalogRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +41,17 @@ class MainActivity : ComponentActivity() {
         // is idempotent (ExistingPeriodicWorkPolicy.KEEP), so it's safe to
         // call on every app open rather than only once ever.
         syncScheduler.schedulePeriodicSweep()
+
+        // Best-effort — refreshes the notification app catalog on every
+        // app open so a source added server-side shows up without an APK
+        // release; on failure TransactionNotificationListener just keeps
+        // using whatever was cached from the last successful sync.
+        lifecycleScope.launch {
+            try {
+                notificationCatalogRepository.sync()
+            } catch (_: Exception) {
+            }
+        }
 
         setContent {
             MaterialTheme(colorScheme = EthernaColorScheme) {

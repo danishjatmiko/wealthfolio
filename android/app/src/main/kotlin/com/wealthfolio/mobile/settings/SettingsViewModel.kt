@@ -3,9 +3,10 @@ package com.wealthfolio.mobile.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wealthfolio.mobile.auth.AuthRepository
+import com.wealthfolio.mobile.data.notificationcatalog.NotificationAppEntity
+import com.wealthfolio.mobile.data.notificationcatalog.NotificationCatalogRepository
 import com.wealthfolio.mobile.network.ApiService
 import com.wealthfolio.mobile.network.dto.UpsertSourceMappingRequest
-import com.wealthfolio.mobile.notifications.NotificationSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 data class SourceRow(
-    val source: NotificationSource,
+    val source: NotificationAppEntity,
     val enabled: Boolean,
     val mappedEnvelopeName: String?,
 )
@@ -32,6 +33,7 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val sourcePreferences: SourcePreferences,
+    private val catalogRepository: NotificationCatalogRepository,
     private val api: ApiService,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
@@ -53,17 +55,25 @@ class SettingsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            val enabledFlows = NotificationSource.entries.map { source ->
-                sourcePreferences.isEnabled(source)
+            // Best-effort — a source added server-side since the last
+            // MainActivity app-open sync should still show up when the
+            // user opens Settings; on failure we fall back to whatever's
+            // already cached in Room from a previous sync.
+            try {
+                catalogRepository.sync()
+            } catch (_: Exception) {
             }
+            val apps = catalogRepository.listApps()
+
+            val enabledFlows = apps.map { sourcePreferences.isEnabled(it.source) }
             combine(enabledFlows) { enabledValues -> enabledValues.toList() }
                 .collect { enabledValues ->
-                    refreshMappingsAndEnvelopes(enabledValues)
+                    refreshMappingsAndEnvelopes(apps, enabledValues)
                 }
         }
     }
 
-    private suspend fun refreshMappingsAndEnvelopes(enabledValues: List<Boolean>) {
+    private suspend fun refreshMappingsAndEnvelopes(apps: List<NotificationAppEntity>, enabledValues: List<Boolean>) {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
         try {
             val mappingsResponse = api.listSourceMappings()
@@ -72,11 +82,11 @@ class SettingsViewModel @Inject constructor(
             val periodResponse = api.latestPeriod()
             val envelopeNames = periodResponse.body()?.envelopes?.map { it.name }.orEmpty()
 
-            val rows = NotificationSource.entries.mapIndexed { index, source ->
+            val rows = apps.mapIndexed { index, app ->
                 SourceRow(
-                    source = source,
+                    source = app,
                     enabled = enabledValues.getOrElse(index) { false },
-                    mappedEnvelopeName = mappings[source.id]?.envelopeName,
+                    mappedEnvelopeName = mappings[app.source]?.envelopeName,
                 )
             }
             // .copy, not a fresh SettingsUiState — this races the profile
@@ -93,16 +103,16 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setSourceEnabled(source: NotificationSource, enabled: Boolean) {
+    fun setSourceEnabled(source: NotificationAppEntity, enabled: Boolean) {
         viewModelScope.launch {
-            sourcePreferences.setEnabled(source, enabled)
+            sourcePreferences.setEnabled(source.source, enabled)
         }
     }
 
-    fun setEnvelopeMapping(source: NotificationSource, envelopeName: String) {
+    fun setEnvelopeMapping(source: NotificationAppEntity, envelopeName: String) {
         viewModelScope.launch {
             try {
-                api.upsertSourceMapping(source.id, UpsertSourceMappingRequest(envelopeName))
+                api.upsertSourceMapping(source.source, UpsertSourceMappingRequest(envelopeName))
                 val rows = _uiState.value.rows.map {
                     if (it.source == source) it.copy(mappedEnvelopeName = envelopeName) else it
                 }

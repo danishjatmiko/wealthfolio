@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 
 	"wealthfolio/backend/internal/db"
-	"wealthfolio/backend/internal/service/notificationparse"
 )
 
 // ExpenseIngestionRequest is a single notification capture forwarded by
@@ -37,11 +36,12 @@ type ExpenseIngestionResult struct {
 // ExpenseIngestionService turns captured notifications into Fixed
 // Expenses, idempotently.
 type ExpenseIngestionService struct {
-	repos *db.Repos
+	repos   *db.Repos
+	catalog *NotificationCatalogService
 }
 
-func NewExpenseIngestionService(repos *db.Repos) *ExpenseIngestionService {
-	return &ExpenseIngestionService{repos: repos}
+func NewExpenseIngestionService(repos *db.Repos, catalog *NotificationCatalogService) *ExpenseIngestionService {
+	return &ExpenseIngestionService{repos: repos, catalog: catalog}
 }
 
 // periodMonthForDate returns the year/month of the pay-cycle period that
@@ -86,7 +86,10 @@ func (s *ExpenseIngestionService) Ingest(ctx context.Context, userID uuid.UUID, 
 		OccurredAt:     req.OccurredAt,
 	}
 
-	parsed, ok := notificationparse.Parse(req.Source, deref(req.RawTitle), deref(req.RawText), deref(req.RawBigText))
+	parsed, ok, err := s.catalog.Parse(ctx, req.Source, deref(req.RawTitle), deref(req.RawText), deref(req.RawBigText))
+	if err != nil {
+		return ExpenseIngestionResult{}, err
+	}
 	if !ok {
 		if _, err := s.repos.NotificationExpenseEvents.CreateIgnored(ctx, raw); err != nil {
 			return ExpenseIngestionResult{}, err

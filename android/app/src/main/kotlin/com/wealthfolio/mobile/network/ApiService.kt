@@ -6,6 +6,7 @@ import com.wealthfolio.mobile.network.dto.IngestExpenseRequest
 import com.wealthfolio.mobile.network.dto.IngestExpenseResponse
 import com.wealthfolio.mobile.network.dto.LoginRequest
 import com.wealthfolio.mobile.network.dto.LoginResponse
+import com.wealthfolio.mobile.network.dto.NotificationAppDto
 import com.wealthfolio.mobile.network.dto.UpsertSourceMappingRequest
 import com.wealthfolio.mobile.network.dto.UserDto
 import retrofit2.Response
@@ -39,4 +40,7 @@ interface ApiService {
 
     @POST("expense-ingestions")
     suspend fun ingestExpense(@Body req: IngestExpenseRequest): Response<IngestExpenseResponse>
+
+    @GET("notification-apps")
+    suspend fun listNotificationApps(): Response<List<NotificationAppDto>>
 }

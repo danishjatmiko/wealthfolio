@@ -181,6 +181,39 @@ type NotificationExpenseEvent struct {
 	CreatedAt      time.Time  `json:"created_at"`
 }
 
+// NotificationApp mirrors the notification_apps table (joined with its
+// notification_app_packages rows into PackageNames): the catalog of
+// e-wallet/bank apps Android is allowed to read notifications from. Fetched
+// by the Android app via GET /notification-apps so a new supported app
+// never needs an APK release. AmountThousandSep/AmountDecimalSep are
+// backend-only — parsing internals never leave the server, same as the
+// regex patterns themselves.
+type NotificationApp struct {
+	ID                uuid.UUID `json:"id"`
+	Source            string    `json:"source"`
+	DisplayName       string    `json:"display_name"`
+	PackageNames      []string  `json:"package_names"`
+	AmountThousandSep string    `json:"-"`
+	AmountDecimalSep  string    `json:"-"`
+	Enabled           bool      `json:"enabled"`
+	UpdatedAt         time.Time `json:"updated_at"`
+}
+
+// NotificationPattern mirrors the notification_patterns table: one ordered
+// regex template for extracting amount + merchant from a NotificationApp's
+// notifications. Patterns for an app are tried in ascending Priority order,
+// first match wins.
+type NotificationPattern struct {
+	ID          uuid.UUID `json:"id"`
+	AppID       uuid.UUID `json:"app_id"`
+	Priority    int       `json:"priority"`
+	Field       string    `json:"field"`
+	Regex       string    `json:"regex"`
+	Description string    `json:"description,omitempty"`
+	Enabled     bool      `json:"enabled"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 // Target mirrors the targets table plus the server-computed fields.
 type Target struct {
 	ID                 uuid.UUID `json:"id"`

@@ -94,6 +94,16 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Put("/expense-source-mappings/{source}", h.upsertExpenseSourceMapping)
 			r.Post("/expense-ingestions", h.ingestExpense)
 
+			// Android's catalog sync target; the POST/PUT routes here are
+			// admin-only, reusing this same session-cookie auth — no
+			// separate admin surface. See NotificationCatalogService.
+			r.Get("/notification-apps", h.listNotificationApps)
+			r.Post("/notification-apps", h.createNotificationApp)
+			r.Put("/notification-apps/{source}", h.updateNotificationApp)
+			r.Get("/notification-apps/{source}/patterns", h.listNotificationPatterns)
+			r.Post("/notification-apps/{source}/patterns", h.createNotificationPattern)
+			r.Put("/notification-patterns/{id}", h.updateNotificationPattern)
+
 			r.Get("/passive-income", h.listPassiveIncome)
 			r.Post("/passive-income", h.createPassiveIncome)
 			r.Put("/passive-income/{id}", h.updatePassiveIncome)

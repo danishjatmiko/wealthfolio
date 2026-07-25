@@ -52,3 +52,10 @@ data class IngestExpenseResponse(
     @SerializedName("amount_idr") val amountIdr: Long?,
     @SerializedName("merchant_name") val merchantName: String?,
 )
+
+data class NotificationAppDto(
+    val source: String,
+    @SerializedName("display_name") val displayName: String,
+    @SerializedName("package_names") val packageNames: List<String>,
+    val enabled: Boolean,
+)
