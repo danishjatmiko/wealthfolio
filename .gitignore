@@ -8,6 +8,10 @@
 .env
 .env.local
 
+# Production DB backups (backup.sh on the server dumps here) — never
+# commit real data dumps, especially since this repo is public.
+/backups/
+
 # Go
 backend/*.exe
 backend/wealthfolio-api
