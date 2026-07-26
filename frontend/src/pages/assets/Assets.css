@@ -34,7 +34,7 @@
   width: 120px;
 }
 .a-val-head {
-  width: 120px;
+  width: 150px;
   text-align: right;
 }
 
@@ -74,7 +74,7 @@
   flex-shrink: 0;
 }
 .a-val {
-  width: 120px;
+  width: 150px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -83,6 +83,7 @@
 .a-val-amount {
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
 }
 .a-edit-btn {
   border: 1px solid var(--border);

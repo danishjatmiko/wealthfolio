@@ -51,7 +51,7 @@ function AxisLabels({ labels, dual }: { labels: string[]; dual?: boolean }) {
 }
 
 export function Progress() {
-  const { fmtExact } = useMoney()
+  const { fmt, fmtExact } = useMoney()
   const [granularity, setGranularity] = useState<ProgressGranularity>('monthly')
   const { data, isLoading, isError } = useProgress(granularity)
   const { data: debtData, isLoading: debtLoading, isError: debtIsError } = useDebtProgress(granularity)
@@ -86,6 +86,7 @@ export function Progress() {
               series={data.series.map((p) => ({ label: p.label, value: p.net_equity_idr }))}
               color={ACCENT}
               formatValue={fmtExact}
+              axisFormatValue={fmt}
             />
             <AxisLabels labels={data.series.map((p) => p.label)} />
           </>
@@ -118,6 +119,7 @@ export function Progress() {
               series={debtData.series.map((p) => ({ label: p.label, value: p.debt_idr }))}
               color={RED}
               formatValue={fmtExact}
+              axisFormatValue={fmt}
               secondarySeries={debtData.series.map((p) => ({ label: p.label, value: p.ratio_pct }))}
               secondaryColor={BLUE}
               secondaryFormatValue={pctFmt}

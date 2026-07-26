@@ -56,6 +56,15 @@ export function goldFmt(value: number): string {
 }
 
 /**
+ * Gold price per gram, abbreviated (rb/mn/B) — e.g. "Rp1.90 mn/g". Used for
+ * the Rates page's "latest rate" summary cards only; the price history
+ * table stays exact via `goldFmt`.
+ */
+export function goldFmtShort(value: number): string {
+  return fmtIdr(value) + '/g'
+}
+
+/**
  * USD -> IDR rate formatter. Input is full IDR per 1 USD, exactly like the
  * prototype's usdFmt(). Output e.g. "Rp18,100".
  */

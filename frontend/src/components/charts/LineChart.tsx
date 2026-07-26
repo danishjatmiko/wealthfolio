@@ -16,9 +16,13 @@ interface LineChartProps {
   color: string
   height?: number
   formatValue: (v: number) => string
+  /** Axis-tick formatter, e.g. an abbreviated "rb/mn/B" style — falls back
+   * to `formatValue` (used for the hover tooltip) when omitted. */
+  axisFormatValue?: (v: number) => string
   secondarySeries?: LinePoint[]
   secondaryColor?: string
   secondaryFormatValue?: (v: number) => string
+  secondaryAxisFormatValue?: (v: number) => string
 }
 
 const DEFAULT_W = 600
@@ -31,8 +35,9 @@ function scaleFor(series: LinePoint[]) {
   const min = Math.min(...vals)
   const max = Math.max(...vals)
   const pad = (max - min) * 0.18 || 1
-  // Values that never go negative shouldn't grow a negative axis tick just from padding.
-  const lo = min >= 0 ? Math.max(0, min - pad) : min - pad
+  // The axis never dips below zero — these charts track net worth/debt,
+  // which don't read meaningfully as negative figures.
+  const lo = Math.max(0, min - pad)
   return { lo, hi: max + pad }
 }
 
@@ -41,9 +46,11 @@ export function LineChart({
   color,
   height = 200,
   formatValue,
+  axisFormatValue = formatValue,
   secondarySeries,
   secondaryColor = 'var(--text-muted)',
   secondaryFormatValue,
+  secondaryAxisFormatValue = secondaryFormatValue,
 }: LineChartProps) {
   const rawId = useId()
   const gradientId = `grad-${rawId.replace(/[^a-zA-Z0-9]/g, '')}`
@@ -135,12 +142,12 @@ export function LineChart({
             fontSize={10}
             fill="var(--text-faint)"
           >
-            {formatValue(t)}
+            {axisFormatValue(t)}
           </text>
         ))}
 
         {hasSecondary &&
-          secondaryFormatValue &&
+          secondaryAxisFormatValue &&
           sTicks.map((t, i) => (
             <text
               key={`s-${i}`}
@@ -151,7 +158,7 @@ export function LineChart({
               fontSize={10}
               fill="var(--text-faint)"
             >
-              {secondaryFormatValue(t)}
+              {secondaryAxisFormatValue(t)}
             </text>
           ))}
 
