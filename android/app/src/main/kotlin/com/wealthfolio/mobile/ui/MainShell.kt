@@ -1,5 +1,6 @@
 package com.wealthfolio.mobile.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -30,6 +31,16 @@ private enum class NativeOverlay { NONE, SYNC, SETTINGS }
 @Composable
 fun MainShell(tokenStore: TokenStore) {
     var overlay by remember { mutableStateOf(NativeOverlay.NONE) }
+
+    // Without this, system back (button or Pixel's edge gesture) has
+    // nothing here to intercept — it falls straight through to the
+    // Activity, which finishes/closes the app instead of just dismissing
+    // whichever overlay is showing. Disabled when no overlay is up, so
+    // back behaves exactly as before (WebTabScreen's own back handling,
+    // if any) in that state.
+    BackHandler(enabled = overlay != NativeOverlay.NONE) {
+        overlay = NativeOverlay.NONE
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         WebTabScreen(

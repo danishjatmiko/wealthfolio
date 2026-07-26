@@ -20,7 +20,12 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideOutboxDatabase(@ApplicationContext context: Context): OutboxDatabase =
-        Room.databaseBuilder(context, OutboxDatabase::class.java, "wealthfolio_outbox.db").build()
+        Room.databaseBuilder(context, OutboxDatabase::class.java, "wealthfolio_outbox.db")
+            // This table is just a local sync-status log (the real budget
+            // data lives server-side) — safe to wipe and rebuild from
+            // future captures on a schema bump, so no Migration objects.
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
 
     @Provides
     fun provideOutboxDao(database: OutboxDatabase): OutboxDao = database.outboxDao()

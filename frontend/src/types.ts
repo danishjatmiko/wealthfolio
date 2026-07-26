@@ -157,6 +157,10 @@ export interface FixedExpense {
   envelope_id: string
   name: string
   amount_idr: number
+  /** Which notification source (e.g. "gopay") auto-created this expense —
+   * null for anything entered manually. Set once at creation, never
+   * changed by a later edit. */
+  source: string | null
   created_at: string
   updated_at: string
 }

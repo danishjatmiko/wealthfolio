@@ -19,9 +19,21 @@ type Handler struct {
 	// package sets (session + OAuth state).
 	appBaseURL   string
 	cookieSecure bool
+
+	// ratesSyncToken/ratesSyncEmail back RatesSyncOrAuthMiddleware — see
+	// its doc comment and config.Config's.
+	ratesSyncToken string
+	ratesSyncEmail string
 }
 
 // NewHandler builds a Handler backed by the given repositories/services.
 func NewHandler(repos *db.Repos, svc *service.Services, cfg config.Config) *Handler {
-	return &Handler{repos: repos, svc: svc, appBaseURL: cfg.AppBaseURL, cookieSecure: cfg.CookieSecure}
+	return &Handler{
+		repos:          repos,
+		svc:            svc,
+		appBaseURL:     cfg.AppBaseURL,
+		cookieSecure:   cfg.CookieSecure,
+		ratesSyncToken: cfg.RatesSyncToken,
+		ratesSyncEmail: cfg.RatesSyncEmail,
+	}
 }

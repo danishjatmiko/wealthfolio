@@ -28,6 +28,10 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?set GOOGLE_CLIENT_SECRET in .env}
       GOOGLE_REDIRECT_URL: ${GOOGLE_REDIRECT_URL:?set GOOGLE_REDIRECT_URL in .env}
       APP_BASE_URL: ${APP_BASE_URL:?set APP_BASE_URL in .env}
+      # Optional — only needed to let backend/cmd/rates-sync authenticate
+      # without a login; unset means that path stays disabled.
+      RATES_SYNC_TOKEN: ${RATES_SYNC_TOKEN:-}
+      RATES_SYNC_EMAIL: ${RATES_SYNC_EMAIL:-}
     depends_on:
       db:
         condition: service_healthy

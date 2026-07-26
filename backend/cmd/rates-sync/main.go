@@ -1,8 +1,12 @@
 // Command rates-sync fetches the day's Antam/UBS/King Halim gold prices
-// (per gram, 1g denomination) and the USD/IDR rate, then logs into
-// Etherna's own account and POSTs them to /api/v1/rates — the same
-// endpoint the Rates page's manual entry form uses. Meant to run once a
-// day via cron; see the env vars and crontab line below.
+// (per gram, 1g denomination) and the USD/IDR rate, then POSTs them to
+// /api/v1/rates — the same endpoint the Rates page's manual entry form
+// uses. Authenticates via a shared-secret header rather than a login,
+// since this runs unattended on the VPS with no interactive session to
+// log in with — see RatesSyncOrAuthMiddleware in
+// backend/internal/httpapi/middleware.go, which accepts this exact
+// header only on /rates and /rates/latest, nothing else. Meant to run
+// once a day via cron; see the env vars and crontab line below.
 //
 // Data sources — each brand/rate's own site, not a third-party aggregator:
 //
@@ -36,12 +40,17 @@
 //
 // Required env vars:
 //
-//	ETHERNA_EMAIL       login email for your Etherna account
-//	ETHERNA_PASSWORD    login password
+//	RATES_SYNC_TOKEN    must match the backend's RATES_SYNC_TOKEN exactly
 //
 // Optional env vars (default shown):
 //
 //	ETHERNA_API_BASE_URL      https://etherna.id/api/v1
+//
+// The backend also needs RATES_SYNC_TOKEN (the same value) and
+// RATES_SYNC_EMAIL (the account these rates belong to) set in its own
+// environment — see docker-compose.yml/.env. Without those two set
+// backend-side, RatesSyncOrAuthMiddleware never activates and every
+// request from this script gets a 401, same as before it existed.
 //
 // Build once on the VPS:
 //
@@ -49,9 +58,9 @@
 //
 // Crontab (9AM WIB daily; adjust if the VPS isn't already on Asia/Jakarta):
 //
-//	0 9 * * * ETHERNA_EMAIL=you@example.com ETHERNA_PASSWORD=... /usr/local/bin/rates-sync >> /var/log/rates-sync.log 2>&1
+//	0 9 * * * RATES_SYNC_TOKEN=... /usr/local/bin/rates-sync >> /var/log/rates-sync.log 2>&1
 //
-// Prefer not to put secrets directly in crontab? Put the exports in
+// Prefer not to put the token directly in crontab? Put the export in
 // /opt/wealthfolio/rates-sync.env and use:
 //
 //	0 9 * * * . /opt/wealthfolio/rates-sync.env && /usr/local/bin/rates-sync >> /var/log/rates-sync.log 2>&1
@@ -74,9 +83,8 @@ import (
 )
 
 type config struct {
-	EthernaBaseURL  string
-	EthernaEmail    string
-	EthernaPassword string
+	EthernaBaseURL string
+	RatesSyncToken string
 }
 
 func loadConfig() (config, error) {
@@ -86,23 +94,13 @@ func loadConfig() (config, error) {
 		}
 		return def
 	}
-	required := func(key string) (string, error) {
-		v := os.Getenv(key)
-		if v == "" {
-			return "", fmt.Errorf("missing required env var %s", key)
-		}
-		return v, nil
-	}
 
 	cfg := config{
 		EthernaBaseURL: get("ETHERNA_API_BASE_URL", "https://etherna.id/api/v1"),
+		RatesSyncToken: os.Getenv("RATES_SYNC_TOKEN"),
 	}
-	var err error
-	if cfg.EthernaEmail, err = required("ETHERNA_EMAIL"); err != nil {
-		return cfg, err
-	}
-	if cfg.EthernaPassword, err = required("ETHERNA_PASSWORD"); err != nil {
-		return cfg, err
+	if cfg.RatesSyncToken == "" {
+		return cfg, fmt.Errorf("missing required env var RATES_SYNC_TOKEN")
 	}
 	return cfg, nil
 }
@@ -118,15 +116,7 @@ func main() {
 	}
 	client := &http.Client{Timeout: 20 * time.Second}
 
-	// Logged in first (rather than last, as before) — the fallback path
-	// below needs a token to read yesterday's rate before we can decide
-	// what to post today.
-	token, err := loginEtherna(client, cfg)
-	if err != nil {
-		log.Fatalf("etherna login: %v", err)
-	}
-
-	latest, hasLatest, err := fetchLatestRate(client, cfg, token)
+	latest, hasLatest, err := fetchLatestRate(client, cfg)
 	if err != nil {
 		log.Fatalf("fetch latest rate (needed as a fallback if today's scrape fails): %v", err)
 	}
@@ -152,7 +142,7 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
-	if err := postRate(client, cfg, token, antam, kinghalim, ubs, usdIdr); err != nil {
+	if err := postRate(client, cfg, antam, kinghalim, ubs, usdIdr); err != nil {
 		log.Fatalf("post rate: %v", err)
 	}
 
@@ -433,12 +423,12 @@ type latestRate struct {
 // (not an error) when the account has no rate entries yet — the very
 // first run has nothing to fall back to, which the caller must treat as
 // a hard failure for whichever value is missing.
-func fetchLatestRate(client *http.Client, cfg config, token string) (latestRate, bool, error) {
+func fetchLatestRate(client *http.Client, cfg config) (latestRate, bool, error) {
 	req, err := http.NewRequest(http.MethodGet, cfg.EthernaBaseURL+"/rates/latest", nil)
 	if err != nil {
 		return latestRate{}, false, err
 	}
-	req.Header.Set("Cookie", "wf_session="+token)
+	req.Header.Set(ratesSyncTokenHeader, cfg.RatesSyncToken)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -464,39 +454,11 @@ func fetchLatestRate(client *http.Client, cfg config, token string) (latestRate,
 	return out, true, nil
 }
 
-func loginEtherna(client *http.Client, cfg config) (string, error) {
-	body, err := json.Marshal(map[string]string{
-		"email":    cfg.EthernaEmail,
-		"password": cfg.EthernaPassword,
-	})
-	if err != nil {
-		return "", err
-	}
+// ratesSyncTokenHeader must match the backend's RatesSyncOrAuthMiddleware
+// (backend/internal/httpapi/middleware.go) exactly.
+const ratesSyncTokenHeader = "X-Rates-Sync-Token"
 
-	resp, err := client.Post(cfg.EthernaBaseURL+"/auth/login", "application/json", bytes.NewReader(body))
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("login returned %d: %s", resp.StatusCode, respBody)
-	}
-
-	var out struct {
-		Token string `json:"token"`
-	}
-	if err := json.Unmarshal(respBody, &out); err != nil {
-		return "", fmt.Errorf("parsing login response: %w (body: %s)", err, respBody)
-	}
-	return out.Token, nil
-}
-
-func postRate(client *http.Client, cfg config, token string, antam, kinghalim, ubs, usdIdr float64) error {
+func postRate(client *http.Client, cfg config, antam, kinghalim, ubs, usdIdr float64) error {
 	body, err := json.Marshal(map[string]any{
 		"entry_date": jakartaToday(),
 		"antam":      antam,
@@ -513,10 +475,7 @@ func postRate(client *http.Client, cfg config, token string, antam, kinghalim, u
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	// Matches the Android app's AuthInterceptor: the backend's
-	// AuthMiddleware just reads this cookie, whether a real cookie jar
-	// or a manually-set header put it there.
-	req.Header.Set("Cookie", "wf_session="+token)
+	req.Header.Set(ratesSyncTokenHeader, cfg.RatesSyncToken)
 
 	resp, err := client.Do(req)
 	if err != nil {

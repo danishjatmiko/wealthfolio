@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"crypto/subtle"
 	"net/http"
 	"time"
 
@@ -61,6 +62,43 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 
 		ctx := context.WithValue(r.Context(), userContextKey, user)
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// ratesSyncTokenHeader carries the rates-sync script's shared secret. Not
+// a cookie, since this script has no browser and no interactive session
+// to hold one in.
+const ratesSyncTokenHeader = "X-Rates-Sync-Token"
+
+// RatesSyncOrAuthMiddleware is AuthMiddleware plus one extra way in: a
+// request bearing X-Rates-Sync-Token matching the configured
+// RATES_SYNC_TOKEN authenticates as the fixed account named by
+// RATES_SYNC_EMAIL, no session cookie needed. This exists solely for the
+// rates-sync cron script (backend/cmd/rates-sync), which runs unattended
+// on the VPS and has no way to hold a browser-style session — everything
+// else (every other route, and this same route via a normal cookie) is
+// unaffected. Deliberately mounted on only /rates and /rates/latest (see
+// router.go), not the whole authenticated route group, so a leaked token
+// can only read/write gold rates, nothing else. Inert whenever
+// RATES_SYNC_TOKEN isn't set (e.g. local dev), since the header check
+// short-circuits to false and every request falls through to the normal
+// AuthMiddleware path.
+func (h *Handler) RatesSyncOrAuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h.ratesSyncToken != "" {
+			given := r.Header.Get(ratesSyncTokenHeader)
+			if given != "" && subtle.ConstantTimeCompare([]byte(given), []byte(h.ratesSyncToken)) == 1 {
+				user, err := h.repos.Users.GetByEmail(r.Context(), h.ratesSyncEmail)
+				if err != nil {
+					writeError(w, http.StatusUnauthorized, "not authenticated")
+					return
+				}
+				ctx := context.WithValue(r.Context(), userContextKey, user)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+		}
+		h.AuthMiddleware(next).ServeHTTP(w, r)
 	})
 }
 

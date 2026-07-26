@@ -26,4 +26,12 @@ interface OutboxDao {
 
     @Query("SELECT * FROM outbox_expenses WHERE id = :id")
     suspend fun getById(id: Long): OutboxExpense?
+
+    /** Only SENT/IGNORED — never PENDING/FAILED, which haven't reached
+     * the server yet and would be lost for good if deleted here. */
+    @Query("DELETE FROM outbox_expenses WHERE status IN ('SENT', 'IGNORED')")
+    suspend fun deleteResolved()
+
+    @Query("DELETE FROM outbox_expenses")
+    suspend fun deleteAll()
 }

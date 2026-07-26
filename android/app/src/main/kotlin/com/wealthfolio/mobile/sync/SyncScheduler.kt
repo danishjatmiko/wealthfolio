@@ -49,8 +49,28 @@ class SyncScheduler @Inject constructor(private val workManager: WorkManager) {
         workManager.enqueueUniqueWork(ONE_SHOT_WORK_NAME, ExistingWorkPolicy.REPLACE, request)
     }
 
+    /** Called when the Sync status screen's "Auto-clear daily" toggle
+     * turns on. REPLACE rather than KEEP (unlike [schedulePeriodicSweep])
+     * — toggling off then back on is a fresh explicit user action each
+     * time, so it should reset the 24h timer rather than resuming
+     * whatever schedule was already there. */
+    fun scheduleAutoClear() {
+        val request = PeriodicWorkRequestBuilder<OutboxAutoClearWorker>(1, TimeUnit.DAYS).build()
+        workManager.enqueueUniquePeriodicWork(
+            AUTO_CLEAR_WORK_NAME,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            request,
+        )
+    }
+
+    /** Called when the toggle turns off. */
+    fun cancelAutoClear() {
+        workManager.cancelUniqueWork(AUTO_CLEAR_WORK_NAME)
+    }
+
     private companion object {
         const val PERIODIC_WORK_NAME = "outbox_periodic_sweep"
         const val ONE_SHOT_WORK_NAME = "outbox_one_shot_sync"
+        const val AUTO_CLEAR_WORK_NAME = "outbox_auto_clear"
     }
 }

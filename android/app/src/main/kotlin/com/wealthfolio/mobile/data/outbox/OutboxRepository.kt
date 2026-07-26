@@ -13,11 +13,11 @@ class OutboxRepository @Inject constructor(private val dao: OutboxDao) {
     suspend fun listRetryable(): List<OutboxExpense> = dao.listRetryable()
 
     suspend fun markSent(expense: OutboxExpense) {
-        dao.update(expense.copy(status = OutboxStatus.SENT, lastError = null))
+        dao.update(expense.copy(status = OutboxStatus.SENT, lastError = null, updatedAt = System.currentTimeMillis()))
     }
 
     suspend fun markIgnored(expense: OutboxExpense) {
-        dao.update(expense.copy(status = OutboxStatus.IGNORED, lastError = null))
+        dao.update(expense.copy(status = OutboxStatus.IGNORED, lastError = null, updatedAt = System.currentTimeMillis()))
     }
 
     suspend fun markFailed(expense: OutboxExpense, error: String) {
@@ -26,6 +26,7 @@ class OutboxRepository @Inject constructor(private val dao: OutboxDao) {
                 status = OutboxStatus.FAILED,
                 attemptCount = expense.attemptCount + 1,
                 lastError = error,
+                updatedAt = System.currentTimeMillis(),
             ),
         )
     }
@@ -36,6 +37,7 @@ class OutboxRepository @Inject constructor(private val dao: OutboxDao) {
                 status = OutboxStatus.PENDING,
                 attemptCount = expense.attemptCount + 1,
                 lastError = error,
+                updatedAt = System.currentTimeMillis(),
             ),
         )
     }
@@ -44,6 +46,14 @@ class OutboxRepository @Inject constructor(private val dao: OutboxDao) {
      * row — puts it back in the retryable set for the next sweep. */
     suspend fun requeue(id: Long) {
         val expense = dao.getById(id) ?: return
-        dao.update(expense.copy(status = OutboxStatus.PENDING))
+        dao.update(expense.copy(status = OutboxStatus.PENDING, updatedAt = System.currentTimeMillis()))
     }
+
+    /** Manual "Clear resolved" button, and the daily auto-clear worker —
+     * only ever removes SENT/IGNORED rows, never PENDING/FAILED. */
+    suspend fun clearResolved() = dao.deleteResolved()
+
+    /** Manual "Clear all" button only — removes every row regardless of
+     * status, including anything not yet synced. */
+    suspend fun clearAll() = dao.deleteAll()
 }

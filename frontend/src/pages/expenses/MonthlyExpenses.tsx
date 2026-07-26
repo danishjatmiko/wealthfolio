@@ -11,7 +11,7 @@ import { api } from '../../lib/api'
 import { NewPeriodModal } from './NewPeriodModal'
 import { BudgetEnvelopeModal } from './BudgetEnvelopeModal'
 import { FixedExpenseModal } from './FixedExpenseModal'
-import { formatShortDate, formatTimestamp } from '../../lib/format'
+import { formatShortDate, formatTimestamp, sourceLabel } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
 
@@ -168,7 +168,10 @@ export function MonthlyExpenses() {
                 return (
                   <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
                     <div className="expense-row-info">
-                      <div className="expense-row-name">{fe.name}</div>
+                      <div className="expense-row-name">
+                        {fe.name}
+                        {fe.source && <span className="source-badge">{sourceLabel(fe.source)}</span>}
+                      </div>
                       <div className="expense-row-date">
                         {edited ? 'Updated' : 'Added'} {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
                       </div>

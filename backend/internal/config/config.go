@@ -30,6 +30,15 @@ type Config struct {
 	// dropped by browsers over plain HTTP (e.g. local dev), but can be
 	// overridden explicitly via COOKIE_SECURE.
 	CookieSecure bool
+
+	// RatesSyncToken/RatesSyncEmail let the rates-sync cron script (which
+	// runs unattended on the VPS, with no interactive session to log in
+	// with) authenticate to POST /rates and GET /rates/latest only, via
+	// the X-Rates-Sync-Token header instead of a session cookie — see
+	// RatesSyncOrAuthMiddleware. Leaving RATES_SYNC_TOKEN unset disables
+	// this path entirely (e.g. local dev never has it configured).
+	RatesSyncToken string
+	RatesSyncEmail string
 }
 
 // Load reads configuration from environment variables, applying defaults
@@ -47,6 +56,9 @@ func Load() Config {
 
 		AppBaseURL:   appBaseURL,
 		CookieSecure: getEnvBoolOr("COOKIE_SECURE", strings.HasPrefix(appBaseURL, "https://")),
+
+		RatesSyncToken: os.Getenv("RATES_SYNC_TOKEN"),
+		RatesSyncEmail: os.Getenv("RATES_SYNC_EMAIL"),
 	}
 }
 

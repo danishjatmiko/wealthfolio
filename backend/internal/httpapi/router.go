@@ -44,6 +44,17 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 		r.Post("/auth/logout", h.logout)
 		r.Post("/auth/login", h.login)
 
+		// Separate from the main authenticated group below: these two
+		// also accept the rates-sync cron script's shared-secret header
+		// (see RatesSyncOrAuthMiddleware) alongside the normal session
+		// cookie. Keeping it to just these two routes means a leaked
+		// token can only touch gold rates, nothing else.
+		r.Group(func(r chi.Router) {
+			r.Use(h.RatesSyncOrAuthMiddleware)
+			r.Get("/rates/latest", h.getLatestRate)
+			r.Post("/rates", h.createRate)
+		})
+
 		r.Group(func(r chi.Router) {
 			r.Use(h.AuthMiddleware)
 
@@ -52,8 +63,6 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Get("/categories", h.listCategories)
 
 			r.Get("/rates", h.listRates)
-			r.Get("/rates/latest", h.getLatestRate)
-			r.Post("/rates", h.createRate)
 
 			r.Get("/snapshots", h.listSnapshots)
 			r.Get("/snapshots/latest", h.getLatestSnapshot)

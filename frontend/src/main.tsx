@@ -13,7 +13,11 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
-      refetchOnWindowFocus: false,
+      // Refetch whenever the tab/window regains focus — e.g. after
+      // switching away and back — not just on route navigation. Still
+      // respects staleTime above, so rapid alt-tabbing within 30s won't
+      // refire every query.
+      refetchOnWindowFocus: true,
       retry: 1,
       // This app only ever talks to a same-machine backend, so there's no
       // meaningful "offline" state to design around — always attempt

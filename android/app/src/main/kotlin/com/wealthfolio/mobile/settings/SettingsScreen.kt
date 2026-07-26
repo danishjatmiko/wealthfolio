@@ -3,6 +3,7 @@ package com.wealthfolio.mobile.settings
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,8 +53,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,6 +65,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.wealthfolio.mobile.R
 import com.wealthfolio.mobile.ui.NativeScreenTopBar
 import com.wealthfolio.mobile.ui.theme.EthernaForest
 import com.wealthfolio.mobile.ui.theme.EthernaGoldSoft
@@ -342,11 +346,21 @@ private fun SourceCard(
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                InitialsBadge(
-                    letter = row.source.displayName.first().toString(),
-                    background = sourceChipColor(row.source.source),
-                    modifier = Modifier.size(32.dp),
-                )
+                val logoRes = sourceLogoRes(row.source.source)
+                if (logoRes != null) {
+                    Image(
+                        painter = painterResource(logoRes),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(32.dp).clip(RoundedCornerShape(9.dp)),
+                    )
+                } else {
+                    InitialsBadge(
+                        letter = row.source.displayName.first().toString(),
+                        background = sourceChipColor(row.source.source),
+                        modifier = Modifier.size(32.dp),
+                    )
+                }
                 Spacer(Modifier.width(11.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(row.source.displayName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
@@ -414,6 +428,18 @@ private fun SourceCard(
             }
         }
     }
+}
+
+/** Real app icons for the sources we have one bundled for (downloaded from
+ * each app's own Play Store listing) — falls back to [InitialsBadge] for
+ * any source without a match, so a future app added via the backend
+ * catalog still renders something reasonable without a code change. */
+private fun sourceLogoRes(source: String): Int? = when (source) {
+    "gopay" -> R.drawable.logo_gopay
+    "bca" -> R.drawable.logo_bca
+    "jago" -> R.drawable.logo_jago
+    "dana" -> R.drawable.logo_dana
+    else -> null
 }
 
 /** Fixed palette a source's chip color is picked from, keyed by a hash of

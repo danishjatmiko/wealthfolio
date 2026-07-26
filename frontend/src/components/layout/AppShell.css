@@ -237,7 +237,35 @@
 .content-area {
   flex: 1;
   overflow-y: auto;
+  /* Stops the browser's own native pull-to-refresh (a hard page reload)
+     from also firing alongside our in-app one. */
+  overscroll-behavior-y: contain;
   padding: 22px 24px 32px;
+}
+
+.pull-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: height 0.2s ease;
+}
+.pull-refresh-spinner {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text-muted);
+}
+.pull-refresh-spinner.pull-refresh-spinning {
+  animation: pull-refresh-spin 0.7s linear infinite;
+}
+@keyframes pull-refresh-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .mobile-user-bar {

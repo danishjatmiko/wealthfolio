@@ -18,11 +18,11 @@ func NewFixedExpensesRepo(pool *pgxpool.Pool) *FixedExpensesRepo {
 	return &FixedExpensesRepo{pool: pool}
 }
 
-const fixedExpenseSelectCols = `id, period_id, envelope_id, name, amount_idr, created_at, updated_at`
+const fixedExpenseSelectCols = `id, period_id, envelope_id, name, amount_idr, source, created_at, updated_at`
 
 func scanFixedExpense(row interface{ Scan(dest ...any) error }) (domain.FixedExpense, error) {
 	var e domain.FixedExpense
-	err := row.Scan(&e.ID, &e.PeriodID, &e.EnvelopeID, &e.Name, &e.AmountIdr, &e.CreatedAt, &e.UpdatedAt)
+	err := row.Scan(&e.ID, &e.PeriodID, &e.EnvelopeID, &e.Name, &e.AmountIdr, &e.Source, &e.CreatedAt, &e.UpdatedAt)
 	if err != nil {
 		return domain.FixedExpense{}, err
 	}
@@ -55,7 +55,7 @@ func (r *FixedExpensesRepo) ListByPeriod(ctx context.Context, periodID uuid.UUID
 // period). ErrNotFound if missing or owned by someone else.
 func (r *FixedExpensesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (domain.FixedExpense, error) {
 	row := r.pool.QueryRow(ctx, `
-		SELECT e.id, e.period_id, e.envelope_id, e.name, e.amount_idr, e.created_at, e.updated_at
+		SELECT e.id, e.period_id, e.envelope_id, e.name, e.amount_idr, e.source, e.created_at, e.updated_at
 		FROM fixed_expenses e
 		JOIN expense_periods p ON p.id = e.period_id
 		WHERE e.id = $1 AND p.user_id = $2`, id, userID)
@@ -67,21 +67,25 @@ func (r *FixedExpensesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (
 }
 
 // FixedExpenseWrite is the set of columns needed to insert/update a fixed
-// expense.
+// expense. Source is only ever set by notification ingestion (see
+// NotificationExpenseEventsRepo.CreateExpense, which inserts directly
+// rather than through this repo) — manual creates via this Create leave it
+// nil, and Update never touches the column at all.
 type FixedExpenseWrite struct {
 	PeriodID   uuid.UUID
 	EnvelopeID uuid.UUID
 	Name       string
 	AmountIdr  int64
+	Source     *string
 }
 
 // Create inserts a new fixed expense and returns the full row.
 func (r *FixedExpensesRepo) Create(ctx context.Context, w FixedExpenseWrite) (domain.FixedExpense, error) {
 	row := r.pool.QueryRow(ctx, `
-		INSERT INTO fixed_expenses (period_id, envelope_id, name, amount_idr)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO fixed_expenses (period_id, envelope_id, name, amount_idr, source)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING `+fixedExpenseSelectCols,
-		w.PeriodID, w.EnvelopeID, w.Name, w.AmountIdr)
+		w.PeriodID, w.EnvelopeID, w.Name, w.AmountIdr, w.Source)
 	return scanFixedExpense(row)
 }
 

@@ -136,12 +136,17 @@ type BudgetEnvelope struct {
 
 // FixedExpense mirrors the fixed_expenses table. Every fixed expense
 // belongs to a BudgetEnvelope — there's no more "standalone" expense.
+// Source is nil for manually-entered expenses and set once, at creation,
+// for ones created via notification ingestion (see
+// NotificationExpenseEventsRepo.CreateExpense) — never touched by a later
+// manual edit, so it keeps recording where the expense actually came from.
 type FixedExpense struct {
 	ID         uuid.UUID `json:"id"`
 	PeriodID   uuid.UUID `json:"period_id"`
 	EnvelopeID uuid.UUID `json:"envelope_id"`
 	Name       string    `json:"name"`
 	AmountIdr  int64     `json:"amount_idr"`
+	Source     *string   `json:"source"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

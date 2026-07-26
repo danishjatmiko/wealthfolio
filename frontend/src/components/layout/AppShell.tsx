@@ -1,9 +1,11 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { NAV_ITEMS, PAGE_TITLES } from './nav'
 import { useAuth } from '../../context/AuthContext'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { useDashboard } from '../../hooks/useDashboard'
+import { usePullToRefresh } from '../../hooks/usePullToRefresh'
 import './AppShell.css'
 
 function useTodayLabel() {
@@ -26,6 +28,10 @@ export function AppShell() {
   const { user, logout } = useAuth()
   const todayLabel = useTodayLabel()
   const title = PAGE_TITLES[location.pathname] ?? 'Etherna'
+  const queryClient = useQueryClient()
+  const { ref: pullRef, pullDistance, refreshing } = usePullToRefresh<HTMLElement>(() =>
+    queryClient.refetchQueries({ type: 'active' }),
+  )
 
   return (
     <div className="app-shell">
@@ -147,7 +153,18 @@ export function AppShell() {
           </div>
         )}
 
-        <main className="content-area pg" key={location.pathname}>
+        <main className="content-area pg" key={location.pathname} ref={pullRef}>
+          <div className="pull-refresh-indicator" style={{ height: refreshing ? 36 : pullDistance }}>
+            <span
+              className={'pull-refresh-spinner' + (refreshing ? ' pull-refresh-spinning' : '')}
+              style={{
+                opacity: Math.min(1, (refreshing ? 36 : pullDistance) / 50),
+                transform: refreshing ? undefined : `rotate(${pullDistance * 3}deg)`,
+              }}
+            >
+              ⟳
+            </span>
+          </div>
           <Outlet />
         </main>
 

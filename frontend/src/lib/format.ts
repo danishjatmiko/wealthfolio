@@ -87,6 +87,22 @@ export function formatTimestamp(isoStr: string): string {
   )
 }
 
+/** Known notification-source display names — keep in sync with the
+ * `source` ids seeded in backend/migrations (gopay/dana/bca/jago, etc.).
+ * Anything not listed here falls back to a capitalized version of the raw
+ * id, so a future source never renders blank. */
+const SOURCE_LABELS: Record<string, string> = {
+  gopay: 'GoPay',
+  dana: 'DANA',
+  bca: 'BCA',
+  jago: 'Jago',
+}
+
+/** Display label for a fixed expense's `source` (e.g. "gopay" -> "GoPay"). */
+export function sourceLabel(source: string): string {
+  return SOURCE_LABELS[source] ?? source.charAt(0).toUpperCase() + source.slice(1)
+}
+
 /** Parse a free-typed numeric string the same way the prototype does. */
 export function parseNumeric(input: string | number | null | undefined): number {
   if (typeof input === 'number') return Number.isFinite(input) ? input : 0

@@ -34,4 +34,8 @@ data class OutboxExpense(
     val attemptCount: Int = 0,
     val lastError: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
+    /** When [status] last changed — distinct from [createdAt], which is
+     * set once at capture time and never touched again. Powers the Sync
+     * status detail view's "Last updated" timestamp. */
+    val updatedAt: Long = System.currentTimeMillis(),
 )
