@@ -17,7 +17,7 @@ function todayIso(): string {
 }
 
 export function DebtSnapshotModal({ open, onClose, latestSnapshot, onCreated }: DebtSnapshotModalProps) {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { showError, showSuccess } = useToast()
   const createSnapshot = useCreateDebtSnapshot()
   const [date, setDate] = useState(todayIso())
@@ -89,8 +89,8 @@ export function DebtSnapshotModal({ open, onClose, latestSnapshot, onCreated }: 
             <div className="snap-copy-row">
               <span>Starting debt / owed to me</span>
               <b className="mono">
-                {latestSnapshot ? fmt(latestSnapshot.i_owe_idr) : '—'} /{' '}
-                {latestSnapshot ? fmt(latestSnapshot.owed_to_me_idr) : '—'}
+                {latestSnapshot ? fmtExact(latestSnapshot.i_owe_idr) : '—'} /{' '}
+                {latestSnapshot ? fmtExact(latestSnapshot.owed_to_me_idr) : '—'}
               </b>
             </div>
           </div>

@@ -24,7 +24,7 @@ function formatMetricValue(value: number, metricType: TargetMetricType, unit: st
 }
 
 export function Targets() {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { data: targets = [] } = useTargets()
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTarget, setEditingTarget] = useState<Target | null>(null)
@@ -53,7 +53,7 @@ export function Targets() {
           const remaining = t.target_value - t.current_value
           const pct = Math.max(0, Math.min(100, t.percent))
           const color = METRIC_COLOR[t.metric_type]
-          const remainingAmount = formatMetricValue(Math.abs(remaining), t.metric_type, t.unit, fmt)
+          const remainingAmount = formatMetricValue(Math.abs(remaining), t.metric_type, t.unit, fmtExact)
           let toGoText: string
           if (t.lower_is_better) {
             toGoText = remaining >= 0 ? `${remainingAmount} headroom` : `${remainingAmount} over target`
@@ -72,10 +72,10 @@ export function Targets() {
               </div>
               <div className="target-card-row">
                 <span>
-                  Now <b className="mono target-card-val">{formatMetricValue(t.current_value, t.metric_type, t.unit, fmt)}</b>
+                  Now <b className="mono target-card-val">{formatMetricValue(t.current_value, t.metric_type, t.unit, fmtExact)}</b>
                 </span>
                 <span>
-                  Target <b className="mono target-card-val">{formatMetricValue(t.target_value, t.metric_type, t.unit, fmt)}</b>
+                  Target <b className="mono target-card-val">{formatMetricValue(t.target_value, t.metric_type, t.unit, fmtExact)}</b>
                 </span>
               </div>
               <div className="target-card-togo">{toGoText}</div>

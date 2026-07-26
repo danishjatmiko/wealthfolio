@@ -18,7 +18,7 @@ type holdingRequest struct {
 	Brand      *string  `json:"brand"`
 	UsdValue   *float64 `json:"usd_value"`
 	Currency   *string  `json:"currency"`
-	ValueIdr   *float64 `json:"value_idr"`
+	ValueIdr   *int64   `json:"value_idr"`
 	Detail     *string  `json:"detail"`
 }
 

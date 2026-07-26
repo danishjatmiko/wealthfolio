@@ -18,7 +18,7 @@ function todayIso(): string {
 }
 
 export function NewSnapshotModal({ open, onClose, latestSnapshot, onCreated }: NewSnapshotModalProps) {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { showError, showSuccess } = useToast()
   const { data: latestDebtSnapshot } = useLatestDebtSnapshot()
   const createSnapshot = useCreateSnapshot()
@@ -94,7 +94,7 @@ export function NewSnapshotModal({ open, onClose, latestSnapshot, onCreated }: N
             </div>
             <div className="snap-copy-row">
               <span>Starting net equity</span>
-              <b className="mono">{latestSnapshot ? fmt(latestSnapshot.net_equity_idr) : '—'}</b>
+              <b className="mono">{latestSnapshot ? fmtExact(latestSnapshot.net_equity_idr) : '—'}</b>
             </div>
           </div>
           <div className="snap-copy-note">Values carry over so you only change what moved — no more copy-pasting tabs.</div>

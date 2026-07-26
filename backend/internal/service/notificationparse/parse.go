@@ -46,9 +46,9 @@ type AmountFormat struct {
 }
 
 // ParsedTransaction is what Match extracts once a pattern's format is
-// known. AmountIdr is in THOUSANDS of rupiah, like every other IDR field
-// in this codebase (fixed_expenses.amount_idr, etc. — see
-// frontend/src/lib/format.ts's convention note), not full rupiah.
+// known. AmountIdr is the exact captured amount in full/raw rupiah, like
+// every other IDR field in this codebase (fixed_expenses.amount_idr,
+// etc.).
 type ParsedTransaction struct {
 	AmountIdr int64
 	Merchant  string
@@ -120,15 +120,12 @@ func fieldValue(field Field, title, text, bigText string) string {
 }
 
 // NormalizeAmount turns a captured amount substring (e.g. "Rp50.000") into
-// an int64 amount in THOUSANDS of rupiah — the unit every monetary field
-// in this codebase uses (see frontend/src/lib/format.ts's convention
-// note), not full rupiah. Any fractional part (after format.DecimalSep) is
-// discarded first, then every character that isn't a digit or
-// format.ThousandSep (currency symbols, spaces, etc.) is dropped from
-// what remains, then the resulting full-rupiah figure is divided by 1000
-// and rounded to the nearest thousand — the same precision loss a user
-// manually typing an amount into the "Amount (rb Rp)" field already
-// accepts, since that field can't express sub-thousand amounts either.
+// an exact int64 amount in full/raw rupiah. Any fractional part (after
+// format.DecimalSep) is discarded first — IDR has no circulating subunit
+// worth capturing — then every character that isn't a digit or
+// format.ThousandSep (currency symbols, spaces, etc.) is dropped from what
+// remains, and the resulting digit string is parsed directly as the exact
+// rupiah amount, with no further rounding.
 func NormalizeAmount(raw string, format AmountFormat) (int64, error) {
 	whole := raw
 	if idx := strings.IndexByte(raw, format.DecimalSep); idx >= 0 {
@@ -144,9 +141,5 @@ func NormalizeAmount(raw string, format AmountFormat) (int64, error) {
 	if digits.Len() == 0 {
 		return 0, errNoDigits
 	}
-	fullRupiah, err := strconv.ParseInt(digits.String(), 10, 64)
-	if err != nil {
-		return 0, err
-	}
-	return (fullRupiah + 500) / 1000, nil
+	return strconv.ParseInt(digits.String(), 10, 64)
 }

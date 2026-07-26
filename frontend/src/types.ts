@@ -1,6 +1,6 @@
 // Core API types, matching the Etherna backend contract (v1).
-// All monetary fields are integers representing THOUSANDS of IDR, unless
-// noted otherwise (rate.usd_idr is full IDR per 1 USD).
+// All monetary fields are integers representing full/raw IDR (whole
+// Rupiah) — no rounding, no scaling factor.
 
 export interface User {
   id: string

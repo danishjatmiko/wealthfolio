@@ -77,30 +77,30 @@ export function Rates() {
             />
           </label>
           <label className="field">
-            Antam (rb Rp/g)
+            Antam (Rp/g)
             <input
               className="field-input mono"
               value={antam}
               onChange={(e) => setAntam(e.target.value)}
-              placeholder="1650"
+              placeholder="1650000"
             />
           </label>
           <label className="field">
-            King Halim (rb Rp/g)
+            King Halim (Rp/g)
             <input
               className="field-input mono"
               value={kinghalim}
               onChange={(e) => setKinghalim(e.target.value)}
-              placeholder="1610"
+              placeholder="1610000"
             />
           </label>
           <label className="field">
-            UBS (rb Rp/g)
+            UBS (Rp/g)
             <input
               className="field-input mono"
               value={ubs}
               onChange={(e) => setUbs(e.target.value)}
-              placeholder="1600"
+              placeholder="1600000"
             />
           </label>
           <label className="field">

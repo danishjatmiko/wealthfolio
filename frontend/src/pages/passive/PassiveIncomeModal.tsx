@@ -100,12 +100,12 @@ export function PassiveIncomeModal({ open, onClose, categories, editingSource }:
         />
       </label>
       <label className="field">
-        Estimated / year (rb Rp)
+        Estimated / year (Rp)
         <input
           className="field-input mono"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="127100"
+          placeholder="127100000"
         />
       </label>
     </Modal>

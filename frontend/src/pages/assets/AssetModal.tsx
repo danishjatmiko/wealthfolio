@@ -13,7 +13,7 @@ import {
   showsIdrInput,
   showsUsdInput,
 } from '../../lib/holdingCalc'
-import { fmtIdr, goldFmt, usdFmt, parseNumeric } from '../../lib/format'
+import { fmtIdrExact, goldFmt, usdFmt, parseNumeric } from '../../lib/format'
 import type { AssetFormValues } from '../../lib/holdingCalc'
 import type { Category, Holding, RateEntry } from '../../types'
 
@@ -238,12 +238,12 @@ export function AssetModal({
 
       {showIdr && (
         <label className="field">
-          Value (rb Rp)
+          Value (Rp)
           <input
             className="field-input mono"
             value={form.val}
             onChange={(e) => setForm((f) => ({ ...f, val: e.target.value }))}
-            placeholder="21200"
+            placeholder="21200000"
           />
         </label>
       )}
@@ -252,7 +252,7 @@ export function AssetModal({
         <div className="computed-box">
           <div>
             <div className="computed-box-label">IDR value (auto)</div>
-            <div className="computed-box-value mono">{fmtIdr(computedValue)}</div>
+            <div className="computed-box-value mono">{fmtIdrExact(computedValue)}</div>
           </div>
           <div className="computed-box-note">{computedNote}</div>
         </div>

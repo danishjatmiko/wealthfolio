@@ -16,7 +16,7 @@ import type { DebtEntry, DebtDirection } from '../../types'
 import './Debts.css'
 
 export function Debts() {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { showError, showSuccess } = useToast()
   const { data: snapshots = [] } = useDebtSnapshots()
   const { data: latestSnapshot } = useLatestDebtSnapshot()
@@ -122,7 +122,7 @@ export function Debts() {
         <div className="card">
           <div className="debts-card-head">
             <div className="card-title-inline">My debts</div>
-            <div className="mono debts-card-total">{fmt(totalDebt)}</div>
+            <div className="mono debts-card-total">{fmtExact(totalDebt)}</div>
           </div>
           {myDebts.length === 0 && <div className="empty-state">No debts logged.</div>}
           {myDebts.map((d) => (
@@ -135,7 +135,7 @@ export function Debts() {
                 <div className="debt-row-name">{d.name}</div>
                 <div className="debt-row-type">{d.type}</div>
               </div>
-              <span className="mono debt-row-val debt-row-val-red">{fmt(d.value_idr)}</span>
+              <span className="mono debt-row-val debt-row-val-red">{fmtExact(d.value_idr)}</span>
             </div>
           ))}
           <button
@@ -151,7 +151,7 @@ export function Debts() {
         <div className="card">
           <div className="debts-card-head">
             <div className="card-title-inline">Who owes me</div>
-            <div className="mono debts-card-total">{fmt(totalReceivable)}</div>
+            <div className="mono debts-card-total">{fmtExact(totalReceivable)}</div>
           </div>
           {receivables.length === 0 && <div className="empty-state">Nobody owes you (yet).</div>}
           {receivables.map((d) => (
@@ -164,7 +164,7 @@ export function Debts() {
                 <div className="debt-row-name">{d.name}</div>
                 <div className="debt-row-type">{d.type}</div>
               </div>
-              <span className="mono debt-row-val debt-row-val-green">{fmt(d.value_idr)}</span>
+              <span className="mono debt-row-val debt-row-val-green">{fmtExact(d.value_idr)}</span>
             </div>
           ))}
           <button

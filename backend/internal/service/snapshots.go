@@ -113,7 +113,7 @@ func (s *SnapshotsService) ListHoldingsForDate(ctx context.Context, userID uuid.
 // gold and USD-linked holdings get repriced against the latest rate entry
 // instead of carrying over a stale value_idr.
 func holdingRequestFromHolding(h domain.Holding) HoldingRequest {
-	valueIdr := float64(h.ValueIdr)
+	valueIdr := h.ValueIdr
 	detail := h.Detail
 	return HoldingRequest{
 		CategoryID: h.CategoryID,

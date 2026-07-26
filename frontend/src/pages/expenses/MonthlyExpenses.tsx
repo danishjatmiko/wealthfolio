@@ -16,7 +16,7 @@ import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
 
 export function MonthlyExpenses() {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { showError, showSuccess } = useToast()
   const { data: periods = [] } = useExpensePeriods()
   const { data: latestPeriod } = useLatestExpensePeriod()
@@ -143,13 +143,13 @@ export function MonthlyExpenses() {
                 <div>
                   <div className="expense-card-title">{env.name}</div>
                 </div>
-                <div className="mono expense-card-total">{fmt(env.actual_total_idr)}</div>
+                <div className="mono expense-card-total">{fmtExact(env.actual_total_idr)}</div>
               </div>
               <div className="expense-envelope-meta">
-                <span>of {fmt(env.committed_amount_idr)} committed</span>
+                <span>of {fmtExact(env.committed_amount_idr)} committed</span>
                 <span className={overBudget ? 'expense-over' : 'expense-under'}>
                   {overBudget ? '+' : '−'}
-                  {fmt(deltaAbs)} {overBudget ? 'over' : 'under'}
+                  {fmtExact(deltaAbs)} {overBudget ? 'over' : 'under'}
                 </span>
               </div>
               <div className="progress-track">
@@ -173,7 +173,7 @@ export function MonthlyExpenses() {
                         {edited ? 'Updated' : 'Added'} {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
                       </div>
                     </div>
-                    <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
+                    <span className="mono expense-row-val">{fmtExact(fe.amount_idr)}</span>
                   </div>
                 )
               })}
@@ -197,9 +197,9 @@ export function MonthlyExpenses() {
       <div className="expense-total-banner">
         <div>
           <div className="expense-total-label">{period.label} total spend</div>
-          <div className="mono expense-total-value">{fmt(period.actual_total_idr)}</div>
+          <div className="mono expense-total-value">{fmtExact(period.actual_total_idr)}</div>
           <div className="expense-total-note">
-            of {fmt(period.committed_total_idr)} committed across envelopes
+            of {fmtExact(period.committed_total_idr)} committed across envelopes
           </div>
         </div>
       </div>

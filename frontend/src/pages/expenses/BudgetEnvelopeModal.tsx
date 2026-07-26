@@ -114,12 +114,12 @@ export function BudgetEnvelopeModal({ open, onClose, periodId, editingEnvelope }
         />
       </label>
       <label className="field">
-        Committed target (rb Rp)
+        Committed target (Rp)
         <input
           className="field-input mono"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="20000"
+          placeholder="20000000"
         />
       </label>
     </Modal>

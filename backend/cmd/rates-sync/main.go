@@ -252,11 +252,10 @@ func fetchGoldPricePerGram(client *http.Client, cfg config, brand, resource stri
 		return 0, fmt.Errorf("brand=%q resource=%q: %w", brand, resource, err)
 	}
 
-	// rate_entries stores antam/kinghalim/ubs in THOUSANDS of IDR (see
-	// backend/internal/domain/domain.go's RateEntry comment) — this API
-	// returns full Rupiah, so divide by 1000. usd_idr is the one field
-	// that stays as full IDR, handled separately in fetchUsdIdr.
-	return rows[0].SellPrice / 1000, nil
+	// rate_entries stores antam/kinghalim/ubs in full/raw IDR (see
+	// backend/internal/domain/domain.go's RateEntry comment), matching what
+	// this API already returns directly — no scaling needed.
+	return rows[0].SellPrice, nil
 }
 
 // --- Etherna ---

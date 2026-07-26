@@ -8,7 +8,7 @@ import type { PassiveIncomeSource } from '../../types'
 import './PassiveIncome.css'
 
 export function PassiveIncome() {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { data: categories = [] } = useCategories()
   const { data: dashboard } = useDashboard()
   const { data: sources = [] } = usePassiveIncome()
@@ -48,7 +48,7 @@ export function PassiveIncome() {
             <div className="passive-row" key={s.id} onClick={() => openEdit(s)}>
               <div className="passive-row-head">
                 <span>{s.name || s.category_label}</span>
-                <span className="mono passive-row-val">{fmt(s.per_year_idr)}</span>
+                <span className="mono passive-row-val">{fmtExact(s.per_year_idr)}</span>
               </div>
               <div className="progress-track">
                 <div
@@ -63,9 +63,9 @@ export function PassiveIncome() {
         <div className="passive-side">
           <div className="card">
             <div className="dash-mini-label">Total per year</div>
-            <div className="mono passive-total-value">{passive ? fmt(passive.per_year_idr) : '—'}</div>
+            <div className="mono passive-total-value">{passive ? fmtExact(passive.per_year_idr) : '—'}</div>
             <div className="passive-total-note">
-              of {passive ? fmt(passive.target_per_year_idr) : '—'} target · {pct}%
+              of {passive ? fmtExact(passive.target_per_year_idr) : '—'} target · {pct}%
             </div>
             <div className="progress-track passive-total-track">
               <div
@@ -73,13 +73,13 @@ export function PassiveIncome() {
                 style={{ width: `${Math.min(100, pct)}%`, background: 'var(--blue)' }}
               />
             </div>
-            <div className="passive-gap">{fmt(gap)} still needed</div>
+            <div className="passive-gap">{fmtExact(gap)} still needed</div>
           </div>
           <div className="card">
             <div className="dash-mini-label">Per month now</div>
-            <div className="mono dash-mini-value">{passive ? fmt(passive.per_month_idr) : '—'}</div>
+            <div className="mono dash-mini-value">{passive ? fmtExact(passive.per_month_idr) : '—'}</div>
             <div className="dash-mini-note">
-              target {passive ? fmt(passive.per_month_target_idr) : '—'} / month
+              target {passive ? fmtExact(passive.per_month_target_idr) : '—'} / month
             </div>
           </div>
         </div>

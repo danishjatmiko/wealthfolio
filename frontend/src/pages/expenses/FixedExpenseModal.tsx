@@ -132,12 +132,12 @@ export function FixedExpenseModal({
         </select>
       </label>
       <label className="field">
-        Amount (rb Rp)
+        Amount (Rp)
         <input
           className="field-input mono"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="3000"
+          placeholder="3000000"
         />
       </label>
     </Modal>

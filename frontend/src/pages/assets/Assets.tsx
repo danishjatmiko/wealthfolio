@@ -13,7 +13,7 @@ import './Assets.css'
 type ModalKind = 'addAsset' | 'newSnapshot' | null
 
 export function Assets() {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const { showError, showSuccess } = useToast()
   const { data: categories = [] } = useCategories()
   const { data: snapshots = [] } = useSnapshots()
@@ -183,7 +183,7 @@ export function Assets() {
                 {h.category_label}
               </span>
               <span className="a-val">
-                <span className="mono a-val-amount">{fmt(h.value_idr)}</span>
+                <span className="mono a-val-amount">{fmtExact(h.value_idr)}</span>
                 <button
                   type="button"
                   title="Edit"
@@ -202,9 +202,9 @@ export function Assets() {
           <div className="asset-net-row">
             <span className="asset-net-label">Net equity (assets + liability)</span>
             <span className="mono asset-net-breakdown">
-              assets {fmt(grandAssets)} · liab {fmt(grandLiab)}
+              assets {fmtExact(grandAssets)} · liab {fmtExact(grandLiab)}
             </span>
-            <span className="mono asset-net-total">{fmt(grandAssets + grandLiab)}</span>
+            <span className="mono asset-net-total">{fmtExact(grandAssets + grandLiab)}</span>
           </div>
         )}
       </div>

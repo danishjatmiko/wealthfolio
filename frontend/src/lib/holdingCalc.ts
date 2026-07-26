@@ -12,7 +12,7 @@ export const CASH_CATEGORY_LABEL = 'Uang Tunai'
 export const GOLD_TYPES = ['Antam', 'King Halim', 'UBS'] as const
 export type GoldType = (typeof GOLD_TYPES)[number]
 
-/** Latest gold price per gram (in thousands of IDR) for the given brand. */
+/** Latest gold price per gram (in full/raw IDR) for the given brand. */
 export function goldPrice(rate: RateEntry | undefined | null, brand: string): number {
   if (!rate) return 0
   if (brand === 'King Halim') return rate.kinghalim
@@ -22,7 +22,7 @@ export function goldPrice(rate: RateEntry | undefined | null, brand: string): nu
 
 export interface AssetFormValues {
   categoryLabel: string
-  val: string // direct IDR (thousands), as typed
+  val: string // direct IDR (full/raw), as typed
   gram: string
   qty: string
   usd: string
@@ -31,7 +31,7 @@ export interface AssetFormValues {
 }
 
 /**
- * Live client-side preview of the IDR value (thousands) for the asset
+ * Live client-side preview of the IDR value (full/raw) for the asset
  * add/edit form, mirroring mdComputedVal() exactly.
  */
 /** Categories that are always USD-denominated, regardless of a currency toggle. */
@@ -46,7 +46,7 @@ export function computeHoldingValue(md: AssetFormValues, latestRate: RateEntry |
   }
   if (isFixedUsdCategory(md.categoryLabel) || (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD')) {
     const u = parseNumeric(md.usd)
-    return u && latestRate ? u * (latestRate.usd_idr / 1000) : parseNumeric(md.val)
+    return u && latestRate ? u * latestRate.usd_idr : parseNumeric(md.val)
   }
   return parseNumeric(md.val)
 }

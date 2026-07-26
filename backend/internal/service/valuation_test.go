@@ -9,7 +9,7 @@ import (
 
 func TestComputeHoldingValue(t *testing.T) {
 	rate := &domain.RateEntry{
-		Antam:     1200, // Rp 1,200,000/g (thousands of IDR)
+		Antam:     1200, // Rp 1,200/g (full/raw IDR)
 		Kinghalim: 1150,
 		Ubs:       1180,
 		UsdIdr:    15800, // full IDR per 1 USD
@@ -84,7 +84,7 @@ func TestComputeHoldingValue(t *testing.T) {
 			categoryKey: "bonds_usd",
 			input:       HoldingInput{UsdValue: 1000},
 			rate:        rate,
-			wantValue:   round64(1000 * (15800.0 / 1000)),
+			wantValue:   round64(1000 * 15800.0),
 			wantDetail:  "1000 USD",
 		},
 		{
@@ -107,7 +107,7 @@ func TestComputeHoldingValue(t *testing.T) {
 			categoryKey: "us_etf",
 			input:       HoldingInput{UsdValue: 1000},
 			rate:        rate,
-			wantValue:   round64(1000 * (15800.0 / 1000)),
+			wantValue:   round64(1000 * 15800.0),
 			wantDetail:  "1000 USD",
 		},
 		{
@@ -130,7 +130,7 @@ func TestComputeHoldingValue(t *testing.T) {
 			categoryKey: "uang_tunai",
 			input:       HoldingInput{Currency: "USD", UsdValue: 200},
 			rate:        rate,
-			wantValue:   round64(200 * (15800.0 / 1000)),
+			wantValue:   round64(200 * 15800.0),
 			wantDetail:  "200 USD",
 		},
 		{

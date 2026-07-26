@@ -51,7 +51,7 @@ function AxisLabels({ labels, dual }: { labels: string[]; dual?: boolean }) {
 }
 
 export function Progress() {
-  const { fmt } = useMoney()
+  const { fmtExact } = useMoney()
   const [granularity, setGranularity] = useState<ProgressGranularity>('monthly')
   const { data, isLoading, isError } = useProgress(granularity)
   const { data: debtData, isLoading: debtLoading, isError: debtIsError } = useDebtProgress(granularity)
@@ -60,7 +60,7 @@ export function Progress() {
     <div>
       <div className="progress-header">
         <div>
-          <div className="mono progress-latest">{data ? fmt(data.latest_value_idr) : '—'}</div>
+          <div className="mono progress-latest">{data ? fmtExact(data.latest_value_idr) : '—'}</div>
         </div>
         <div className="segmented">
           {VIEWS.map((v) => (
@@ -85,7 +85,7 @@ export function Progress() {
             <LineChart
               series={data.series.map((p) => ({ label: p.label, value: p.net_equity_idr }))}
               color={ACCENT}
-              formatValue={fmt}
+              formatValue={fmtExact}
             />
             <AxisLabels labels={data.series.map((p) => p.label)} />
           </>
@@ -117,7 +117,7 @@ export function Progress() {
             <LineChart
               series={debtData.series.map((p) => ({ label: p.label, value: p.debt_idr }))}
               color={RED}
-              formatValue={fmt}
+              formatValue={fmtExact}
               secondarySeries={debtData.series.map((p) => ({ label: p.label, value: p.ratio_pct }))}
               secondaryColor={BLUE}
               secondaryFormatValue={pctFmt}

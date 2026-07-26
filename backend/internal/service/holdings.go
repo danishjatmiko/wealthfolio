@@ -30,11 +30,18 @@ type HoldingRequest struct {
 	Brand      *string
 	UsdValue   *float64
 	Currency   *string
-	ValueIdr   *float64
+	ValueIdr   *int64
 	Detail     *string
 }
 
 func derefF64(p *float64) float64 {
+	if p == nil {
+		return 0
+	}
+	return *p
+}
+
+func derefI64(p *int64) int64 {
 	if p == nil {
 		return 0
 	}
@@ -55,7 +62,7 @@ func (r HoldingRequest) toValuationInput() HoldingInput {
 		Brand:    derefStr(r.Brand),
 		Currency: derefStr(r.Currency),
 		UsdValue: derefF64(r.UsdValue),
-		ValueIdr: derefF64(r.ValueIdr),
+		ValueIdr: derefI64(r.ValueIdr),
 		Detail:   derefStr(r.Detail),
 	}
 }

@@ -15,15 +15,15 @@ func TestNormalizeAmount(t *testing.T) {
 		want    int64
 		wantErr bool
 	}{
-		{"plain thousands", "50.000", idFormat, 50, false},
-		{"currency prefix and label", "Rp50.000", idFormat, 50, false},
-		{"decimal part discarded", "50.000,50", idFormat, 50, false},
-		{"no separators", "5000", idFormat, 5, false},
-		{"comma thousands, dot decimal", "50,000.00", AmountFormat{ThousandSep: ',', DecimalSep: '.'}, 50, false},
+		{"plain thousands", "50.000", idFormat, 50000, false},
+		{"currency prefix and label", "Rp50.000", idFormat, 50000, false},
+		{"decimal part discarded", "50.000,50", idFormat, 50000, false},
+		{"no separators", "5000", idFormat, 5000, false},
+		{"comma thousands, dot decimal", "50,000.00", AmountFormat{ThousandSep: ',', DecimalSep: '.'}, 50000, false},
 		{"no digits at all", "Rp", idFormat, 0, true},
-		{"sub-thousand amount rounds up", "1.903", idFormat, 2, false},
-		{"sub-thousand amount rounds down", "1.234", idFormat, 1, false},
-		{"tiny amount rounds to zero", "1", idFormat, 0, false},
+		{"sub-thousand amount preserved exactly", "1.903", idFormat, 1903, false},
+		{"another sub-thousand amount preserved exactly", "1.234", idFormat, 1234, false},
+		{"tiny amount preserved exactly", "1", idFormat, 1, false},
 	}
 
 	for _, tt := range tests {
@@ -64,8 +64,8 @@ func TestMatch(t *testing.T) {
 		if !ok {
 			t.Fatal("Match() ok = false, want true")
 		}
-		if got.AmountIdr != 50 || got.Merchant != "You paid Warung Kopi" {
-			t.Errorf("Match() = %+v, want amount=50 merchant=%q", got, "You paid Warung Kopi")
+		if got.AmountIdr != 50000 || got.Merchant != "You paid Warung Kopi" {
+			t.Errorf("Match() = %+v, want amount=50000 merchant=%q", got, "You paid Warung Kopi")
 		}
 	})
 
@@ -81,8 +81,8 @@ func TestMatch(t *testing.T) {
 		if !ok {
 			t.Fatal("Match() ok = false, want true")
 		}
-		if got.AmountIdr != 20 || got.Merchant != "" {
-			t.Errorf("Match() = %+v, want amount=20 merchant=\"\"", got)
+		if got.AmountIdr != 20000 || got.Merchant != "" {
+			t.Errorf("Match() = %+v, want amount=20000 merchant=\"\"", got)
 		}
 	})
 

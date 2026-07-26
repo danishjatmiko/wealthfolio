@@ -104,12 +104,12 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
         </select>
       </label>
       <label className="field">
-        Amount (rb Rp)
+        Amount (Rp)
         <input
           className="field-input mono"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder={isDebt ? '8800' : '4800'}
+          placeholder={isDebt ? '8800000' : '4800000'}
         />
       </label>
     </Modal>

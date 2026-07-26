@@ -37,9 +37,9 @@ type Category struct {
 
 // RateEntry mirrors the rate_entries table.
 //
-// NOTE on units: Antam/Kinghalim/Ubs are Rp-per-gram expressed in THOUSANDS
-// of IDR (matching the general *_idr unit convention). UsdIdr is the sole
-// exception in the schema: it is full IDR per 1 USD, not thousands.
+// NOTE on units: Antam/Kinghalim/Ubs are Rp-per-gram in full/raw IDR,
+// matching the general *_idr unit convention. UsdIdr is likewise full IDR
+// per 1 USD.
 type RateEntry struct {
 	ID        uuid.UUID `json:"id"`
 	UserID    uuid.UUID `json:"-"`
