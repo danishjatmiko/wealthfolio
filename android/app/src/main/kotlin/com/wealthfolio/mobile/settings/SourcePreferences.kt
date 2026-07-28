@@ -32,4 +32,11 @@ class SourcePreferences @Inject constructor(@ApplicationContext private val cont
     suspend fun setEnabled(source: String, enabled: Boolean) {
         context.sourcePrefsDataStore.edit { it[key(source)] = enabled }
     }
+
+    /** Called on logout — these toggles aren't scoped per-account, so
+     * without this a source enabled by one Google account would still
+     * read as enabled for whichever account logs in next on this device. */
+    suspend fun clearAll() {
+        context.sourcePrefsDataStore.edit { it.clear() }
+    }
 }

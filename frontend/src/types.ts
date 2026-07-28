@@ -161,6 +161,7 @@ export interface FixedExpense {
    * null for anything entered manually. Set once at creation, never
    * changed by a later edit. */
   source: string | null
+  notes: string | null
   created_at: string
   updated_at: string
 }
@@ -201,6 +202,7 @@ export interface FixedExpenseInput {
   name: string
   amount_idr: number
   envelope_id: string
+  notes?: string | null
 }
 
 export interface CreateExpensePeriodInput {

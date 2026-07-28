@@ -13,6 +13,7 @@ type fixedExpenseRequest struct {
 	Name       *string    `json:"name"`
 	AmountIdr  *int64     `json:"amount_idr"`
 	EnvelopeID *uuid.UUID `json:"envelope_id"`
+	Notes      *string    `json:"notes"`
 }
 
 func (req fixedExpenseRequest) toServiceRequest() service.FixedExpenseRequest {
@@ -28,7 +29,7 @@ func (req fixedExpenseRequest) toServiceRequest() service.FixedExpenseRequest {
 	if req.EnvelopeID != nil {
 		envelopeID = *req.EnvelopeID
 	}
-	return service.FixedExpenseRequest{Name: name, AmountIdr: amount, EnvelopeID: envelopeID}
+	return service.FixedExpenseRequest{Name: name, AmountIdr: amount, EnvelopeID: envelopeID, Notes: req.Notes}
 }
 
 func (h *Handler) createFixedExpense(w http.ResponseWriter, r *http.Request) {

@@ -28,6 +28,7 @@ type FixedExpenseRequest struct {
 	Name       string
 	AmountIdr  int64
 	EnvelopeID uuid.UUID
+	Notes      *string
 }
 
 func (r FixedExpenseRequest) validate() error {
@@ -70,6 +71,7 @@ func (s *FixedExpensesService) Create(ctx context.Context, userID, periodID uuid
 		EnvelopeID: req.EnvelopeID,
 		Name:       req.Name,
 		AmountIdr:  req.AmountIdr,
+		Notes:      req.Notes,
 	})
 }
 
@@ -86,7 +88,7 @@ func (s *FixedExpensesService) Update(ctx context.Context, userID, id uuid.UUID,
 	if err := s.checkEnvelopeBelongsToPeriod(ctx, userID, existing.PeriodID, req.EnvelopeID); err != nil {
 		return domain.FixedExpense{}, err
 	}
-	return s.repos.FixedExpenses.Update(ctx, userID, id, req.EnvelopeID, req.Name, req.AmountIdr)
+	return s.repos.FixedExpenses.Update(ctx, userID, id, req.EnvelopeID, req.Name, req.AmountIdr, req.Notes)
 }
 
 // Delete removes a fixed expense. Returns db.ErrNotFound if it doesn't

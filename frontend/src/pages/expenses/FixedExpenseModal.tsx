@@ -30,6 +30,7 @@ export function FixedExpenseModal({
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [envelopeId, setEnvelopeId] = useState('')
+  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (!open) return
@@ -37,10 +38,12 @@ export function FixedExpenseModal({
       setName(editingExpense.name)
       setAmount(String(editingExpense.amount_idr))
       setEnvelopeId(editingExpense.envelope_id)
+      setNotes(editingExpense.notes ?? '')
     } else {
       setName('')
       setAmount('')
       setEnvelopeId(defaultEnvelopeId ?? envelopes[0]?.id ?? '')
+      setNotes('')
     }
   }, [open, editingExpense, defaultEnvelopeId, envelopes])
 
@@ -57,6 +60,7 @@ export function FixedExpenseModal({
       name: name.trim(),
       amount_idr: Math.round(parseNumeric(amount)),
       envelope_id: envelopeId,
+      notes: notes.trim() || null,
     }
     try {
       if (editingExpense) {
@@ -138,6 +142,16 @@ export function FixedExpenseModal({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="3000000"
+        />
+      </label>
+      <label className="field">
+        Notes
+        <textarea
+          className="field-input"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Optional — any context you want to remember about this expense"
+          rows={3}
         />
       </label>
     </Modal>

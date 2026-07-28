@@ -147,6 +147,7 @@ type FixedExpense struct {
 	Name       string    `json:"name"`
 	AmountIdr  int64     `json:"amount_idr"`
 	Source     *string   `json:"source"`
+	Notes      *string   `json:"notes"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

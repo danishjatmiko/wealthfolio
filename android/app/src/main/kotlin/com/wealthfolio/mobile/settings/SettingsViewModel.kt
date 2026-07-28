@@ -9,6 +9,7 @@ import com.wealthfolio.mobile.network.ApiService
 import com.wealthfolio.mobile.network.dto.UpsertSourceMappingRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,36 +42,68 @@ class SettingsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
+    // Cancelled and relaunched on every isLoggedIn transition below —
+    // without this, this ViewModel (which MainShell's hiltViewModel()
+    // calls resolve up to MainActivity's own ViewModelStore, since there's
+    // no NavHost destination scoping it) would otherwise keep running the
+    // *first* login's collectors forever, silently showing that account's
+    // profile/mappings even after logging out and into a different one.
+    private var refreshJob: Job? = null
+
     init {
         viewModelScope.launch {
-            // Best-effort — a failed fetch just leaves the account card
-            // blank rather than blocking the notification-source UI, which
-            // is this screen's actual reason for existing.
-            try {
-                val user = api.me().body()
-                if (user != null) {
-                    _uiState.value = _uiState.value.copy(displayName = user.displayName, email = user.email)
+            authRepository.isLoggedIn.collect { loggedIn ->
+                refreshJob?.cancel()
+                if (!loggedIn) {
+                    _uiState.value = SettingsUiState()
+                    return@collect
                 }
-            } catch (_: Exception) {
+                // A fresh Job per login (including the very first one,
+                // since collect() immediately replays isLoggedIn's current
+                // value) — refreshProfile and refreshCatalogAndMappings
+                // both read whatever token is current at call time via
+                // AuthInterceptor, so this always fetches the
+                // just-logged-in account's own data, never a stale one.
+                refreshJob = viewModelScope.launch {
+                    launch { refreshProfile() }
+                    refreshCatalogAndMappings()
+                }
             }
         }
-        viewModelScope.launch {
-            // Best-effort — a source added server-side since the last
-            // MainActivity app-open sync should still show up when the
-            // user opens Settings; on failure we fall back to whatever's
-            // already cached in Room from a previous sync.
-            try {
-                catalogRepository.sync()
-            } catch (_: Exception) {
-            }
-            val apps = catalogRepository.listApps()
+    }
 
-            val enabledFlows = apps.map { sourcePreferences.isEnabled(it.source) }
-            combine(enabledFlows) { enabledValues -> enabledValues.toList() }
-                .collect { enabledValues ->
-                    refreshMappingsAndEnvelopes(apps, enabledValues)
-                }
+    /** Best-effort — a failed fetch just leaves the account card blank
+     * rather than blocking the notification-source UI, which is this
+     * screen's actual reason for existing. */
+    private suspend fun refreshProfile() {
+        try {
+            val user = api.me().body()
+            if (user != null) {
+                _uiState.value = _uiState.value.copy(displayName = user.displayName, email = user.email)
+            }
+        } catch (_: Exception) {
         }
+    }
+
+    /** Runs forever (until [refreshJob] is cancelled by the next login/
+     * logout) reacting to per-source toggle changes, same as before —
+     * only the "restart fresh on every login" wrapper around this is new. */
+    private suspend fun refreshCatalogAndMappings() {
+        // Best-effort — a source added server-side since the last
+        // MainActivity app-open sync should still show up when the user
+        // opens Settings; on failure we fall back to whatever's already
+        // cached in Room from a previous sync.
+        try {
+            catalogRepository.sync()
+        } catch (_: Exception) {
+        }
+        val apps = catalogRepository.listApps()
+
+        val enabledFlows = apps.map { sourcePreferences.isEnabled(it.source) }
+        combine(enabledFlows) { enabledValues -> enabledValues.toList() }
+            .collect { enabledValues ->
+                refreshMappingsAndEnvelopes(apps, enabledValues)
+            }
     }
 
     private suspend fun refreshMappingsAndEnvelopes(apps: List<NotificationAppEntity>, enabledValues: List<Boolean>) {

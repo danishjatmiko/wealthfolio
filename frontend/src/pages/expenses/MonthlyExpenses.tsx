@@ -175,6 +175,7 @@ export function MonthlyExpenses() {
                       <div className="expense-row-date">
                         {edited ? 'Updated' : 'Added'} {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
                       </div>
+                      {fe.notes && <div className="expense-row-notes">{fe.notes}</div>}
                     </div>
                     <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
                   </div>

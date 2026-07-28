@@ -1,8 +1,10 @@
 package com.wealthfolio.mobile.auth
 
 import com.wealthfolio.mobile.AppConfig
+import com.wealthfolio.mobile.data.outbox.OutboxRepository
 import com.wealthfolio.mobile.network.ApiService
 import com.wealthfolio.mobile.network.dto.LoginRequest
+import com.wealthfolio.mobile.settings.SourcePreferences
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,6 +21,8 @@ class NetworkException(cause: Throwable) : Exception(cause.message, cause)
 class AuthRepository @Inject constructor(
     private val api: ApiService,
     private val tokenStore: TokenStore,
+    private val outboxRepository: OutboxRepository,
+    private val sourcePreferences: SourcePreferences,
 ) {
     val isLoggedIn = tokenStore.isLoggedIn
 
@@ -68,5 +72,15 @@ class AuthRepository @Inject constructor(
             // expiry instead of immediately.
         }
         tokenStore.clear()
+
+        // Neither of these is scoped per-account, so without clearing them
+        // here they'd silently carry over to whichever account logs in
+        // next on this device. clearAll() wipes the Outbox unconditionally
+        // (not just resolved rows) — anything still PENDING/FAILED here
+        // was captured under the account that's logging out, and letting
+        // it sync later would submit it under the *next* account's token
+        // instead, a real cross-account data leak, not just a UI nit.
+        outboxRepository.clearAll()
+        sourcePreferences.clearAll()
     }
 }

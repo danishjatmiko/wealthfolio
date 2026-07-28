@@ -84,6 +84,14 @@
   color: var(--text-faint);
   margin-top: 2px;
 }
+.expense-row-notes {
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .expense-row-val {
   font-size: 14px;
   font-weight: 600;
