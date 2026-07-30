@@ -10,6 +10,7 @@ import { PassiveIncome } from './pages/passive/PassiveIncome'
 import { Targets } from './pages/targets/Targets'
 import { Progress } from './pages/progress/Progress'
 import { Rates } from './pages/rates/Rates'
+import { Simulation } from './pages/simulation/Simulation'
 
 function App() {
   const { user, isLoading } = useAuth()
@@ -38,6 +39,7 @@ function App() {
           <Route path="/targets" element={<Targets />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/rates" element={<Rates />} />
+          <Route path="/simulation" element={<Simulation />} />
         </Route>
       </Routes>
     </BrowserRouter>

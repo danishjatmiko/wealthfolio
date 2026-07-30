@@ -1,0 +1,204 @@
+.simulation-form-card {
+  margin-bottom: 14px;
+}
+
+.simulation-field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.simulation-starting-field {
+  grid-column: 1 / -1;
+}
+.simulation-field-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-faint);
+}
+.simulation-reset-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.simulation-range-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.simulation-range-track {
+  position: relative;
+  flex: 1;
+}
+.simulation-range-track input[type='range'] {
+  width: 100%;
+  display: block;
+  accent-color: var(--accent);
+}
+.simulation-range-value {
+  min-width: 42px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Value bubble that tracks the thumb (approximated by percent-of-track)
+   and fades in on hover/focus/drag — a plain range input gives no
+   feedback at all about its current value otherwise. */
+.simulation-range-tooltip {
+  position: absolute;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin-bottom: 12px;
+  background: #16130f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 5;
+}
+.simulation-range-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #16130f;
+}
+.simulation-range-track input[type='range']:hover + .simulation-range-tooltip,
+.simulation-range-track input[type='range']:focus + .simulation-range-tooltip,
+.simulation-range-track input[type='range']:active + .simulation-range-tooltip {
+  opacity: 1;
+}
+
+.simulation-warning {
+  border: 1px solid var(--red);
+  background: color-mix(in oklch, var(--red) 10%, transparent);
+  color: var(--red);
+  border-radius: var(--radius-card);
+  padding: 12px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.simulation-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.simulation-result-card {
+  padding: 16px 18px;
+}
+.simulation-result-card-hero {
+  background: var(--hero-grad);
+  color: #fff;
+}
+.simulation-result-card-hero .simulation-result-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+.simulation-result-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.simulation-result-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.simulation-chart-card {
+  padding: 22px 20px 14px;
+}
+
+.simulation-chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 11.5px;
+  color: var(--text-body-secondary);
+}
+.simulation-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.simulation-chart-legend-swatch {
+  width: 14px;
+  height: 0;
+  border-top-width: 2.5px;
+  border-top-style: solid;
+}
+.simulation-chart-legend-swatch-dashed {
+  border-top-style: dashed;
+}
+
+.simulation-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-left: 9.33%; /* aligns with the chart's left Y-axis gutter (56/600) */
+  padding-right: 9.33%; /* this chart also reserves a right-side axis gutter for the secondary series */
+}
+.simulation-label {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+/* LineChart.tsx renders these class names directly and expects the
+   consuming page to style them (see Progress.css for the same
+   duplication) — there's no shared stylesheet for the chart component
+   itself, so every page using LineChart repeats this block. */
+.line-chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #16130f;
+  color: #fff;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-tooltip);
+  z-index: 20;
+}
+.line-chart-tooltip-label {
+  color: var(--border);
+  margin-bottom: 2px;
+}
+.line-chart-tooltip-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.line-chart-tooltip-secondary {
+  color: var(--border);
+  font-weight: 500;
+  font-size: 11px;
+  margin-top: 1px;
+}
+.line-chart-tooltip-extra-row {
+  color: var(--border);
+  font-weight: 500;
+  font-size: 10.5px;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.line-chart-tooltip-extra-row .mono {
+  color: #fff;
+  font-weight: 600;
+}

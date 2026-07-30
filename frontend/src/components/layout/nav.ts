@@ -2,6 +2,12 @@ export interface NavItem {
   to: string
   label: string
   icon: string
+  /** Only ever shown in the desktop sidebar — never in the mobile bottom
+   * nav, and never at all inside the Android app's WebView regardless of
+   * its viewport width (see AppShell.tsx, which filters on both
+   * conditions). For a feature that isn't meant to be reachable from a
+   * phone at all, not just "not linked from the compact nav." */
+  desktopOnly?: boolean
 }
 
 // Passive Income and Targets are hidden from the nav for now (still fully
@@ -14,6 +20,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/expenses', label: 'Expenses', icon: '▦' },
   { to: '/progress', label: 'Progress', icon: '∿' },
   { to: '/rates', label: 'Rates', icon: '¤' },
+  { to: '/simulation', label: 'Simulation', icon: '↗', desktopOnly: true },
 ]
 
 export const PAGE_TITLES: Record<string, string> = {
@@ -25,4 +32,5 @@ export const PAGE_TITLES: Record<string, string> = {
   '/targets': 'Targets',
   '/progress': 'Progress',
   '/rates': 'Rates & Prices',
+  '/simulation': 'Growth Simulation',
 }

@@ -3,6 +3,7 @@
 
 # Local tool/editor config (not shared)
 .claude/
+.idea/
 
 # Env files with real secrets (only .env.example is committed)
 .env

@@ -1,11 +1,13 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react'
+import { useId, useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
 
 // Ported from the prototype's buildLine() (Portfolio App.dc.html ~line 690):
 // polyline + gradient area fill, last point marked, ~18% vertical padding.
 // Extended with a left Y-axis, a hover tooltip showing the point's value,
-// and an optional secondary series (dashed, own right-side axis) for
-// comparing two differently-scaled metrics — e.g. a Rupiah value against a
-// percentage — on the same timeline.
+// and an optional secondary series (dashed) for comparing two metrics on
+// the same timeline — either on its own right-side axis (two differently-
+// scaled metrics, e.g. Rupiah vs a percentage) or sharing the primary's
+// left axis (same unit, e.g. nominal vs inflation-adjusted Rupiah — see
+// `sharedScale`).
 export interface LinePoint {
   label: string
   value: number
@@ -23,6 +25,25 @@ interface LineChartProps {
   secondaryColor?: string
   secondaryFormatValue?: (v: number) => string
   secondaryAxisFormatValue?: (v: number) => string
+  /** When true, the secondary series is plotted against the SAME left
+   * axis as the primary (scaled from both series' combined range) instead
+   * of getting its own right-side axis — for when both series are the
+   * same unit and a second axis would just be visual noise. Ignored if
+   * there's no secondary series. */
+  sharedScale?: boolean
+  /** An extra value shown in the tooltip only — never drawn as a line,
+   * dot, or axis. For a related figure on a totally different scale (or
+   * that isn't really "continuous" in spirit, e.g. a per-year cost that's
+   * constant within a year and steps between years) where plotting it
+   * alongside the main series would just be visual noise or misleading.
+   * Snapped to the same point the tooltip's label snaps to — not
+   * interpolated like the plotted series are, since a stepped/bucketed
+   * value has nothing meaningful "between" two points. */
+  tooltipExtra?: {
+    label: string
+    series: LinePoint[] // must be the same length as `series`
+    formatValue: (v: number) => string
+  }
 }
 
 const DEFAULT_W = 600
@@ -30,15 +51,24 @@ const AXIS_W = 56
 const AXIS_W_RIGHT = 56
 const TICK_COUNT = 4
 
-function scaleFor(series: LinePoint[]) {
-  const vals = series.map((p) => p.value)
-  const min = Math.min(...vals)
-  const max = Math.max(...vals)
+function scaleFor(values: number[]) {
+  const min = Math.min(...values)
+  const max = Math.max(...values)
   const pad = (max - min) * 0.18 || 1
   // The axis never dips below zero — these charts track net worth/debt,
   // which don't read meaningfully as negative figures.
   const lo = Math.max(0, min - pad)
   return { lo, hi: max + pad }
+}
+
+/** Linear interpolation between series[i] and series[i+1] at fractional
+ * index `frac` — lets hovering "between" two points estimate a value
+ * rather than only ever snapping to an actual data point. */
+function interpolate(series: LinePoint[], frac: number): number {
+  const i0 = Math.floor(frac)
+  const i1 = Math.min(series.length - 1, i0 + 1)
+  const t = frac - i0
+  return series[i0].value + (series[i1].value - series[i0].value) * t
 }
 
 export function LineChart({
@@ -51,12 +81,15 @@ export function LineChart({
   secondaryColor = 'var(--text-muted)',
   secondaryFormatValue,
   secondaryAxisFormatValue = secondaryFormatValue,
+  sharedScale = false,
+  tooltipExtra,
 }: LineChartProps) {
   const rawId = useId()
   const gradientId = `grad-${rawId.replace(/[^a-zA-Z0-9]/g, '')}`
   const H = height
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+  const [hoverFrac, setHoverFrac] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
   const [W, setW] = useState(DEFAULT_W)
 
   // The SVG's viewBox is kept 1:1 with the actual rendered pixel width so
@@ -83,10 +116,14 @@ export function LineChart({
   }
 
   const hasSecondary = !!secondarySeries && secondarySeries.length === series.length
-  const { lo, hi } = scaleFor(series)
+  const showRightAxis = hasSecondary && !sharedScale
+  const { lo, hi } =
+    hasSecondary && sharedScale && secondarySeries
+      ? scaleFor([...series, ...secondarySeries].map((p) => p.value))
+      : scaleFor(series.map((p) => p.value))
 
   const plotX0 = AXIS_W
-  const plotW = W - AXIS_W - (hasSecondary ? AXIS_W_RIGHT : 0)
+  const plotW = W - AXIS_W - (showRightAxis ? AXIS_W_RIGHT : 0)
   const X = (i: number) => plotX0 + (series.length > 1 ? (i / (series.length - 1)) * plotW : 0)
   const Y = (v: number) => H - ((v - lo) / (hi - lo)) * H
 
@@ -99,26 +136,70 @@ export function LineChart({
   let sPts: [number, number][] = []
   let sLinePoints = ''
   let sTicks: number[] = []
-  let sLo = 0
-  let sHi = 0
+  let sLo = lo
+  let sHi = hi
   if (hasSecondary && secondarySeries) {
-    const scale = scaleFor(secondarySeries)
-    sLo = scale.lo
-    sHi = scale.hi
-    const Y2 = (v: number) => H - ((v - sLo) / (sHi - sLo)) * H
+    if (showRightAxis) {
+      const scale = scaleFor(secondarySeries.map((p) => p.value))
+      sLo = scale.lo
+      sHi = scale.hi
+    }
+    const Y2 = showRightAxis ? (v: number) => H - ((v - sLo) / (sHi - sLo)) * H : Y
     sPts = secondarySeries.map((p, i): [number, number] => [X(i), Y2(p.value)])
     sLinePoints = sPts.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')
-    sTicks = Array.from({ length: TICK_COUNT }, (_, i) => sLo + (sHi - sLo) * (i / (TICK_COUNT - 1)))
+    if (showRightAxis) {
+      sTicks = Array.from({ length: TICK_COUNT }, (_, i) => sLo + (sHi - sLo) * (i / (TICK_COUNT - 1)))
+    }
   }
 
-  const hovered = hoverIndex !== null ? { point: series[hoverIndex], xy: pts[hoverIndex] } : null
-  const hoveredSecondary = hoverIndex !== null && hasSecondary && secondarySeries ? secondarySeries[hoverIndex] : null
-  const tooltipLeftPct = hovered ? (hovered.xy[0] / W) * 100 : 0
-  const tooltipAbove = hovered ? hovered.xy[1] > 40 : false
+  // Continuous hover: track the mouse across the ENTIRE plot area rather
+  // than only within a small hit-circle right on top of each data point —
+  // sparse data (e.g. yearly points across a wide chart) otherwise leaves
+  // most of the chart with no hover response at all. The fractional index
+  // this resolves to is also used to *interpolate* a value between the two
+  // bracketing points, so the tooltip reads as a smooth estimate while
+  // sweeping across, not just snapping from dot to dot.
+  function handlePointerMove(e: PointerEvent<SVGRectElement>) {
+    const svg = svgRef.current
+    if (!svg) return
+    const rect = svg.getBoundingClientRect()
+    const svgX = ((e.clientX - rect.left) / rect.width) * W
+    const clampedX = Math.max(plotX0, Math.min(plotX0 + plotW, svgX))
+    const frac = series.length > 1 ? ((clampedX - plotX0) / plotW) * (series.length - 1) : 0
+    setHoverFrac(frac)
+  }
+
+  const hovered =
+    hoverFrac !== null
+      ? (() => {
+          // The tooltip's label is categorical ("Year 7"), so it snaps to
+          // whichever point the cursor is currently closer to rather than
+          // trying to express a fractional label — tooltipExtra snaps the
+          // same way, for the same reason.
+          const snappedIndex = Math.min(series.length - 1, Math.round(hoverFrac))
+          return {
+            x: X(hoverFrac),
+            value: interpolate(series, hoverFrac),
+            secondaryValue: hasSecondary && secondarySeries ? interpolate(secondarySeries, hoverFrac) : null,
+            label: series[snappedIndex].label,
+            extraValue: tooltipExtra ? tooltipExtra.series[snappedIndex].value : null,
+          }
+        })()
+      : null
+  const hoveredY = hovered ? Y(hovered.value) : 0
+  const hoveredSecondaryY =
+    hovered && hovered.secondaryValue !== null
+      ? showRightAxis
+        ? H - ((hovered.secondaryValue - sLo) / (sHi - sLo)) * H
+        : Y(hovered.secondaryValue)
+      : 0
+  const tooltipLeftPct = hovered ? (hovered.x / W) * 100 : 0
+  const tooltipAbove = hovered ? hoveredY > 40 : false
 
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%', height: H }}>
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
         width={W}
         height={H}
@@ -146,7 +227,7 @@ export function LineChart({
           </text>
         ))}
 
-        {hasSecondary &&
+        {showRightAxis &&
           secondaryAxisFormatValue &&
           sTicks.map((t, i) => (
             <text
@@ -188,9 +269,9 @@ export function LineChart({
 
         {hovered && (
           <line
-            x1={hovered.xy[0]}
+            x1={hovered.x}
             y1={0}
-            x2={hovered.xy[0]}
+            x2={hovered.x}
             y2={H}
             stroke={color}
             strokeOpacity={0.25}
@@ -204,7 +285,7 @@ export function LineChart({
             key={i}
             cx={p[0]}
             cy={p[1]}
-            r={i === hoverIndex ? 5.5 : i === pts.length - 1 ? 4.5 : 0}
+            r={i === pts.length - 1 ? 4.5 : 0}
             fill={color}
             stroke="#fff"
             strokeWidth={2}
@@ -217,25 +298,33 @@ export function LineChart({
               key={`s-${i}`}
               cx={p[0]}
               cy={p[1]}
-              r={i === hoverIndex ? 5 : i === sPts.length - 1 ? 4 : 0}
+              r={i === sPts.length - 1 ? 4 : 0}
               fill={secondaryColor}
               stroke="#fff"
               strokeWidth={2}
             />
           ))}
 
-        {/* Invisible wider hit-targets for hover, drawn last so they're on top. */}
-        {pts.map((p, i) => (
-          <circle
-            key={`hit-${i}`}
-            cx={p[0]}
-            cy={p[1]}
-            r={14}
-            fill="transparent"
-            onMouseEnter={() => setHoverIndex(i)}
-            onMouseLeave={() => setHoverIndex((cur) => (cur === i ? null : cur))}
-          />
-        ))}
+        {/* The moving "current estimate" marker(s), at the exact
+            (possibly interpolated) hover position rather than snapped to
+            a data point. */}
+        {hovered && <circle cx={hovered.x} cy={hoveredY} r={5.5} fill={color} stroke="#fff" strokeWidth={2} />}
+        {hovered && hovered.secondaryValue !== null && (
+          <circle cx={hovered.x} cy={hoveredSecondaryY} r={5} fill={secondaryColor} stroke="#fff" strokeWidth={2} />
+        )}
+
+        {/* One large transparent hit-area covering the whole plot, drawn
+            last so it's on top — this is what makes hovering work
+            anywhere across the chart, not just precisely on a dot. */}
+        <rect
+          x={plotX0}
+          y={0}
+          width={plotW}
+          height={H}
+          fill="transparent"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={() => setHoverFrac(null)}
+        />
       </svg>
 
       {hovered && (
@@ -243,15 +332,20 @@ export function LineChart({
           className="line-chart-tooltip"
           style={{
             left: `${tooltipLeftPct}%`,
-            top: tooltipAbove ? hovered.xy[1] - 10 : hovered.xy[1] + 10,
+            top: tooltipAbove ? hoveredY - 10 : hoveredY + 10,
             transform: `translate(-50%, ${tooltipAbove ? '-100%' : '0'})`,
           }}
         >
-          <div className="line-chart-tooltip-label">{hovered.point.label}</div>
-          <div className="line-chart-tooltip-value mono">{formatValue(hovered.point.value)}</div>
-          {hoveredSecondary && secondaryFormatValue && (
+          <div className="line-chart-tooltip-label">{hovered.label}</div>
+          <div className="line-chart-tooltip-value mono">{formatValue(hovered.value)}</div>
+          {hovered.secondaryValue !== null && secondaryFormatValue && (
             <div className="line-chart-tooltip-value mono line-chart-tooltip-secondary">
-              {secondaryFormatValue(hoveredSecondary.value)}
+              {secondaryFormatValue(hovered.secondaryValue)}
+            </div>
+          )}
+          {hovered.extraValue !== null && tooltipExtra && (
+            <div className="line-chart-tooltip-extra-row">
+              {tooltipExtra.label}: <span className="mono">{tooltipExtra.formatValue(hovered.extraValue)}</span>
             </div>
           )}
         </div>

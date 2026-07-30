@@ -33,6 +33,18 @@ export function AppShell() {
     queryClient.refetchQueries({ type: 'active' }),
   )
 
+  // desktopOnly nav items (e.g. Simulation) never appear in the bottom nav
+  // at all — that alone is enough on the web, since the sidebar that DOES
+  // list them is already display:none below the mobile breakpoint. Inside
+  // the Android app's WebView, though, a wide-enough viewport (a tablet)
+  // could still render the sidebar, so those items are additionally
+  // stripped from the sidebar itself whenever window.WealthfolioNative is
+  // present — "desktop only" and "never inside the app" are two separate
+  // conditions, not the same one.
+  const isNativeApp = !!window.WealthfolioNative
+  const sidebarNavItems = NAV_ITEMS.filter((item) => !(item.desktopOnly && isNativeApp))
+  const bottomNavItems = NAV_ITEMS.filter((item) => !item.desktopOnly)
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -41,7 +53,7 @@ export function AppShell() {
           <div className="brand-name">Etherna</div>
         </div>
         <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => (
+          {sidebarNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -169,7 +181,7 @@ export function AppShell() {
         </main>
 
         <nav className="bottom-nav">
-          {NAV_ITEMS.map((item) => (
+          {bottomNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
