@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -52,6 +53,13 @@ func debtWriteFromRequest(debtSnapshotID uuid.UUID, req DebtEntryRequest) db.Deb
 // Create adds a new debt entry to the debt snapshot on the given date.
 // Returns db.ErrNotFound if there's no debt snapshot on that date,
 // ErrSnapshotLocked if that snapshot isn't the latest.
+//
+// A receivable (direction="owed_to_me") is itself an asset from the user's
+// side, so it's also mirrored onto the Assets page as a "Piutang" holding
+// in the current latest asset snapshot — a one-way copy taken here, at
+// creation time only. It is not a live sync: editing or deleting the debt
+// entry afterward, or copying it forward into a new debt snapshot, never
+// touches the mirrored holding again.
 func (s *DebtEntriesService) Create(ctx context.Context, userID uuid.UUID, date domain.Date, req DebtEntryRequest) (domain.DebtEntry, error) {
 	if err := req.validate(); err != nil {
 		return domain.DebtEntry{}, err
@@ -70,7 +78,47 @@ func (s *DebtEntriesService) Create(ctx context.Context, userID uuid.UUID, date 
 		return domain.DebtEntry{}, ErrSnapshotLocked
 	}
 
-	return s.CreateUnlocked(ctx, snap.ID, req)
+	entry, err := s.CreateUnlocked(ctx, snap.ID, req)
+	if err != nil {
+		return domain.DebtEntry{}, err
+	}
+
+	if req.Direction == "owed_to_me" {
+		if err := s.mirrorReceivableToAssets(ctx, userID, req); err != nil {
+			return domain.DebtEntry{}, err
+		}
+	}
+
+	return entry, nil
+}
+
+// mirrorReceivableToAssets copies a new receivable onto the Assets page as
+// a plain "Piutang" holding. A no-op (not an error) if the user has no
+// asset snapshot yet — there's nowhere to put it until they create one.
+func (s *DebtEntriesService) mirrorReceivableToAssets(ctx context.Context, userID uuid.UUID, req DebtEntryRequest) error {
+	assetSnap, err := s.repos.Snapshots.GetLatest(ctx, userID)
+	if err != nil {
+		if errors.Is(err, db.ErrNotFound) {
+			return nil
+		}
+		return err
+	}
+
+	category, err := s.repos.Categories.GetByKey(ctx, "piutang")
+	if err != nil {
+		return err
+	}
+
+	_, err = s.repos.Holdings.Create(ctx, db.HoldingWrite{
+		SnapshotID:    assetSnap.ID,
+		CategoryID:    category.ID,
+		CategoryKey:   category.Key,
+		CategoryLabel: category.Label,
+		Name:          req.Name,
+		ValueIdr:      req.ValueIdr,
+		IsLiability:   false,
+	})
+	return err
 }
 
 // CreateUnlocked adds a debt entry directly to the given debt snapshot with
