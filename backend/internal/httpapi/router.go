@@ -113,6 +113,13 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Post("/notification-apps/{source}/patterns", h.createNotificationPattern)
 			r.Put("/notification-patterns/{id}", h.updateNotificationPattern)
 
+			r.Get("/bond-purchases", h.listBondPurchases)
+			r.Get("/bond-purchases/summary", h.getBondPurchasesSummary)
+			r.Get("/bond-purchases/coupon-calendar", h.getCouponCalendar)
+			r.Post("/bond-purchases", h.createBondPurchase)
+			r.Put("/bond-purchases/{id}", h.updateBondPurchase)
+			r.Delete("/bond-purchases/{id}", h.deleteBondPurchase)
+
 			r.Get("/passive-income", h.listPassiveIncome)
 			r.Post("/passive-income", h.createPassiveIncome)
 			r.Put("/passive-income/{id}", h.updatePassiveIncome)

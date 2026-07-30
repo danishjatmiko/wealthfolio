@@ -39,6 +39,22 @@ func (r *CategoriesRepo) List(ctx context.Context) ([]domain.Category, error) {
 	return out, rows.Err()
 }
 
+// GetByKey looks up a single category by its stable seeded key (e.g.
+// "bonds_usd"). Returns ErrNotFound if the key doesn't exist. Preferred
+// over GetByID anywhere Go needs a specific category, since the key is part
+// of the seed contract while the smallserial id is not.
+func (r *CategoriesRepo) GetByKey(ctx context.Context, key string) (domain.Category, error) {
+	var c domain.Category
+	err := r.pool.QueryRow(ctx, `
+		SELECT id, key, label, color_oklch, kind, price_linked, sort_order
+		FROM categories WHERE key = $1`, key).
+		Scan(&c.ID, &c.Key, &c.Label, &c.ColorOKLCH, &c.Kind, &c.PriceLinked, &c.SortOrder)
+	if err != nil {
+		return domain.Category{}, wrapNotFound(err)
+	}
+	return c, nil
+}
+
 // GetByID looks up a single category. Returns ErrNotFound if id doesn't exist.
 func (r *CategoriesRepo) GetByID(ctx context.Context, id int16) (domain.Category, error) {
 	var c domain.Category

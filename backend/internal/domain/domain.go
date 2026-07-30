@@ -111,6 +111,32 @@ type PassiveIncomeSource struct {
 	PerYearIdr    int64     `json:"per_year_idr"`
 }
 
+// BondPurchase mirrors the bond_purchases table: one USD bond bought on
+// one date at one price. A pure column mirror — total paid, IDR cost,
+// coupon size and pay dates are all derived at read time (see
+// service/bondcalc.go), never stored, so an edit can't leave them stale.
+//
+// NOTE on units: InterestRate is a PERCENT (5.69 means 5.69%). PriceUsd is
+// the aggregate price for the whole lot, not per unit — $1,608.00 for
+// Quantity 2 at FaceValueUsd 1000 is a price of 80.4% of par.
+// UsdIdrAtPurchase is full IDR per 1 USD, same unit as RateEntry.UsdIdr.
+type BondPurchase struct {
+	ID                 uuid.UUID `json:"id"`
+	UserID             uuid.UUID `json:"-"`
+	BondName           string    `json:"bond_name"`
+	Platform           string    `json:"platform"`
+	InterestRate       float64   `json:"interest_rate"`
+	BuyDate            Date      `json:"buy_date"`
+	MaturityDate       Date      `json:"maturity_date"`
+	Quantity           float64   `json:"quantity"`
+	FaceValueUsd       float64   `json:"face_value_usd"`
+	PriceUsd           float64   `json:"price_usd"`
+	AccruedInterestUsd float64   `json:"accrued_interest_usd"`
+	UsdIdrAtPurchase   float64   `json:"usd_idr_at_purchase"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
 // ExpensePeriod mirrors the expense_periods table: a custom pay-cycle
 // window (25th of one month through the 24th of the next) rather than a
 // calendar month. Never locks — every period stays editable indefinitely.

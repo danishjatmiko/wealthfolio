@@ -16,6 +16,7 @@ type Services struct {
 	ExpensePeriods  *ExpensePeriodsService
 	BudgetEnvelopes *BudgetEnvelopesService
 	FixedExpenses   *FixedExpensesService
+	BondPurchases   *BondPurchasesService
 	Dashboard       *DashboardService
 	Progress        *ProgressService
 	Targets         *TargetsService
@@ -30,6 +31,7 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 	holdings := NewHoldingsService(repos)
 	debtEntries := NewDebtEntriesService(repos)
 	notificationCatalog := NewNotificationCatalogService(repos)
+	bonds := NewBondPurchasesService(repos)
 	return &Services{
 		Auth:            NewAuthService(repos, cfg),
 		Holdings:        holdings,
@@ -39,6 +41,7 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 		ExpensePeriods:  NewExpensePeriodsService(repos),
 		BudgetEnvelopes: NewBudgetEnvelopesService(repos),
 		FixedExpenses:   NewFixedExpensesService(repos),
+		BondPurchases:   bonds,
 		Dashboard:       NewDashboardService(repos),
 		Progress:        NewProgressService(repos),
 		Targets:         NewTargetsService(repos),

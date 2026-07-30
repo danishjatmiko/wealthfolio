@@ -172,3 +172,19 @@ func (r *HoldingsRepo) Delete(ctx context.Context, userID, id uuid.UUID) error {
 	}
 	return nil
 }
+
+// DeleteByCategory removes every holding of one category from one snapshot,
+// returning how many rows went. Used by the bond-ledger sync, which clears
+// the snapshot's bonds before rebuilding them. Unlike Delete this is a bulk
+// clear, so matching nothing is a legitimate outcome (0, nil) rather than
+// ErrNotFound.
+func (r *HoldingsRepo) DeleteByCategory(ctx context.Context, userID, snapshotID uuid.UUID, categoryID int16) (int64, error) {
+	tag, err := r.pool.Exec(ctx, `
+		DELETE FROM holdings
+		WHERE snapshot_id = $1 AND category_id = $2
+			AND snapshot_id IN (SELECT id FROM snapshots WHERE user_id = $3)`, snapshotID, categoryID, userID)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
+}
