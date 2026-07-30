@@ -114,6 +114,7 @@ export const api = {
     create: (input: { snapshot_date: string; copy_from_latest: boolean }) =>
       post<Snapshot>('/snapshots', input),
     remove: (id: string) => del<void>(`/snapshots/${id}`),
+    syncBonds: (date: string) => post<Snapshot>(`/snapshots/${date}/sync-bonds`, {}),
   },
   holdings: {
     create: (date: string, input: HoldingInput) =>

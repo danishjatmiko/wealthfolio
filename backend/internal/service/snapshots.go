@@ -128,6 +128,76 @@ func holdingRequestFromHolding(h domain.Holding) HoldingRequest {
 	}
 }
 
+// bondHoldingRequests turns the bond ledger into one holding request per
+// bond name, as of the given date. Returns the bonds_usd category alongside
+// them so callers can identify existing bond rows without a second lookup.
+//
+// Only purchases already bought and not yet matured count: a matured bond
+// has returned its principal and is no longer a position. value_idr is left
+// nil so ComputeHoldingValue derives it from usd_value at the latest rate,
+// exactly like a hand-entered bond row.
+func (s *SnapshotsService) bondHoldingRequests(ctx context.Context, userID uuid.UUID, asOf domain.Date) (domain.Category, []HoldingRequest, error) {
+	bondCat, err := s.repos.Categories.GetByKey(ctx, "bonds_usd")
+	if err != nil {
+		return domain.Category{}, nil, err
+	}
+	active, err := s.repos.BondPurchases.ListActiveAsOf(ctx, userID, asOf)
+	if err != nil {
+		return domain.Category{}, nil, err
+	}
+
+	summaries := summarizeByName(active, asOf.Time)
+	reqs := make([]HoldingRequest, 0, len(summaries))
+	for _, sum := range summaries {
+		usd := sum.TotalUsd
+		name := sum.BondName
+		reqs = append(reqs, HoldingRequest{
+			CategoryID: bondCat.ID,
+			Name:       name,
+			UsdValue:   &usd,
+		})
+	}
+	return bondCat, reqs, nil
+}
+
+// SyncBonds rebuilds the snapshot's bonds_usd holdings from the ledger,
+// replacing whatever is there. Restricted to the latest snapshot: past
+// snapshots are frozen history and must not be rewritten from today's
+// ledger.
+//
+// Destructive by design — every existing bonds_usd row in the snapshot goes,
+// including a hand-typed one, which is why the UI confirms with counts
+// first. Not wrapped in a transaction (consistent with Create's
+// copy-forward); a partial failure is recoverable by running it again.
+func (s *SnapshotsService) SyncBonds(ctx context.Context, userID uuid.UUID, date domain.Date) (SnapshotDetail, error) {
+	snap, err := s.repos.Snapshots.GetByDate(ctx, userID, date)
+	if err != nil {
+		return SnapshotDetail{}, err
+	}
+	latest, err := s.repos.Snapshots.GetLatest(ctx, userID)
+	if err != nil {
+		return SnapshotDetail{}, err
+	}
+	if snap.ID != latest.ID {
+		return SnapshotDetail{}, ErrSnapshotLocked
+	}
+
+	bondCat, reqs, err := s.bondHoldingRequests(ctx, userID, date)
+	if err != nil {
+		return SnapshotDetail{}, err
+	}
+	if _, err := s.repos.Holdings.DeleteByCategory(ctx, userID, snap.ID, bondCat.ID); err != nil {
+		return SnapshotDetail{}, err
+	}
+	for _, req := range reqs {
+		if _, err := s.holdings.CreateUnlocked(ctx, userID, snap.ID, req); err != nil {
+			return SnapshotDetail{}, err
+		}
+	}
+
+	return s.detailFromSnapshot(ctx, userID, snap)
+}
+
 // Create makes a new snapshot for the user on the given date. The date must
 // be today or later (ErrSnapshotDateInPast otherwise) and not already used
 // by an existing snapshot. "Latest"/editable status is always derived
@@ -165,15 +235,35 @@ func (s *SnapshotsService) Create(ctx context.Context, userID uuid.UUID, date do
 		return SnapshotDetail{}, err
 	}
 
+	// The bond ledger, not the previous snapshot, is the source of truth for
+	// bonds — but only once it has something in it. With an empty ledger
+	// this whole branch is inert and copy-forward behaves exactly as it
+	// always did, so a user with a hand-typed bond row can't silently lose
+	// it just because the feature shipped.
+	bondCat, bondReqs, err := s.bondHoldingRequests(ctx, userID, date)
+	if err != nil {
+		return SnapshotDetail{}, err
+	}
+	ledgerOwnsBonds := len(bondReqs) > 0
+
 	if copyFromLatest && hasLatest {
 		sourceHoldings, err := s.repos.Holdings.ListBySnapshot(ctx, latest.ID)
 		if err != nil {
 			return SnapshotDetail{}, err
 		}
 		for _, h := range sourceHoldings {
+			if ledgerOwnsBonds && h.CategoryID == bondCat.ID {
+				continue
+			}
 			if _, err := s.holdings.CreateUnlocked(ctx, userID, newSnap.ID, holdingRequestFromHolding(h)); err != nil {
 				return SnapshotDetail{}, err
 			}
+		}
+	}
+
+	for _, req := range bondReqs {
+		if _, err := s.holdings.CreateUnlocked(ctx, userID, newSnap.ID, req); err != nil {
+			return SnapshotDetail{}, err
 		}
 	}
 

@@ -15,10 +15,11 @@ import (
 // snapshot plus current debts/passive-income/targets.
 type DashboardService struct {
 	repos *db.Repos
+	bonds *BondPurchasesService
 }
 
-func NewDashboardService(repos *db.Repos) *DashboardService {
-	return &DashboardService{repos: repos}
+func NewDashboardService(repos *db.Repos, bonds *BondPurchasesService) *DashboardService {
+	return &DashboardService{repos: repos, bonds: bonds}
 }
 
 // CategoryBreakdown is one entry of equity.by_category / allocation.
@@ -118,10 +119,19 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	}
 
 	// Passive income and its target exist independently of snapshots.
+	// Bond coupons count alongside hand-entered sources — TargetsService
+	// adds the same summand for metric_type "passive_income", so the two
+	// pages always report the same figure.
 	perYear, err := s.repos.PassiveIncome.Sum(ctx, userID)
 	if err != nil {
 		return out, err
 	}
+	coupons, err := s.bonds.CouponPerYearIdr(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+	perYear += coupons
+
 	targetPerYear, _, err := s.repos.Targets.FirstTargetValueByMetricType(ctx, userID, "passive_income")
 	if err != nil {
 		return out, err
@@ -131,6 +141,13 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	passiveUpdatedAt, err := s.repos.PassiveIncome.MaxUpdatedAt(ctx, userID)
 	if err != nil {
 		return out, err
+	}
+	bondsUpdatedAt, err := s.repos.BondPurchases.MaxUpdatedAt(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+	if bondsUpdatedAt != nil && (passiveUpdatedAt == nil || bondsUpdatedAt.Time.After(passiveUpdatedAt.Time)) {
+		passiveUpdatedAt = bondsUpdatedAt
 	}
 
 	out.Passive = PassiveDTO{

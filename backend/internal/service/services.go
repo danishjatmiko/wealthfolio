@@ -42,9 +42,9 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 		BudgetEnvelopes: NewBudgetEnvelopesService(repos),
 		FixedExpenses:   NewFixedExpensesService(repos),
 		BondPurchases:   bonds,
-		Dashboard:       NewDashboardService(repos),
+		Dashboard:       NewDashboardService(repos, bonds),
 		Progress:        NewProgressService(repos),
-		Targets:         NewTargetsService(repos),
+		Targets:         NewTargetsService(repos, bonds),
 
 		ExpenseSourceMappings: NewExpenseSourceMappingsService(repos),
 		ExpenseIngestion:      NewExpenseIngestionService(repos, notificationCatalog),

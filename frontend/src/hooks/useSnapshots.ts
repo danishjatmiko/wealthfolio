@@ -37,6 +37,23 @@ export function useCreateSnapshot() {
   })
 }
 
+/** Rebuilds the latest snapshot's Bonds USD holdings from the purchase
+ *  ledger. Same invalidation fan-out as a holdings write, since that's
+ *  effectively what it is. */
+export function useSyncSnapshotBonds() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (date: string) => api.snapshots.syncBonds(date),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['snapshot'], refetchType: 'all' })
+      qc.invalidateQueries({ queryKey: ['snapshots'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+      qc.invalidateQueries({ queryKey: ['progress'] })
+      qc.invalidateQueries({ queryKey: ['targets'] })
+    },
+  })
+}
+
 export function useDeleteSnapshot() {
   const qc = useQueryClient()
   return useMutation({

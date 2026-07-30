@@ -70,6 +70,7 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Get("/snapshots/{date}", h.getSnapshotByDate)
 			r.Get("/snapshots/{date}/holdings", h.listHoldingsForDate)
 			r.Post("/snapshots/{date}/holdings", h.createHolding)
+			r.Post("/snapshots/{date}/sync-bonds", h.syncSnapshotBonds)
 			r.Delete("/snapshots/{id}", h.deleteSnapshot)
 
 			r.Put("/holdings/{id}", h.updateHolding)

@@ -133,3 +133,25 @@ func (h *Handler) listHoldingsForDate(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, holdings)
 }
+
+// syncSnapshotBonds rebuilds the snapshot's Bonds USD holdings from the
+// user's purchase ledger. Latest snapshot only — anything older is frozen
+// history and comes back 409.
+func (h *Handler) syncSnapshotBonds(w http.ResponseWriter, r *http.Request) {
+	date, err := parseDateParam(r)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	userID := currentUserID(r.Context())
+	detail, err := h.svc.Snapshots.SyncBonds(r.Context(), userID, date)
+	if err != nil {
+		if errors.Is(err, db.ErrNotFound) {
+			writeError(w, http.StatusNotFound, "snapshot not found")
+			return
+		}
+		handleServiceError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, detail)
+}

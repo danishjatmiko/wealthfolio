@@ -118,7 +118,7 @@ wealth_management/
 │   │   └── httpapi/             # chi router, handlers, middleware (see §4.6)
 │   └── migrations/
 │       ├── embed.go            # //go:embed *.sql
-│       └── 00001..00018_*.sql  # see §4.7
+│       └── 00001..00019_*.sql  # see §4.7
 └── frontend/
     ├── index.html / package.json / vite.config.ts / Dockerfile / Caddyfile
     └── src/
@@ -203,6 +203,7 @@ Module path `wealthfolio/backend`, Go 1.25. Key deps: `chi/v5` + `go-chi/cors`, 
 | `DebtSnapshot` | `debt_snapshots` | `SnapshotDate` |
 | `DebtEntry` | `debt_entries` | `Name`, `Type`, `ValueIdr`, `Direction` (i_owe / owed_to_me) |
 | `PassiveIncomeSource` | `passive_income_sources` (+ `categories` join) | `CategoryKey`, `CategoryLabel`, `Name`, `PerYearIdr` |
+| `BondPurchase` | `bond_purchases` | `BondName`, `Platform`, `InterestRate` (percent), `BuyDate`, `MaturityDate`, `Quantity`, `FaceValueUsd`, `PriceUsd` (whole lot), `AccruedInterestUsd`, `UsdIdrAtPurchase` — a pure column mirror; totals/coupons/pay-dates are derived in `service/bondcalc.go` |
 | `ExpensePeriod` | `expense_periods` | `StartDate`, `EndDate` |
 | `BudgetEnvelope` | `budget_envelopes` | `PeriodID`, `Name`, `CommittedAmountIdr` |
 | `FixedExpense` | `fixed_expenses` | `PeriodID`, `EnvelopeID`, `Name`, `AmountIdr`, `Source *string` (nil unless notification-created), `Notes *string` |
@@ -369,6 +370,7 @@ Located in `backend/migrations/`, embedded via `//go:embed *.sql`, run automatic
 | 00016 | `seed_gopay_using_pattern.sql` | Adds a third GoPay template (payment via a linked funding source) |
 | 00017 | `fixed_expense_source.sql` | Adds nullable, write-once `source` column to `fixed_expenses` |
 | 00018 | `fixed_expense_notes.sql` | Adds nullable, manual-entry-only `notes` column to `fixed_expenses` |
+| 00019 | `bond_purchases.sql` | `bond_purchases` — the permanent, user-scoped ledger of individual USD bond buys that Assets' Bonds USD rows are now derived from |
 
 ---
 
@@ -454,6 +456,22 @@ passive_income_sources
   category_id smallint FK → categories
   name text
   per_year_idr bigint     -- full/raw IDR per year
+
+bond_purchases            -- permanent ledger; never copies forward, never locks
+  id uuid PK
+  user_id uuid FK → users
+  bond_name text            -- the grouping key for every rollup
+  platform text             -- free text (OCBC / MyBCA / Mandiri / …)
+  interest_rate numeric(6,4)   -- PERCENT: 5.69 means 5.69%
+  buy_date date
+  maturity_date date        -- anchors the two semiannual coupon dates
+  quantity numeric(14,3)
+  face_value_usd numeric(14,2) -- per lot, $1000 by default
+  price_usd numeric(14,2)      -- clean price for the WHOLE lot, not per unit
+  accrued_interest_usd numeric(14,2)
+  usd_idr_at_purchase numeric(14,2)  -- frozen; the rate actually paid
+  created_at / updated_at timestamptz
+  INDEX (user_id, bond_name)
 
 expense_periods
   id uuid PK
@@ -629,6 +647,19 @@ POST /notification-apps/{source}/patterns
 ```
 The regex must contain a named `amount` group; a named `merchant` group is optional, but if present in the regex it must also capture non-empty text for that pattern to count as a match. `priority` auto-assigns to `max(existing)+10` when omitted.
 
+### Bond Purchases
+
+```json
+POST /bond-purchases
+{ "bond_name": "INDON36NEWNEW", "platform": "OCBC", "interest_rate": 5.69,
+  "buy_date": "2026-05-22", "maturity_date": "2036-05-29",
+  "quantity": 1, "face_value_usd": 1000, "price_usd": 1014.50,
+  "accrued_interest_usd": 0.47, "usd_idr_at_purchase": 17690 }
+```
+`interest_rate` is a percent; `price_usd` is the clean price for the whole lot. Responses add derived `total_usd`, `total_idr`, `coupon_per_cycle_usd`, `price_pct`, `coupon_months`, `coupon_day`, `is_matured`.
+
+`GET /bond-purchases/summary` rolls purchases up per `bond_name` (nesting the purchases behind each) plus portfolio totals and the blended `average_usd_idr`. `GET /bond-purchases/coupon-calendar?year=2026` returns exactly 12 month buckets — zero months included, since the UI still needs a row for them — each with a `color_oklch` slice colour and the exact-dated `entries[]` behind it, alongside the manual passive-income totals for a combined figure. `POST /snapshots/{date}/sync-bonds` rebuilds that snapshot's Bonds USD holdings from the ledger (latest snapshot only, `409` otherwise).
+
 ### Passive Income / Targets
 
 ```json
@@ -664,6 +695,12 @@ Price-linked categories never store a value the user typed directly:
 - **Gold** (`logam_mulia`): `gram × qty × goldPricePerGram(brand, latestRateEntry)`.
 - **USD Bonds/ETF/Cash** (`bonds_usd`, `us_etf`, `uang_tunai` with `currency=USD`): `usd_value × usd_idr`.
 - If no rate entry exists yet and a derived value is required, the API returns `422`.
+
+### Bond Coupon Schedule
+A bullet bond is issued a whole number of years before it matures, so the maturity month/day *is* a coupon month/day; the other lands six months away (maturity 2 Jul → 2 Jul and 2 Jan). A day that overflows a shorter month clamps to that month's last day, leap years included (maturity 31 Aug → 28 or 29 Feb). A coupon counts for a given year when its date falls **strictly after** the buy date — the accrued interest paid at settlement is the seller's share of the current period, so the first coupon the buyer collects is the next one — and **on or before** maturity, since the final coupon is paid together with the principal. That maturity rule is what drops matured bonds out of the calendar, and it's evaluated per-date, so a bond maturing mid-year correctly half-drops-out. Semiannual is assumed throughout (`bondCouponsPerYear = 2`); a quarterly bond would need a frequency column.
+
+### The Bond Ledger Owns Bonds USD
+`bond_purchases` is permanent and user-scoped — it never copies forward and never locks, unlike holdings. Once it holds at least one active purchase it becomes the source of truth for the `bonds_usd` category: creating a snapshot skips copying forward the previous snapshot's bond rows and seeds one row per `bond_name` instead, valued at the summed settlement cost of purchases already bought and not yet matured. With an **empty** ledger this is entirely inert and copy-forward behaves exactly as it always did, so a hand-typed bond row can't be silently lost by a user who never adopts the feature. Coupon income folds into `dashboard.passive` *and* the `passive_income` target metric — both call the same `BondPurchasesService.CouponPerYearIdr`, so the Dashboard and Targets pages can't drift apart.
 
 ### Multi-User Design
 Every account signs in with Google or email/password and gets its own isolated workspace; every table is scoped by `user_id` and every read/write path enforces it. The seeded pre-auth user is claimed in place by whichever account logs in first, so local data predating auth isn't lost.

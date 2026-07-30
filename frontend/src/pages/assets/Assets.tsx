@@ -1,10 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { errorMessage, useToast } from '../../context/ToastContext'
 import { useCategories } from '../../hooks/useCategories'
-import { useSnapshots, useLatestSnapshot, useSnapshotByDate, useDeleteSnapshot } from '../../hooks/useSnapshots'
+import {
+  useSnapshots,
+  useLatestSnapshot,
+  useSnapshotByDate,
+  useDeleteSnapshot,
+  useSyncSnapshotBonds,
+} from '../../hooks/useSnapshots'
 import { useLatestRate } from '../../hooks/useRates'
 import { api } from '../../lib/api'
+import { BONDS_USD_CATEGORY_LABEL } from '../../lib/holdingCalc'
 import { AssetModal } from './AssetModal'
 import { NewSnapshotModal } from './NewSnapshotModal'
 import type { Holding } from '../../types'
@@ -20,6 +28,7 @@ export function Assets() {
   const { data: latestSnapshot } = useLatestSnapshot()
   const { data: latestRate } = useLatestRate()
   const deleteSnapshot = useDeleteSnapshot()
+  const syncBonds = useSyncSnapshotBonds()
 
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
   const [assetGroup, setAssetGroup] = useState<string>('all')
@@ -86,6 +95,28 @@ export function Assets() {
     }
   }
 
+  const bondCategoryId = categories.find((c) => c.label === BONDS_USD_CATEGORY_LABEL)?.id
+  const bondHoldingCount = holdings.filter((h) => h.category_id === bondCategoryId).length
+
+  async function handleSyncBonds() {
+    if (!snapshot) return
+    // This replaces every Bonds USD row in the snapshot, including any typed
+    // by hand, so say so with counts before doing it.
+    const existing = bondHoldingCount === 1 ? '1 Bonds USD row' : `${bondHoldingCount} Bonds USD rows`
+    if (
+      !window.confirm(
+        `Replace ${existing} in this snapshot with rows built from your bond ledger?\n\nAnything you typed by hand in this category will be overwritten.`,
+      )
+    )
+      return
+    try {
+      await syncBonds.mutateAsync(snapshot.snapshot_date)
+      showSuccess('Bonds synced from ledger.')
+    } catch (err) {
+      showError(errorMessage(err))
+    }
+  }
+
   const defaultCategoryId =
     assetGroup !== 'all'
       ? Number(assetGroup)
@@ -122,6 +153,15 @@ export function Assets() {
             disabled={!snapshot || deleteSnapshot.isPending}
           >
             🗑 Delete snapshot
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleSyncBonds}
+            disabled={!isEditable || syncBonds.isPending}
+            title="Rebuild the Bonds USD rows from your bond purchase ledger"
+          >
+            ⟳ Sync bonds
           </button>
           <button type="button" className="btn btn-primary" onClick={openAddAsset} disabled={!isEditable}>
             + Add to this snapshot
@@ -211,6 +251,13 @@ export function Assets() {
       <p className="assets-footnote">
         Values are stored per snapshot date. Editing a value here only changes this month — past months stay
         locked so your history stays accurate.
+        {bondCategoryId !== undefined && String(bondCategoryId) === assetGroup && (
+          <>
+            {' '}
+            Bonds USD rows are built from your purchase ledger —{' '}
+            <Link to="/bonds">manage bond ledger →</Link>
+          </>
+        )}
       </p>
 
       <AssetModal

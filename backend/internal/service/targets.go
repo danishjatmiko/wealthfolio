@@ -15,10 +15,11 @@ import (
 // fields for targets on top of the stored row.
 type TargetsService struct {
 	repos *db.Repos
+	bonds *BondPurchasesService
 }
 
-func NewTargetsService(repos *db.Repos) *TargetsService {
-	return &TargetsService{repos: repos}
+func NewTargetsService(repos *db.Repos, bonds *BondPurchasesService) *TargetsService {
+	return &TargetsService{repos: repos, bonds: bonds}
 }
 
 var validMetricTypes = map[string]bool{
@@ -80,8 +81,18 @@ func (s *TargetsService) computeCurrentValue(ctx context.Context, userID uuid.UU
 		return sum, nil
 
 	case "passive_income":
+		// Must stay in step with DashboardService.Get, which adds the same
+		// coupon summand — otherwise this page and the dashboard would
+		// disagree about how much passive income the user has.
 		sum, err := s.repos.PassiveIncome.Sum(ctx, userID)
-		return float64(sum), err
+		if err != nil {
+			return 0, err
+		}
+		coupons, err := s.bonds.CouponPerYearIdr(ctx, userID)
+		if err != nil {
+			return 0, err
+		}
+		return float64(sum + coupons), nil
 
 	case "debt_ratio":
 		holdings, ok, err := s.latestHoldings(ctx, userID)
