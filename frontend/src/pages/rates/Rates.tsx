@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useCreateRate, useLatestRate, useRates } from '../../hooks/useRates'
-import { goldFmt, goldFmtShort, parseNumeric, usdFmt } from '../../lib/format'
+import { goldFmt, goldFmtShort, parseNumeric, fmtUsdIdrRate } from '../../lib/format'
 import { errorMessage, useToast } from '../../context/ToastContext'
 import './Rates.css'
 
@@ -60,7 +60,7 @@ export function Rates() {
         </div>
         <div className="card rate-summary-card rate-summary-card-usd">
           <div className="rate-summary-label">USD → IDR</div>
-          <div className="mono rate-summary-value">{latest ? usdFmt(latest.usd_idr) : '—'}</div>
+          <div className="mono rate-summary-value">{latest ? fmtUsdIdrRate(latest.usd_idr) : '—'}</div>
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export function Rates() {
               <span className="mono">{goldFmt(r.antam)}</span>
               <span className="mono">{goldFmt(r.kinghalim)}</span>
               <span className="mono">{goldFmt(r.ubs)}</span>
-              <span className="mono">{usdFmt(r.usd_idr)}</span>
+              <span className="mono">{fmtUsdIdrRate(r.usd_idr)}</span>
             </div>
           ))}
         </div>

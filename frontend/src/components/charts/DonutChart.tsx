@@ -13,9 +13,20 @@ interface DonutChartProps {
   size?: number
   thickness?: number
   onHover?: (datum: DonutDatum | null) => void
+  /** Emphasises the slice with this label, for pages that drive selection
+   *  from a table rather than the ring — matched by label rather than index
+   *  because zero-value entries are filtered out below, so a caller's index
+   *  wouldn't line up. Live hover still wins over selection. */
+  selectedLabel?: string | null
 }
 
-export function DonutChart({ data, size = 190, thickness = 26, onHover }: DonutChartProps) {
+export function DonutChart({
+  data,
+  size = 190,
+  thickness = 26,
+  onHover,
+  selectedLabel = null,
+}: DonutChartProps) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
   const total = data.reduce((s, d) => s + Math.max(0, d.value), 0) || 1
   const r = (size - thickness) / 2
@@ -35,12 +46,20 @@ export function DonutChart({ data, size = 190, thickness = 26, onHover }: DonutC
     onHover?.(null)
   }
 
+  // Hovering anything overrides the selection, so the ring always tracks
+  // the pointer when there is one.
+  const selectedIdx =
+    hoverIdx === null && selectedLabel != null
+      ? visible.findIndex((d) => d.label === selectedLabel)
+      : -1
+  const activeIdx = hoverIdx ?? (selectedIdx === -1 ? null : selectedIdx)
+
   const segments = visible.map((d, i) => {
     const frac = d.value / total
     const dasharray = `${(frac * C).toFixed(2)} ${(C - frac * C).toFixed(2)}`
     const dashoffset = (-acc * C).toFixed(2)
     acc += frac
-    const dimmed = hoverIdx !== null && hoverIdx !== i
+    const dimmed = activeIdx !== null && activeIdx !== i
     return (
       <circle
         key={i}
@@ -49,7 +68,7 @@ export function DonutChart({ data, size = 190, thickness = 26, onHover }: DonutC
         r={r}
         fill="none"
         stroke={d.color}
-        strokeWidth={hoverIdx === i ? thickness + 4 : thickness}
+        strokeWidth={activeIdx === i ? thickness + 4 : thickness}
         strokeDasharray={dasharray}
         strokeDashoffset={dashoffset}
         transform={`rotate(-90 ${cx} ${cy})`}

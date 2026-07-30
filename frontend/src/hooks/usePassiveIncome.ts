@@ -13,6 +13,9 @@ function invalidate(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: ['passiveIncome'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })
   qc.invalidateQueries({ queryKey: ['targets'] })
+  // The coupon calendar carries manual_per_year_idr alongside the bond
+  // figures, so a manual-source edit moves it too.
+  qc.invalidateQueries({ queryKey: ['couponCalendar'] })
 }
 
 export function useCreatePassiveIncome() {

@@ -10,16 +10,20 @@ export interface NavItem {
   desktopOnly?: boolean
 }
 
-// Passive Income and Targets are hidden from the nav for now (still fully
-// functional at their routes, just not linked from here) — remove these
-// two comments and add their entries back to un-hide.
+// Targets is hidden from the nav for now (still fully functional at its
+// route, just not linked from here) — add an entry back to un-hide.
+//
+// Labels are kept short because the mobile bottom bar fits seven items at
+// ~53px each; PAGE_TITLES below carries the full names for page headers.
 export const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Dashboard', icon: '◫' },
+  { to: '/', label: 'Home', icon: '◫' },
   { to: '/assets', label: 'Assets', icon: '▤' },
-  { to: '/debts', label: 'Debt & Loans', icon: '⇄' },
+  { to: '/debts', label: 'Debt', icon: '⇄' },
   { to: '/expenses', label: 'Expenses', icon: '▦' },
+  { to: '/passive-income', label: 'Passive', icon: '⊛' },
   { to: '/progress', label: 'Progress', icon: '∿' },
   { to: '/rates', label: 'Rates', icon: '¤' },
+  { to: '/bonds', label: 'Bonds', icon: '◈', desktopOnly: true },
   { to: '/simulation', label: 'Simulation', icon: '↗', desktopOnly: true },
 ]
 
@@ -33,4 +37,5 @@ export const PAGE_TITLES: Record<string, string> = {
   '/progress': 'Progress',
   '/rates': 'Rates & Prices',
   '/simulation': 'Growth Simulation',
+  '/bonds': 'Bond Ledger',
 }

@@ -13,7 +13,7 @@ import {
   showsIdrInput,
   showsUsdInput,
 } from '../../lib/holdingCalc'
-import { fmtIdrExact, goldFmt, usdFmt, parseNumeric } from '../../lib/format'
+import { fmtIdrExact, goldFmt, fmtUsdIdrRate, parseNumeric } from '../../lib/format'
 import type { AssetFormValues } from '../../lib/holdingCalc'
 import type { Category, Holding, RateEntry } from '../../types'
 
@@ -97,7 +97,7 @@ export function AssetModal({
     ? `Auto from ${form.brand} · ${goldFmt(
         form.brand === 'King Halim' ? latestRate?.kinghalim ?? 0 : form.brand === 'UBS' ? latestRate?.ubs ?? 0 : latestRate?.antam ?? 0,
       )}`
-    : `Auto from USD rate · ${usdFmt(latestRate?.usd_idr ?? 0)}`
+    : `Auto from USD rate · ${fmtUsdIdrRate(latestRate?.usd_idr ?? 0)}`
 
   async function handleSave() {
     if (!categoryId) {

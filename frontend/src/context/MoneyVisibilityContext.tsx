@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { money, moneyExact } from '../lib/format'
+import { money, moneyExact, moneyUsd } from '../lib/format'
 
 const STORAGE_KEY = 'wealthfolio:hideValues'
 
@@ -11,6 +11,8 @@ interface MoneyVisibilityValue {
   fmt: (value: number) => string
   /** Exact formatter (every other page), masked when hidden. */
   fmtExact: (value: number) => string
+  /** Exact USD formatter (bond ledger, coupon calendar), masked when hidden. */
+  fmtUsd: (value: number) => string
 }
 
 const MoneyVisibilityContext = createContext<MoneyVisibilityValue | null>(null)
@@ -38,8 +40,12 @@ export function MoneyVisibilityProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback(() => setHidden((h) => !h), [])
   const fmt = useCallback((value: number) => money(value, hidden), [hidden])
   const fmtExact = useCallback((value: number) => moneyExact(value, hidden), [hidden])
+  const fmtUsd = useCallback((value: number) => moneyUsd(value, hidden), [hidden])
 
-  const value = useMemo(() => ({ hidden, toggle, fmt, fmtExact }), [hidden, toggle, fmt, fmtExact])
+  const value = useMemo(
+    () => ({ hidden, toggle, fmt, fmtExact, fmtUsd }),
+    [hidden, toggle, fmt, fmtExact, fmtUsd],
+  )
 
   return <MoneyVisibilityContext.Provider value={value}>{children}</MoneyVisibilityContext.Provider>
 }

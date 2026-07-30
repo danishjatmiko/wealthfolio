@@ -1,7 +1,11 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type {
+  BondLedgerSummary,
+  BondPurchase,
+  BondPurchaseInput,
   BudgetEnvelope,
   BudgetEnvelopeInput,
+  CouponCalendar,
   Category,
   CreateExpensePeriodInput,
   Dashboard,
@@ -150,6 +154,15 @@ export const api = {
       post<FixedExpense>(`/expense-periods/${periodId}/fixed-expenses`, input),
     update: (id: string, input: FixedExpenseInput) => put<FixedExpense>(`/fixed-expenses/${id}`, input),
     remove: (id: string) => del<void>(`/fixed-expenses/${id}`),
+  },
+  bondPurchases: {
+    list: () => get<BondPurchase[]>('/bond-purchases'),
+    summary: () => get<BondLedgerSummary>('/bond-purchases/summary'),
+    calendar: (year: number) => get<CouponCalendar>(`/bond-purchases/coupon-calendar?year=${year}`),
+    create: (input: BondPurchaseInput) => post<BondPurchase>('/bond-purchases', input),
+    update: (id: string, input: BondPurchaseInput) =>
+      put<BondPurchase>(`/bond-purchases/${id}`, input),
+    remove: (id: string) => del<void>(`/bond-purchases/${id}`),
   },
   passiveIncome: {
     list: () => get<PassiveIncomeSource[]>('/passive-income'),

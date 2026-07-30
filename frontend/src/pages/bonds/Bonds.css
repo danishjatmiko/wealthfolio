@@ -1,0 +1,170 @@
+.bonds-header {
+  margin-bottom: 14px;
+}
+.bonds-header-copy {
+  font-size: 13px;
+  color: var(--text-body-secondary);
+  max-width: 46ch;
+}
+
+.bonds-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.bond-summary-card {
+  padding: 16px 18px;
+}
+.bond-summary-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted-2);
+  margin-bottom: 6px;
+}
+.bond-summary-value {
+  font-size: 19px;
+  font-weight: 700;
+}
+.bond-summary-sub {
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+  margin-top: 3px;
+}
+
+.bonds-table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Grid fake-table, same approach as the rates history table — there are no
+   <table> elements anywhere in this app. */
+.bond-row {
+  display: grid;
+  grid-template-columns: 2.2fr 0.8fr 1.1fr 0.6fr 1fr 28px;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--divider);
+}
+.bond-row-head {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted-2);
+  border-bottom: 1px solid var(--divider-2);
+}
+.bond-name-row {
+  cursor: pointer;
+}
+.bond-name-row:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+.bond-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  min-width: 0;
+}
+.bond-num {
+  text-align: right;
+}
+.bond-chevron {
+  color: var(--text-muted-2);
+  font-size: 11px;
+  text-align: center;
+}
+.bond-badge-matured {
+  background: var(--progress-track);
+  color: var(--text-muted);
+}
+.bond-conflict {
+  padding: 0 18px 10px;
+}
+
+.bond-purchases {
+  background: var(--content-bg);
+  padding: 4px 18px 12px;
+  border-bottom: 1px solid var(--divider);
+}
+.bond-purchase-row {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr 0.5fr 0.9fr 0.8fr 0.9fr 0.9fr 1.2fr 28px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--divider);
+}
+.bond-purchase-row:last-of-type {
+  border-bottom: none;
+}
+.bond-purchase-head {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted-2);
+}
+
+.bond-net-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--sidebar-bg);
+  font-size: 13px;
+}
+.bond-net-label {
+  flex: 1;
+  font-weight: 600;
+}
+.bond-net-sub {
+  color: var(--text-muted-2);
+  margin-right: 16px;
+}
+.bond-net-total {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+@container (max-width: 560px) {
+  /* Nine columns of purchase detail can't survive a phone. Both tables drop
+     to a two-up grid with the name on its own line and the chevron pinned
+     to the corner, so figures pair off predictably instead of trailing
+     after the date. Headers go away since the values carry their own
+     units. */
+  .bond-row-head,
+  .bond-purchase-head {
+    display: none;
+  }
+  .bond-row {
+    position: relative;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 3px;
+  }
+  .bond-name {
+    grid-column: 1 / -1;
+    padding-right: 22px;
+  }
+  .bond-chevron {
+    position: absolute;
+    top: 11px;
+    right: 18px;
+  }
+  .bond-purchase-row {
+    position: relative;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 3px;
+    padding-right: 34px;
+  }
+  .bond-purchase-row .a-edit-btn {
+    position: absolute;
+    top: 8px;
+    right: 0;
+  }
+  .bond-num {
+    text-align: left;
+  }
+}

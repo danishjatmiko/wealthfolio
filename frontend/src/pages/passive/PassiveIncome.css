@@ -4,6 +4,27 @@
 .passive-header-copy {
   font-size: 13px;
   color: var(--text-muted);
+  max-width: 44ch;
+}
+
+.passive-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.passive-hero-card {
+  padding: 16px 18px;
+}
+.passive-hero-value {
+  font-size: 19px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.passive-hero-sub {
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+  margin-top: 3px;
 }
 
 .passive-grid {
@@ -12,6 +33,135 @@
   gap: 14px;
 }
 
+/* One clickable row per calendar month. Zero months stay rendered and
+   clickable — the donut drops their slice, but the row is how you find out
+   nothing lands that month. */
+.passive-month-row {
+  margin-bottom: 11px;
+  cursor: pointer;
+  padding: 4px 6px;
+  margin-left: -6px;
+  margin-right: -6px;
+  border-radius: var(--radius-input);
+}
+.passive-month-row:last-of-type {
+  margin-bottom: 0;
+}
+.passive-month-row:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+.passive-month-row-active {
+  background: var(--accent-soft);
+}
+.passive-month-head {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+.passive-month-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.passive-month-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.passive-month-usd {
+  font-weight: 600;
+}
+.passive-month-idr {
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+  min-width: 84px;
+  text-align: right;
+}
+
+.passive-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Mirrors .dash-donut-* from Dashboard.css, which this page doesn't import.
+   Duplicated rather than extracted, same as the .line-chart-tooltip block
+   that Progress.css and Simulation.css each carry their own copy of. */
+.passive-donut-wrap {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  margin: 0 auto;
+}
+.passive-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Load-bearing: without this the overlay swallows segment hovers. */
+  pointer-events: none;
+}
+.passive-donut-center-label {
+  font-size: 11px;
+  color: var(--text-muted-2);
+}
+.passive-donut-center-value {
+  font-size: 17px;
+  font-weight: 700;
+}
+.passive-donut-note {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 12px;
+  line-height: 1.45;
+}
+
+.passive-entry-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--divider);
+}
+.passive-entry-row:last-of-type {
+  border-bottom: none;
+}
+.passive-entry-info {
+  min-width: 0;
+}
+.passive-entry-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+.passive-entry-date {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+.passive-entry-amounts {
+  text-align: right;
+  flex-shrink: 0;
+}
+.passive-entry-usd {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.passive-entry-idr {
+  font-size: 10.5px;
+  color: var(--text-muted-2);
+  margin-top: 2px;
+}
+
+.passive-manual-card {
+  margin-top: 14px;
+}
 .passive-row {
   margin-bottom: 13px;
   cursor: pointer;
@@ -29,33 +179,13 @@
   font-weight: 600;
 }
 
-.passive-side {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.passive-total-value {
-  font-size: 26px;
-  font-weight: 700;
-}
-.passive-total-note {
-  font-size: 12px;
-  color: var(--text-muted-2);
-  margin-bottom: 12px;
-}
-.passive-total-track {
-  height: 10px;
-}
-.passive-gap {
-  font-size: 12px;
-  color: var(--red);
-  margin-top: 10px;
-  font-weight: 600;
-}
-
 @container (max-width: 560px) {
   .passive-grid {
     grid-template-columns: 1fr;
+  }
+  /* The Rupiah column is the first thing to go when space is tight — the
+     dollar figure is the one that matters here. */
+  .passive-month-idr {
+    display: none;
   }
 }

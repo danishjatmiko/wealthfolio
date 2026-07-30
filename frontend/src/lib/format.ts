@@ -65,11 +65,34 @@ export function goldFmtShort(value: number): string {
 }
 
 /**
- * USD -> IDR rate formatter. Input is full IDR per 1 USD, exactly like the
- * prototype's usdFmt(). Output e.g. "Rp18,100".
+ * USD -> IDR *rate* formatter: input is full IDR per 1 USD, output e.g.
+ * "Rp18,100". Not a dollar amount — for that use fmtUsd().
  */
-export function usdFmt(value: number): string {
+export function fmtUsdIdrRate(value: number): string {
   return 'Rp' + value.toLocaleString('en-US')
+}
+
+/**
+ * Exact USD amount — e.g. "$1,014.97". Always two decimals, because bond
+ * coupons and settlement prices are cent-precise ($28.45 must not read as
+ * $28). Used by the bond ledger and coupon calendar.
+ */
+export function fmtUsd(value: number): string {
+  const neg = value < 0
+  const v = Math.abs(value).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  return (neg ? '−' : '') + '$' + v
+}
+
+/**
+ * Hide-aware USD formatter, mirroring money()/moneyExact() so the global
+ * "hide values" toggle covers dollar figures too.
+ */
+export function moneyUsd(value: number, hidden: boolean): string {
+  if (hidden) return '$ ••••'
+  return fmtUsd(value)
 }
 
 /** Formats a "YYYY-MM-DD" date string as e.g. "20 Jul 2026". */

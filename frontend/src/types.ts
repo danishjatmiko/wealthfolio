@@ -226,6 +226,111 @@ export interface PassiveIncomeInput {
   per_year_idr: number
 }
 
+/** One USD bond purchase. Fields after usd_idr_at_purchase are derived by
+ *  the backend, never sent on writes. interest_rate is a percent (5.69 =
+ *  5.69%); price_usd is the aggregate lot price, not per unit. */
+export interface BondPurchase {
+  id: string
+  bond_name: string
+  platform: string
+  interest_rate: number
+  buy_date: string
+  maturity_date: string
+  quantity: number
+  face_value_usd: number
+  price_usd: number
+  accrued_interest_usd: number
+  usd_idr_at_purchase: number
+
+  total_usd: number
+  total_idr: number
+  coupon_per_cycle_usd: number
+  coupon_per_year_usd: number
+  price_pct: number
+  coupon_months: number[]
+  coupon_day: number
+  is_matured: boolean
+
+  created_at: string
+  updated_at: string
+}
+
+export interface BondPurchaseInput {
+  bond_name: string
+  platform: string
+  interest_rate: number
+  buy_date: string
+  maturity_date: string
+  quantity: number
+  face_value_usd: number
+  price_usd: number
+  accrued_interest_usd: number
+  usd_idr_at_purchase: number
+}
+
+/** Every purchase filed under one bond name, rolled into one position.
+ *  has_conflicts flags lots that disagree on rate or maturity — i.e. two
+ *  different bonds accidentally sharing a name. */
+export interface BondNameSummary {
+  bond_name: string
+  platforms: string[]
+  interest_rate: number
+  maturity_date: string
+  quantity: number
+  total_usd: number
+  total_idr: number
+  average_usd_idr: number
+  face_total_usd: number
+  coupon_per_cycle_usd: number
+  coupon_per_year_usd: number
+  coupon_months: number[]
+  coupon_day: number
+  is_matured: boolean
+  has_conflicts: boolean
+  purchases: BondPurchase[]
+}
+
+export interface BondLedgerSummary {
+  bonds: BondNameSummary[]
+  total_usd: number
+  total_idr: number
+  average_usd_idr: number
+  coupon_per_year_usd: number
+  coupon_per_year_idr: number
+  latest_usd_idr: number
+}
+
+export interface CouponEntry {
+  bond_name: string
+  platform: string
+  pay_date: string
+  amount_usd: number
+  amount_idr: number
+}
+
+export interface CouponMonth {
+  month: number
+  label: string
+  amount_usd: number
+  amount_idr: number
+  percent: number
+  color_oklch: string
+  entries: CouponEntry[]
+}
+
+/** Bond coupons bucketed by month for one reference year. `months` is
+ *  always exactly 12 — a month with no coupons still needs a row. */
+export interface CouponCalendar {
+  reference_year: number
+  months: CouponMonth[]
+  total_usd: number
+  total_idr: number
+  latest_usd_idr: number
+  manual_per_year_idr: number
+  manual_per_month_idr: number
+  combined_per_year_idr: number
+}
+
 export type TargetMetricType =
   | 'equity'
   | 'gold_grams'
