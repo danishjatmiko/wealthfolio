@@ -22,11 +22,12 @@ import (
 // table behind them, and SnapshotsService reuses the same name-grouping to
 // build Assets holdings.
 type BondPurchasesService struct {
-	repos *db.Repos
+	repos     *db.Repos
+	snapshots *SnapshotsService
 }
 
-func NewBondPurchasesService(repos *db.Repos) *BondPurchasesService {
-	return &BondPurchasesService{repos: repos}
+func NewBondPurchasesService(repos *db.Repos, snapshots *SnapshotsService) *BondPurchasesService {
+	return &BondPurchasesService{repos: repos, snapshots: snapshots}
 }
 
 // couponMonthPalette gives each calendar month a stable chart color. Owned
@@ -332,9 +333,18 @@ func (r BondPurchaseRequest) validate() error {
 	return nil
 }
 
+// defaultPlatform is filled in whenever a purchase arrives with no platform
+// named — MyBCA is where most of this ledger's history actually happened,
+// so it's a better default than leaving the field blank.
+const defaultPlatform = "MyBCA"
+
 func (r BondPurchaseRequest) toWrite() db.BondPurchaseWrite {
+	platform := r.Platform
+	if platform == "" {
+		platform = defaultPlatform
+	}
 	return db.BondPurchaseWrite{
-		BondName: r.BondName, Platform: r.Platform, InterestRate: r.InterestRate,
+		BondName: r.BondName, Platform: platform, InterestRate: r.InterestRate,
 		BuyDate: r.BuyDate, MaturityDate: r.MaturityDate, Quantity: r.Quantity,
 		FaceValueUsd: r.FaceValueUsd, PriceUsd: r.PriceUsd,
 		AccruedInterestUsd: r.AccruedInterestUsd, UsdIdrAtPurchase: r.UsdIdrAtPurchase,
@@ -367,6 +377,9 @@ func (s *BondPurchasesService) Create(ctx context.Context, userID uuid.UUID, req
 	if err != nil {
 		return BondPurchaseDTO{}, err
 	}
+	if err := s.snapshots.SyncBondsForLatest(ctx, userID); err != nil {
+		return BondPurchaseDTO{}, err
+	}
 	rate, err := s.latestUsdIdr(ctx, userID)
 	if err != nil {
 		return BondPurchaseDTO{}, err
@@ -382,6 +395,9 @@ func (s *BondPurchasesService) Update(ctx context.Context, userID, id uuid.UUID,
 	if err != nil {
 		return BondPurchaseDTO{}, err
 	}
+	if err := s.snapshots.SyncBondsForLatest(ctx, userID); err != nil {
+		return BondPurchaseDTO{}, err
+	}
 	rate, err := s.latestUsdIdr(ctx, userID)
 	if err != nil {
 		return BondPurchaseDTO{}, err
@@ -389,8 +405,14 @@ func (s *BondPurchasesService) Update(ctx context.Context, userID, id uuid.UUID,
 	return bondPurchaseDTO(p, time.Now().UTC(), rate), nil
 }
 
+// Delete removes a purchase and immediately re-syncs Assets so a deleted
+// lot can't keep inflating the Bonds USD holding until the next manual
+// sync or snapshot rollover.
 func (s *BondPurchasesService) Delete(ctx context.Context, userID, id uuid.UUID) error {
-	return s.repos.BondPurchases.Delete(ctx, userID, id)
+	if err := s.repos.BondPurchases.Delete(ctx, userID, id); err != nil {
+		return err
+	}
+	return s.snapshots.SyncBondsForLatest(ctx, userID)
 }
 
 // Summary rolls the whole ledger up per bond name, with portfolio totals.

@@ -212,6 +212,10 @@ export function Assets() {
 
         {visibleHoldings.map((h) => {
           const cat = catById.get(h.category_id)
+          // Bonds USD rows are derived from the purchase ledger and kept in
+          // sync automatically — editing one here would just get overwritten
+          // by the next ledger change, so the edit path is the Bonds page.
+          const isBondHolding = bondCategoryId !== undefined && h.category_id === bondCategoryId
           return (
             <div className="asset-row" key={h.id}>
               <div className="a-name">
@@ -226,10 +230,10 @@ export function Assets() {
                 <span className="mono a-val-amount">{fmt(h.value_idr)}</span>
                 <button
                   type="button"
-                  title="Edit"
+                  title={isBondHolding ? 'Managed by the bond ledger — edit purchases on the Bonds page' : 'Edit'}
                   className="a-edit-btn"
                   onClick={() => openEditAsset(h)}
-                  disabled={!isEditable}
+                  disabled={!isEditable || isBondHolding}
                 >
                   ✎
                 </button>

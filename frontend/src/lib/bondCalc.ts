@@ -3,7 +3,9 @@
 // backend recomputes everything authoritatively on save — same relationship
 // holdingCalc.ts has with valuation.go. Keep the two in step.
 
-export const BOND_PLATFORMS = ['OCBC', 'MyBCA', 'Mandiri'] as const
+// MyBCA first — it's the backend's default when a purchase arrives with no
+// platform named, so it should also be what the modal preselects.
+export const BOND_PLATFORMS = ['MyBCA', 'OCBC', 'Mandiri'] as const
 
 const COUPONS_PER_YEAR = 2
 

@@ -86,11 +86,6 @@ export function Bonds() {
         return (
           <span className="bond-name" key={key}>
             {b.bond_name}
-            {b.platforms.map((p) => (
-              <span className="source-badge" key={p}>
-                {p}
-              </span>
-            ))}
             {b.is_matured && <span className="source-badge bond-badge-matured">Matured</span>}
           </span>
         )
@@ -244,7 +239,9 @@ export function Bonds() {
                   {b.purchases.map((p) => (
                     <div className="bond-purchase-row" key={p.id}>
                       <span className="mono">{formatShortDate(p.buy_date)}</span>
-                      <span>{p.platform || '—'}</span>
+                      <span>
+                        {p.platform && <span className="source-badge bond-platform-badge">{p.platform}</span>}
+                      </span>
                       <span className="mono bond-num">{p.quantity}</span>
                       <span className="mono bond-num">{fmtUsd(p.price_usd)}</span>
                       <span className="mono bond-num">{fmtUsd(p.accrued_interest_usd)}</span>

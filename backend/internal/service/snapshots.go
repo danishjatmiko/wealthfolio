@@ -198,6 +198,32 @@ func (s *SnapshotsService) SyncBonds(ctx context.Context, userID uuid.UUID, date
 	return s.detailFromSnapshot(ctx, userID, snap)
 }
 
+// SyncBondsForLatest re-syncs the bonds_usd holdings on the user's latest
+// snapshot from the ledger. Called automatically after every bond_purchases
+// write (BondPurchasesService.Create/Update/Delete) so Assets never drifts
+// from the ledger without a manual "Sync bonds" click — the two are tied
+// together at the application layer rather than by a literal foreign key,
+// since one holding row is an aggregate of many purchases and a real FK
+// can't express that.
+//
+// A user with no snapshot yet, or no rate entry logged yet, is not an
+// error: the ledger write that triggered this must still succeed even
+// though there's nothing to sync onto yet.
+func (s *SnapshotsService) SyncBondsForLatest(ctx context.Context, userID uuid.UUID) error {
+	latest, err := s.repos.Snapshots.GetLatest(ctx, userID)
+	if err != nil {
+		if errors.Is(err, db.ErrNotFound) {
+			return nil
+		}
+		return err
+	}
+	_, err = s.SyncBonds(ctx, userID, latest.SnapshotDate)
+	if errors.Is(err, ErrNoRateEntry) {
+		return nil
+	}
+	return err
+}
+
 // Create makes a new snapshot for the user on the given date. The date must
 // be today or later (ErrSnapshotDateInPast otherwise) and not already used
 // by an existing snapshot. "Latest"/editable status is always derived

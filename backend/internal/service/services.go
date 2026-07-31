@@ -29,13 +29,14 @@ type Services struct {
 // NewServices builds a Services bundle backed by the given repositories.
 func NewServices(repos *db.Repos, cfg config.Config) *Services {
 	holdings := NewHoldingsService(repos)
+	snapshots := NewSnapshotsService(repos, holdings)
 	debtEntries := NewDebtEntriesService(repos)
 	notificationCatalog := NewNotificationCatalogService(repos)
-	bonds := NewBondPurchasesService(repos)
+	bonds := NewBondPurchasesService(repos, snapshots)
 	return &Services{
 		Auth:            NewAuthService(repos, cfg),
 		Holdings:        holdings,
-		Snapshots:       NewSnapshotsService(repos, holdings),
+		Snapshots:       snapshots,
 		DebtEntries:     debtEntries,
 		DebtSnapshots:   NewDebtSnapshotsService(repos, debtEntries),
 		ExpensePeriods:  NewExpensePeriodsService(repos),

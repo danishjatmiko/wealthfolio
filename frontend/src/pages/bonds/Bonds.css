@@ -113,6 +113,11 @@
   background: var(--progress-track);
   color: var(--text-muted);
 }
+/* Sole content of its own grid cell on a purchase row, unlike .source-badge's
+   usual spot trailing some text — no left margin needed here. */
+.bond-platform-badge {
+  margin-left: 0;
+}
 .bond-conflict {
   padding: 0 18px 10px;
 }
