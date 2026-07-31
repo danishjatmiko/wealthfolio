@@ -6,7 +6,7 @@ import { formatShortDate } from '../lib/format'
 import './Dashboard.css'
 
 export function Dashboard() {
-  const { fmt } = useMoney()
+  const { fmt, fmtExact } = useMoney()
   const { data, isLoading, isError } = useDashboard()
   const [hoverAllocation, setHoverAllocation] = useState<DonutDatum | null>(null)
   const [hoverSpent, setHoverSpent] = useState<DonutDatum | null>(null)
@@ -23,7 +23,7 @@ export function Dashboard() {
         <div className="dash-top-grid">
           <div className="dash-hero">
             <div className="dash-hero-label">Total Equity</div>
-            <div className="dash-hero-value mono">{fmt(equity.total_idr)}</div>
+            <div className="dash-hero-value mono">{fmtExact(equity.total_idr)}</div>
             <div className="dash-hero-footer">
               <div className="hovwrap">
                 <div className="dash-hero-footer-label">Invested ⓘ</div>
