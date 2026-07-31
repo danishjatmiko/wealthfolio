@@ -22,12 +22,13 @@ func mustDate(t *testing.T, s string) domain.Date {
 
 func TestBondMoneyMath(t *testing.T) {
 	tests := []struct {
-		name            string
-		purchase        domain.BondPurchase
-		wantTotalUsd    float64
-		wantTotalIdr    int64
-		wantCouponCycle float64
-		wantPricePct    float64
+		name              string
+		purchase          domain.BondPurchase
+		wantTotalUsd      float64 // invested: clean price, no accrued
+		wantSettlementUsd float64 // cash actually paid: clean + accrued
+		wantSettlementIdr int64
+		wantCouponCycle   float64
+		wantPricePct      float64
 	}{
 		{
 			// INDON36NEWNEW, bought 22 May 2026.
@@ -36,10 +37,11 @@ func TestBondMoneyMath(t *testing.T) {
 				InterestRate: 5.69, Quantity: 1, FaceValueUsd: 1000,
 				PriceUsd: 1014.50, AccruedInterestUsd: 0.47, UsdIdrAtPurchase: 17690,
 			},
-			wantTotalUsd:    1014.97,
-			wantTotalIdr:    17954819,
-			wantCouponCycle: 28.45,
-			wantPricePct:    101.45,
+			wantTotalUsd:      1014.50,
+			wantSettlementUsd: 1014.97,
+			wantSettlementIdr: 17954819,
+			wantCouponCycle:   28.45,
+			wantPricePct:      101.45,
 		},
 		{
 			// PLN 48 6.15 OCBC — five lots, the row that proves the coupon
@@ -49,10 +51,11 @@ func TestBondMoneyMath(t *testing.T) {
 				InterestRate: 6.15, Quantity: 5, FaceValueUsd: 1000,
 				PriceUsd: 4925.00, AccruedInterestUsd: 34.17, UsdIdrAtPurchase: 17860,
 			},
-			wantTotalUsd:    4959.17,
-			wantTotalIdr:    88570776,
-			wantCouponCycle: 153.75,
-			wantPricePct:    98.5,
+			wantTotalUsd:      4925.00,
+			wantSettlementUsd: 4959.17,
+			wantSettlementIdr: 88570776,
+			wantCouponCycle:   153.75,
+			wantPricePct:      98.5,
 		},
 		{
 			// INDON52 — two lots deep below par, the row that proves
@@ -62,10 +65,11 @@ func TestBondMoneyMath(t *testing.T) {
 				InterestRate: 4.30, Quantity: 2, FaceValueUsd: 1000,
 				PriceUsd: 1608.00, AccruedInterestUsd: 19.59, UsdIdrAtPurchase: 17694,
 			},
-			wantTotalUsd:    1627.59,
-			wantTotalIdr:    28798577,
-			wantCouponCycle: 43.00,
-			wantPricePct:    80.4,
+			wantTotalUsd:      1608.00,
+			wantSettlementUsd: 1627.59,
+			wantSettlementIdr: 28798577,
+			wantCouponCycle:   43.00,
+			wantPricePct:      80.4,
 		},
 	}
 
@@ -74,10 +78,18 @@ func TestBondMoneyMath(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := bondTotalUsd(tt.purchase); !nearly(got, tt.wantTotalUsd, eps) {
-				t.Errorf("bondTotalUsd = %v, want %v", got, tt.wantTotalUsd)
+				t.Errorf("bondTotalUsd = %v, want %v (invested excludes accrued)", got, tt.wantTotalUsd)
 			}
-			if got := bondTotalIdr(tt.purchase); got != tt.wantTotalIdr {
-				t.Errorf("bondTotalIdr = %d, want %d", got, tt.wantTotalIdr)
+			if got := bondSettlementUsd(tt.purchase); !nearly(got, tt.wantSettlementUsd, eps) {
+				t.Errorf("bondSettlementUsd = %v, want %v", got, tt.wantSettlementUsd)
+			}
+			// Rupiah figures now convert at whatever rate the caller passes;
+			// the historical rate paid is what averageUsdIdr blends.
+			if got := bondSettlementIdr(tt.purchase, tt.purchase.UsdIdrAtPurchase); got != tt.wantSettlementIdr {
+				t.Errorf("bondSettlementIdr = %d, want %d", got, tt.wantSettlementIdr)
+			}
+			if got := bondCostIdrAtPurchase(tt.purchase); got != tt.wantSettlementIdr {
+				t.Errorf("bondCostIdrAtPurchase = %d, want %d", got, tt.wantSettlementIdr)
 			}
 			if got := bondCouponPerCycleUsd(tt.purchase); !nearly(got, tt.wantCouponCycle, eps) {
 				t.Errorf("bondCouponPerCycleUsd = %v, want %v", got, tt.wantCouponCycle)
@@ -92,16 +104,97 @@ func TestBondMoneyMath(t *testing.T) {
 	}
 }
 
+func TestBondYtm(t *testing.T) {
+	// A bond bought exactly at par yields its coupon rate — the one YTM
+	// case with a known closed-form answer, so it anchors the solver.
+	t.Run("at par yields the coupon rate", func(t *testing.T) {
+		p := domain.BondPurchase{
+			InterestRate: 6, Quantity: 1, FaceValueUsd: 1000,
+			PriceUsd: 1000, AccruedInterestUsd: 0,
+			BuyDate: mustDate(t, "2026-01-15"), MaturityDate: mustDate(t, "2036-01-15"),
+		}
+		if got := bondYtmPct(p); !nearly(got, 6, 0.05) {
+			t.Errorf("bondYtmPct = %v, want ~6", got)
+		}
+	})
+
+	// Below par, the redemption gain adds to the coupon, so yield must
+	// exceed the coupon rate; above par it must fall short. These bracket
+	// the solver without hard-coding a number a formula change would break.
+	t.Run("below par yields more than the coupon", func(t *testing.T) {
+		p := domain.BondPurchase{
+			InterestRate: 4.30, Quantity: 2, FaceValueUsd: 1000,
+			PriceUsd: 1608.00, AccruedInterestUsd: 19.59,
+			BuyDate: mustDate(t, "2026-06-15"), MaturityDate: mustDate(t, "2052-03-31"),
+		}
+		got := bondYtmPct(p)
+		if got <= 4.30 {
+			t.Errorf("bondYtmPct = %v, want > 4.30 (bought at ~80%% of par)", got)
+		}
+		if got > 8 {
+			t.Errorf("bondYtmPct = %v, implausibly high for a 4.3%% bond at 80", got)
+		}
+	})
+
+	t.Run("above par yields less than the coupon", func(t *testing.T) {
+		p := domain.BondPurchase{
+			InterestRate: 5.69, Quantity: 1, FaceValueUsd: 1000,
+			PriceUsd: 1014.50, AccruedInterestUsd: 0.47,
+			BuyDate: mustDate(t, "2026-05-22"), MaturityDate: mustDate(t, "2036-05-29"),
+		}
+		got := bondYtmPct(p)
+		if got >= 5.69 {
+			t.Errorf("bondYtmPct = %v, want < 5.69 (bought above par)", got)
+		}
+		if got < 3 {
+			t.Errorf("bondYtmPct = %v, implausibly low for a small premium", got)
+		}
+	})
+
+	t.Run("degenerate inputs return zero rather than diverging", func(t *testing.T) {
+		for _, p := range []domain.BondPurchase{
+			{}, // everything zero
+			{InterestRate: 5, Quantity: 1, FaceValueUsd: 1000, PriceUsd: 0,
+				BuyDate: mustDate(t, "2026-01-01"), MaturityDate: mustDate(t, "2030-01-01")},
+			// Already matured: no cash flows left to discount.
+			{InterestRate: 5, Quantity: 1, FaceValueUsd: 1000, PriceUsd: 1000,
+				BuyDate: mustDate(t, "2026-01-01"), MaturityDate: mustDate(t, "2025-01-01")},
+		} {
+			if got := bondYtmPct(p); got != 0 {
+				t.Errorf("bondYtmPct(%+v) = %v, want 0", p, got)
+			}
+		}
+	})
+}
+
+func TestBondRemainingCouponDates(t *testing.T) {
+	// Ten years of semiannual coupons is twenty payments, ending exactly on
+	// the maturity date.
+	p := domain.BondPurchase{
+		BuyDate:      mustDate(t, "2026-01-15"),
+		MaturityDate: mustDate(t, "2036-01-15"),
+	}
+	got := bondRemainingCouponDates(p)
+	if len(got) != 20 {
+		t.Fatalf("got %d coupon dates, want 20", len(got))
+	}
+	if first := domain.NewDate(got[0]).String(); first != "2026-07-15" {
+		t.Errorf("first coupon = %s, want 2026-07-15", first)
+	}
+	if last := domain.NewDate(got[len(got)-1]).String(); last != "2036-01-15" {
+		t.Errorf("last coupon = %s, want 2036-01-15 (paid with the principal)", last)
+	}
+}
+
 func nearly(got, want, eps float64) bool {
 	d := got - want
 	return d < eps && d > -eps
 }
 
 func TestAverageUsdIdr(t *testing.T) {
-	// The spreadsheet's first two rows: $1014.97 bought at 17690 and
-	// $1138.88 bought at 17770. The blend must land between those two rates
-	// and lean toward the larger row. (The sheet's own "Average IDR we buy"
-	// cell reads Rp17,924 because it spans all 17 rows, not just these two.)
+	// The spreadsheet's first two rows, on settlement basis: $1014.97
+	// bought at 17690 and $1138.88 at 17770. The blend must land between
+	// those two rates and lean toward the larger row.
 	got := averageUsdIdr(17954819+20237898, 1014.97+1138.88)
 	if !nearly(got, 17732.30, 0.01) {
 		t.Errorf("averageUsdIdr = %v, want ~17732.30", got)

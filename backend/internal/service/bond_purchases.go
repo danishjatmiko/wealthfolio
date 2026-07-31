@@ -65,11 +65,16 @@ type BondPurchaseDTO struct {
 	AccruedInterestUsd float64     `json:"accrued_interest_usd"`
 	UsdIdrAtPurchase   float64     `json:"usd_idr_at_purchase"`
 
+	// TotalUsd is the invested amount (clean price, no accrued);
+	// SettlementUsd is what actually left the account.
 	TotalUsd          float64 `json:"total_usd"`
 	TotalIdr          int64   `json:"total_idr"`
+	SettlementUsd     float64 `json:"settlement_usd"`
+	SettlementIdr     int64   `json:"settlement_idr"`
 	CouponPerCycleUsd float64 `json:"coupon_per_cycle_usd"`
 	CouponPerYearUsd  float64 `json:"coupon_per_year_usd"`
 	PricePct          float64 `json:"price_pct"`
+	YtmPct            float64 `json:"ytm_pct"`
 	CouponMonths      []int   `json:"coupon_months"`
 	CouponDay         int     `json:"coupon_day"`
 	IsMatured         bool    `json:"is_matured"`
@@ -78,7 +83,11 @@ type BondPurchaseDTO struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func bondPurchaseDTO(p domain.BondPurchase, today time.Time) BondPurchaseDTO {
+// bondPurchaseDTO builds a ledger row. rate is the user's latest logged
+// USD/IDR — every Rupiah figure converts at it, so the ledger agrees with
+// the Assets page rather than mixing in historical rates. The rate actually
+// paid stays visible as UsdIdrAtPurchase.
+func bondPurchaseDTO(p domain.BondPurchase, today time.Time, rate float64) BondPurchaseDTO {
 	return BondPurchaseDTO{
 		ID: p.ID, BondName: p.BondName, Platform: p.Platform,
 		InterestRate: p.InterestRate, BuyDate: p.BuyDate, MaturityDate: p.MaturityDate,
@@ -86,10 +95,13 @@ func bondPurchaseDTO(p domain.BondPurchase, today time.Time) BondPurchaseDTO {
 		AccruedInterestUsd: p.AccruedInterestUsd, UsdIdrAtPurchase: p.UsdIdrAtPurchase,
 
 		TotalUsd:          bondTotalUsd(p),
-		TotalIdr:          bondTotalIdr(p),
+		TotalIdr:          bondTotalIdr(p, rate),
+		SettlementUsd:     bondSettlementUsd(p),
+		SettlementIdr:     bondSettlementIdr(p, rate),
 		CouponPerCycleUsd: bondCouponPerCycleUsd(p),
 		CouponPerYearUsd:  bondCouponPerYearUsd(p),
 		PricePct:          bondPricePct(p),
+		YtmPct:            bondYtmPct(p),
 		CouponMonths:      bondCouponMonths(p.MaturityDate),
 		CouponDay:         p.MaturityDate.Time.Day(),
 		IsMatured:         p.MaturityDate.Time.Before(today),
@@ -110,10 +122,13 @@ type BondNameSummaryDTO struct {
 	Quantity          float64           `json:"quantity"`
 	TotalUsd          float64           `json:"total_usd"`
 	TotalIdr          int64             `json:"total_idr"`
+	SettlementUsd     float64           `json:"settlement_usd"`
+	SettlementIdr     int64             `json:"settlement_idr"`
 	AverageUsdIdr     float64           `json:"average_usd_idr"`
 	FaceTotalUsd      float64           `json:"face_total_usd"`
 	CouponPerCycleUsd float64           `json:"coupon_per_cycle_usd"`
 	CouponPerYearUsd  float64           `json:"coupon_per_year_usd"`
+	YtmPct            float64           `json:"ytm_pct"`
 	CouponMonths      []int             `json:"coupon_months"`
 	CouponDay         int               `json:"coupon_day"`
 	IsMatured         bool              `json:"is_matured"`
@@ -127,9 +142,12 @@ type BondLedgerSummaryDTO struct {
 	Bonds            []BondNameSummaryDTO `json:"bonds"`
 	TotalUsd         float64              `json:"total_usd"`
 	TotalIdr         int64                `json:"total_idr"`
+	SettlementUsd    float64              `json:"settlement_usd"`
+	SettlementIdr    int64                `json:"settlement_idr"`
 	AverageUsdIdr    float64              `json:"average_usd_idr"`
 	CouponPerYearUsd float64              `json:"coupon_per_year_usd"`
 	CouponPerYearIdr int64                `json:"coupon_per_year_idr"`
+	YtmPct           float64              `json:"ytm_pct"`
 	LatestUsdIdr     float64              `json:"latest_usd_idr"`
 }
 
@@ -167,13 +185,20 @@ type CouponCalendarDTO struct {
 	CombinedPerYearIdr int64            `json:"combined_per_year_idr"`
 }
 
-// summarizeByName groups purchases into one position per bond name. Input
-// is expected in (bond_name, buy_date) order, which every repo read
+// Input is expected in (bond_name, buy_date) order, which every repo read
 // provides; first-seen order is preserved so the UI ordering is stable.
-func summarizeByName(purchases []domain.BondPurchase, today time.Time) []BondNameSummaryDTO {
+// summarizeByName groups purchases into one position per bond name, with
+// every Rupiah figure converted at rate (the latest logged USD/IDR).
+// SnapshotsService passes 0 — it only reads names and USD totals, since a
+// holding derives its own value_idr downstream.
+func summarizeByName(purchases []domain.BondPurchase, today time.Time, rate float64) []BondNameSummaryDTO {
 	type agg struct {
-		sum       BondNameSummaryDTO
-		platforms map[string]bool
+		sum         BondNameSummaryDTO
+		platforms   map[string]bool
+		ytmWeighted float64
+		// The average rate paid is a historical fact, so it's blended from
+		// the rates actually paid rather than from the displayed figures.
+		costIdrAtPurchase int64
 	}
 	byName := map[string]*agg{}
 	order := []string{}
@@ -208,19 +233,28 @@ func summarizeByName(purchases []domain.BondPurchase, today time.Time) []BondNam
 
 		a.sum.Quantity += p.Quantity
 		a.sum.TotalUsd += bondTotalUsd(p)
-		a.sum.TotalIdr += bondTotalIdr(p)
-		a.sum.FaceTotalUsd += p.FaceValueUsd * p.Quantity
+		a.sum.TotalIdr += bondTotalIdr(p, rate)
+		a.sum.SettlementUsd += bondSettlementUsd(p)
+		a.sum.SettlementIdr += bondSettlementIdr(p, rate)
+		a.costIdrAtPurchase += bondCostIdrAtPurchase(p)
+		a.sum.FaceTotalUsd += bondFaceTotalUsd(p)
 		// Summed rather than recomputed from the group, so a name holding
 		// lots at different rates still totals correctly.
 		a.sum.CouponPerCycleUsd += bondCouponPerCycleUsd(p)
 		a.sum.CouponPerYearUsd += bondCouponPerYearUsd(p)
-		a.sum.Purchases = append(a.sum.Purchases, bondPurchaseDTO(p, today))
+		// Yields don't average — a big lot bought cheap moves the position's
+		// return more than a small one bought dear, so weight by cash in.
+		a.ytmWeighted += bondYtmPct(p) * bondSettlementUsd(p)
+		a.sum.Purchases = append(a.sum.Purchases, bondPurchaseDTO(p, today, rate))
 	}
 
 	out := make([]BondNameSummaryDTO, 0, len(order))
 	for _, name := range order {
 		a := byName[name]
-		a.sum.AverageUsdIdr = averageUsdIdr(a.sum.TotalIdr, a.sum.TotalUsd)
+		a.sum.AverageUsdIdr = averageUsdIdr(a.costIdrAtPurchase, a.sum.SettlementUsd)
+		if a.sum.SettlementUsd > 0 {
+			a.sum.YtmPct = a.ytmWeighted / a.sum.SettlementUsd
+		}
 		a.sum.Platforms = sortedKeys(a.platforms)
 		out = append(out, a.sum)
 	}
@@ -313,10 +347,14 @@ func (s *BondPurchasesService) List(ctx context.Context, userID uuid.UUID) ([]Bo
 	if err != nil {
 		return nil, err
 	}
+	rate, err := s.latestUsdIdr(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
 	today := time.Now().UTC()
 	out := make([]BondPurchaseDTO, 0, len(purchases))
 	for _, p := range purchases {
-		out = append(out, bondPurchaseDTO(p, today))
+		out = append(out, bondPurchaseDTO(p, today, rate))
 	}
 	return out, nil
 }
@@ -329,7 +367,11 @@ func (s *BondPurchasesService) Create(ctx context.Context, userID uuid.UUID, req
 	if err != nil {
 		return BondPurchaseDTO{}, err
 	}
-	return bondPurchaseDTO(p, time.Now().UTC()), nil
+	rate, err := s.latestUsdIdr(ctx, userID)
+	if err != nil {
+		return BondPurchaseDTO{}, err
+	}
+	return bondPurchaseDTO(p, time.Now().UTC(), rate), nil
 }
 
 func (s *BondPurchasesService) Update(ctx context.Context, userID, id uuid.UUID, req BondPurchaseRequest) (BondPurchaseDTO, error) {
@@ -340,7 +382,11 @@ func (s *BondPurchasesService) Update(ctx context.Context, userID, id uuid.UUID,
 	if err != nil {
 		return BondPurchaseDTO{}, err
 	}
-	return bondPurchaseDTO(p, time.Now().UTC()), nil
+	rate, err := s.latestUsdIdr(ctx, userID)
+	if err != nil {
+		return BondPurchaseDTO{}, err
+	}
+	return bondPurchaseDTO(p, time.Now().UTC(), rate), nil
 }
 
 func (s *BondPurchasesService) Delete(ctx context.Context, userID, id uuid.UUID) error {
@@ -359,20 +405,38 @@ func (s *BondPurchasesService) Summary(ctx context.Context, userID uuid.UUID) (B
 	}
 
 	out := BondLedgerSummaryDTO{
-		Bonds:        summarizeByName(purchases, time.Now().UTC()),
+		Bonds:        summarizeByName(purchases, time.Now().UTC(), rate),
 		LatestUsdIdr: rate,
 	}
+	var ytmWeighted, ytmBase float64
 	for _, b := range out.Bonds {
 		out.TotalUsd += b.TotalUsd
 		out.TotalIdr += b.TotalIdr
-		// Matured bonds have stopped paying, so they don't contribute to
-		// forward-looking income even though their cost stays in the totals.
+		out.SettlementUsd += b.SettlementUsd
+		out.SettlementIdr += b.SettlementIdr
+		// Matured bonds have stopped paying, so they contribute neither
+		// forward income nor a forward yield, even though their cost stays
+		// in the totals.
 		if !b.IsMatured {
 			out.CouponPerYearUsd += b.CouponPerYearUsd
+			ytmWeighted += b.YtmPct * b.SettlementUsd
+			ytmBase += b.SettlementUsd
 		}
 	}
-	out.AverageUsdIdr = averageUsdIdr(out.TotalIdr, out.TotalUsd)
+	// Blended from the rates actually paid, not from the displayed Rupiah —
+	// those now convert at the latest rate, which would make this trivially
+	// echo that rate back instead of telling you what you bought dollars at.
+	var costIdr int64
+	var costUsd float64
+	for _, p := range purchases {
+		costIdr += bondCostIdrAtPurchase(p)
+		costUsd += bondSettlementUsd(p)
+	}
+	out.AverageUsdIdr = averageUsdIdr(costIdr, costUsd)
 	out.CouponPerYearIdr = round64(out.CouponPerYearUsd * rate)
+	if ytmBase > 0 {
+		out.YtmPct = ytmWeighted / ytmBase
+	}
 	return out, nil
 }
 

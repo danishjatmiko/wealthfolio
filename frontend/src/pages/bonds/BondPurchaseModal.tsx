@@ -298,7 +298,15 @@ export function BondPurchaseModal({
 
       <div className="computed-box">
         <div>
-          <div className="computed-box-label">Total paid</div>
+          <div className="computed-box-label">Invested (clean)</div>
+          <div className="computed-box-value mono">{fmtUsd(parseNumeric(price))}</div>
+        </div>
+        <div className="computed-box-note">excludes accrued — this is what Assets counts</div>
+      </div>
+
+      <div className="computed-box">
+        <div>
+          <div className="computed-box-label">Total + accrued</div>
           <div className="computed-box-value mono">{fmtUsd(totalUsd)}</div>
         </div>
         <div className="computed-box-note">

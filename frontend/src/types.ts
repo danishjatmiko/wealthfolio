@@ -242,11 +242,17 @@ export interface BondPurchase {
   accrued_interest_usd: number
   usd_idr_at_purchase: number
 
+  /** Invested amount — the clean price, excluding accrued interest. */
   total_usd: number
   total_idr: number
+  /** What actually left the account: clean price + accrued interest. */
+  settlement_usd: number
+  settlement_idr: number
   coupon_per_cycle_usd: number
   coupon_per_year_usd: number
   price_pct: number
+  /** Annualised yield to maturity, percent. */
+  ytm_pct: number
   coupon_months: number[]
   coupon_day: number
   is_matured: boolean
@@ -279,10 +285,13 @@ export interface BondNameSummary {
   quantity: number
   total_usd: number
   total_idr: number
+  settlement_usd: number
+  settlement_idr: number
   average_usd_idr: number
   face_total_usd: number
   coupon_per_cycle_usd: number
   coupon_per_year_usd: number
+  ytm_pct: number
   coupon_months: number[]
   coupon_day: number
   is_matured: boolean
@@ -294,9 +303,14 @@ export interface BondLedgerSummary {
   bonds: BondNameSummary[]
   total_usd: number
   total_idr: number
+  settlement_usd: number
+  settlement_idr: number
+  /** Blended rate actually paid — historical, unlike the displayed IDR
+   *  figures which convert at the latest rate. */
   average_usd_idr: number
   coupon_per_year_usd: number
   coupon_per_year_idr: number
+  ytm_pct: number
   latest_usd_idr: number
 }
 

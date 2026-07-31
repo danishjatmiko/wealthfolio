@@ -43,11 +43,29 @@
    <table> elements anywhere in this app. */
 .bond-row {
   display: grid;
-  grid-template-columns: 2.2fr 0.8fr 1.1fr 0.6fr 1fr 28px;
-  gap: 10px;
+  grid-template-columns: 2fr 0.75fr 0.75fr 1fr 0.5fr 1fr 24px;
+  /* Right-aligned figures sit flush against the next left-aligned heading,
+     so the columns need more air than the usual 10px to read apart. */
+  gap: 18px;
   align-items: center;
   padding: 11px 18px;
   border-bottom: 1px solid var(--divider);
+}
+.bond-sort {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.bond-sort:hover {
+  color: var(--text-primary);
+}
+.bond-sort-arrow {
+  margin-left: 3px;
+  font-size: 8px;
+  vertical-align: middle;
+}
+.bond-ytm {
+  font-weight: 600;
 }
 .bond-row-head {
   font-size: 11px;
@@ -91,7 +109,7 @@
 }
 .bond-purchase-row {
   display: grid;
-  grid-template-columns: 1fr 0.9fr 0.5fr 0.9fr 0.8fr 0.9fr 0.9fr 1.2fr 28px;
+  grid-template-columns: 0.95fr 0.8fr 0.4fr 0.85fr 0.8fr 0.85fr 0.6fr 0.8fr 1.05fr 26px;
   gap: 8px;
   align-items: center;
   padding: 8px 0;

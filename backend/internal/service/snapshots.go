@@ -146,7 +146,7 @@ func (s *SnapshotsService) bondHoldingRequests(ctx context.Context, userID uuid.
 		return domain.Category{}, nil, err
 	}
 
-	summaries := summarizeByName(active, asOf.Time)
+	summaries := summarizeByName(active, asOf.Time, 0)
 	reqs := make([]HoldingRequest, 0, len(summaries))
 	for _, sum := range summaries {
 		usd := sum.TotalUsd
