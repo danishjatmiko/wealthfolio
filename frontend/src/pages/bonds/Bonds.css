@@ -33,10 +33,24 @@
   color: var(--text-muted-2);
   margin-top: 3px;
 }
+/* Sits inline with the big USD figure — kept small and muted so the dollar
+   amount stays the thing you read first. */
+.bond-summary-ytm {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.bond-summary-rate {
+  color: var(--text-faint);
+}
 
 .bonds-table-card {
   padding: 0;
-  overflow: hidden;
+  /* The stacked mobile layout only kicks in at 560px, but seven columns
+     need more room than that — between the two the columns would overlap.
+     Scrolling the table sideways keeps it readable in that band. */
+  overflow-x: auto;
 }
 
 /* Grid fake-table, same approach as the rates history table — there are no
@@ -50,6 +64,7 @@
   align-items: center;
   padding: 11px 18px;
   border-bottom: 1px solid var(--divider);
+  min-width: 760px;
 }
 .bond-sort {
   cursor: pointer;
@@ -115,6 +130,7 @@
   padding: 8px 0;
   font-size: 12px;
   border-bottom: 1px solid var(--divider);
+  min-width: 760px;
 }
 .bond-purchase-row:last-of-type {
   border-bottom: none;
@@ -161,6 +177,7 @@
     position: relative;
     grid-template-columns: 1fr 1fr;
     row-gap: 3px;
+    min-width: 0;
   }
   .bond-name {
     grid-column: 1 / -1;
@@ -176,6 +193,7 @@
     grid-template-columns: 1fr 1fr;
     row-gap: 3px;
     padding-right: 34px;
+    min-width: 0;
   }
   .bond-purchase-row .a-edit-btn {
     position: absolute;

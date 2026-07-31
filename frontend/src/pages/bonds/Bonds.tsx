@@ -127,6 +127,15 @@ export function Bonds() {
     }
   }
 
+  // Every Rupiah figure on this page is a conversion at the latest logged
+  // rate, so it's worth saying which rate — otherwise the numbers look
+  // unexplained when the rate moves. Omitted entirely if none is logged.
+  const latestRate = summary?.latest_usd_idr ?? 0
+  const rateNote =
+    latestRate > 0 ? (
+      <span className="bond-summary-rate"> @ {fmtUsdIdrRate(latestRate)}</span>
+    ) : null
+
   return (
     <div>
       <div className="row-wrap bonds-header">
@@ -143,7 +152,10 @@ export function Bonds() {
         <div className="card bond-summary-card">
           <div className="bond-summary-label">Invested</div>
           <div className="mono bond-summary-value">{fmtUsd(summary?.total_usd ?? 0)}</div>
-          <div className="mono bond-summary-sub">{fmtExact(summary?.total_idr ?? 0)}</div>
+          <div className="mono bond-summary-sub">
+            {fmtExact(summary?.total_idr ?? 0)}
+            {rateNote}
+          </div>
         </div>
         <div className="card bond-summary-card">
           <div className="bond-summary-label">Paid incl. accrued</div>
@@ -163,9 +175,15 @@ export function Bonds() {
         </div>
         <div className="card bond-summary-card">
           <div className="bond-summary-label">Coupons per year</div>
-          <div className="mono bond-summary-value">{fmtUsd(summary?.coupon_per_year_usd ?? 0)}</div>
+          <div className="mono bond-summary-value">
+            {fmtUsd(summary?.coupon_per_year_usd ?? 0)}
+            {/* YTM sits with the dollar figure because it's a return on the
+                USD position; the Rupiah line is just a conversion of it. */}
+            <span className="bond-summary-ytm">{(summary?.ytm_pct ?? 0).toFixed(2)}% YTM</span>
+          </div>
           <div className="mono bond-summary-sub">
-            {fmtExact(summary?.coupon_per_year_idr ?? 0)} · {(summary?.ytm_pct ?? 0).toFixed(2)}% YTM
+            {fmtExact(summary?.coupon_per_year_idr ?? 0)}
+            {rateNote}
           </div>
         </div>
       </div>
