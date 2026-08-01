@@ -34,7 +34,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/progress', label: 'Progress', icon: '∿' },
   { to: '/rates', label: 'Rates', icon: '¤' },
   { to: '/bonds', label: 'Bonds', icon: '◈', desktopOnly: true },
-  { to: '/simulation', label: 'Simulation', icon: '↗', desktopOnly: true },
+  { to: '/simulation', label: 'Simulation', icon: '↗' },
 ]
 
 export const PAGE_TITLES: Record<string, string> = {
