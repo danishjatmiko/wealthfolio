@@ -16,22 +16,32 @@
 
 	handle {
 		root * /srv
-
-		# index.html changes on every deploy without its own filename ever
-		# changing, so it must always be revalidated — otherwise a client
-		# (notably the Android app's WebView, which loads the page exactly
-		# once per app launch and never reloads it — see WebTabScreen.kt)
-		# can keep serving a stale index.html that points at JS/CSS bundle
-		# filenames no longer on the server, indefinitely.
-		header Cache-Control "no-cache"
-
-		# Vite fingerprints every filename under /assets with a content
-		# hash, so unlike index.html these never change without also
-		# changing name — safe to cache for a year.
 		@assets path /assets/*
-		header @assets Cache-Control "public, max-age=31536000, immutable"
 
-		try_files {path} /index.html
-		file_server
+		# Wrapped in an explicit route so these run in the exact order
+		# written — Caddy's automatic directive sorting doesn't guarantee
+		# that otherwise, and without it both header directives ended up
+		# applying to /assets/* requests, with whichever Caddy happened to
+		# run last (no-cache) winning.
+		route {
+			# index.html changes on every deploy without its own filename
+			# ever changing, so it must always be revalidated — otherwise a
+			# client (notably the Android app's WebView, which loads the
+			# page exactly once per app launch and never reloads it — see
+			# WebTabScreen.kt) can keep serving a stale index.html that
+			# points at JS/CSS bundle filenames no longer on the server,
+			# indefinitely.
+			header Cache-Control "no-cache"
+
+			# Vite fingerprints every filename under /assets with a content
+			# hash, so unlike index.html these never change without also
+			# changing name — safe to cache for a year. Written after the
+			# line above so it overwrites that default for matching
+			# requests only.
+			header @assets Cache-Control "public, max-age=31536000, immutable"
+
+			try_files {path} /index.html
+			file_server
+		}
 	}
 }
