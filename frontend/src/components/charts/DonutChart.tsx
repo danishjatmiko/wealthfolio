@@ -56,7 +56,13 @@ export function DonutChart({
 
   const segments = visible.map((d, i) => {
     const frac = d.value / total
-    const dasharray = `${(frac * C).toFixed(2)} ${(C - frac * C).toFixed(2)}`
+    // Overshoot each segment's far edge by a hair — the next segment (or,
+    // for the last one, the first) is drawn on top of it in DOM order and
+    // covers the overlap, so this can't be seen. Without it, floating-point
+    // rounding can leave a hairline gap at a seam, most visible where a
+    // very thin slice sits next to a much larger one.
+    const segLen = Math.min(C, frac * C + 0.75)
+    const dasharray = `${segLen.toFixed(2)} ${Math.max(0, C - segLen).toFixed(2)}`
     const dashoffset = (-acc * C).toFixed(2)
     acc += frac
     const dimmed = activeIdx !== null && activeIdx !== i

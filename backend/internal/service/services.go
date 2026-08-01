@@ -17,6 +17,7 @@ type Services struct {
 	BudgetEnvelopes *BudgetEnvelopesService
 	FixedExpenses   *FixedExpensesService
 	BondPurchases   *BondPurchasesService
+	BigExpenses     *BigExpensesService
 	Dashboard       *DashboardService
 	Progress        *ProgressService
 	Targets         *TargetsService
@@ -43,6 +44,7 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 		BudgetEnvelopes: NewBudgetEnvelopesService(repos),
 		FixedExpenses:   NewFixedExpensesService(repos),
 		BondPurchases:   bonds,
+		BigExpenses:     NewBigExpensesService(repos),
 		Dashboard:       NewDashboardService(repos, bonds),
 		Progress:        NewProgressService(repos),
 		Targets:         NewTargetsService(repos, bonds),

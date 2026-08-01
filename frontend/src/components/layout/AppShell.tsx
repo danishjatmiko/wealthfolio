@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { NAV_ITEMS, PAGE_TITLES } from './nav'
 import { useAuth } from '../../context/AuthContext'
@@ -44,6 +44,17 @@ export function AppShell() {
   const isNativeApp = !!window.WealthfolioNative
   const sidebarNavItems = NAV_ITEMS.filter((item) => !(item.desktopOnly && isNativeApp))
   const bottomNavItems = NAV_ITEMS.filter((item) => !item.desktopOnly)
+  const primaryBottomItems = bottomNavItems.filter((item) => item.bottomPrimary)
+  const moreBottomItems = bottomNavItems.filter((item) => !item.bottomPrimary)
+
+  // The "More" sheet is its own affordance, not a route — closing it when
+  // the route changes (including navigating to one of its own items) keeps
+  // it from staying open over the next page.
+  const [moreOpen, setMoreOpen] = useState(false)
+  useEffect(() => {
+    setMoreOpen(false)
+  }, [location.pathname])
+  const isMoreActive = moreBottomItems.some((item) => location.pathname === item.to)
 
   return (
     <div className="app-shell">
@@ -180,8 +191,24 @@ export function AppShell() {
           <Outlet />
         </main>
 
+        {moreOpen && (
+          <div className="bottom-nav-sheet">
+            {moreBottomItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) => 'bottom-nav-sheet-item' + (isActive ? ' active' : '')}
+              >
+                <span className="bottom-navi-icon">{item.icon}</span>
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        )}
+
         <nav className="bottom-nav">
-          {bottomNavItems.map((item) => (
+          {primaryBottomItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -192,6 +219,17 @@ export function AppShell() {
               <span className="bottom-navi-label">{item.label}</span>
             </NavLink>
           ))}
+          {moreBottomItems.length > 0 && (
+            <button
+              type="button"
+              className={'bottom-navi bottom-navi-more' + (isMoreActive ? ' bottom-navi-active' : '')}
+              onClick={() => setMoreOpen((open) => !open)}
+              aria-expanded={moreOpen}
+            >
+              <span className="bottom-navi-icon">⋯</span>
+              <span className="bottom-navi-label">More</span>
+            </button>
+          )}
         </nav>
       </div>
     </div>

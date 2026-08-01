@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMoney } from '../context/MoneyVisibilityContext'
 import { useDashboard } from '../hooks/useDashboard'
 import { DonutChart, type DonutDatum } from '../components/charts/DonutChart'
+import { CategoryRowList } from '../components/CategoryRowList'
 import { formatShortDate } from '../lib/format'
 import './Dashboard.css'
 
@@ -83,15 +84,7 @@ export function Dashboard() {
 
           <div className="card">
             <div className="card-title">By category</div>
-            {allocation.length === 0 && <div className="empty-state">No holdings yet.</div>}
-            {allocation.map((c) => (
-              <div className="dash-cat-row" key={c.category_key}>
-                <span className="dash-cat-swatch" style={{ background: c.color_oklch }} />
-                <span className="dash-cat-name">{c.label}</span>
-                <span className="mono dash-cat-val">{fmt(c.value_idr)}</span>
-                <span className="mono dash-cat-pct">{c.percent.toFixed(2)}%</span>
-              </div>
-            ))}
+            <CategoryRowList rows={allocation} fmt={fmt} emptyMessage="No holdings yet." />
             {equity.as_of_date && <div className="dash-updated">As of {formatShortDate(equity.as_of_date)}</div>}
           </div>
         </div>
@@ -113,17 +106,7 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-            {expense.actual_by_envelope.length === 0 && (
-              <div className="empty-state">No expenses logged yet.</div>
-            )}
-            {expense.actual_by_envelope.map((c) => (
-              <div className="dash-cat-row" key={c.category_key}>
-                <span className="dash-cat-swatch" style={{ background: c.color_oklch }} />
-                <span className="dash-cat-name">{c.label}</span>
-                <span className="mono dash-cat-val">{fmt(c.value_idr)}</span>
-                <span className="mono dash-cat-pct">{c.percent.toFixed(2)}%</span>
-              </div>
-            ))}
+            <CategoryRowList rows={expense.actual_by_envelope} fmt={fmt} emptyMessage="No expenses logged yet." />
           </div>
 
           <div className="card dash-donut-card">
@@ -144,17 +127,7 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-            {expense.committed_by_envelope.length === 0 && (
-              <div className="empty-state">No budget envelopes yet.</div>
-            )}
-            {expense.committed_by_envelope.map((c) => (
-              <div className="dash-cat-row" key={c.category_key}>
-                <span className="dash-cat-swatch" style={{ background: c.color_oklch }} />
-                <span className="dash-cat-name">{c.label}</span>
-                <span className="mono dash-cat-val">{fmt(c.value_idr)}</span>
-                <span className="mono dash-cat-pct">{c.percent.toFixed(2)}%</span>
-              </div>
-            ))}
+            <CategoryRowList rows={expense.committed_by_envelope} fmt={fmt} emptyMessage="No budget envelopes yet." />
           </div>
         </div>
       </div>

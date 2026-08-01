@@ -312,6 +312,32 @@
 .bottom-navi-active .bottom-navi-label {
   font-weight: 600;
 }
+.bottom-navi-more {
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.bottom-nav-sheet {
+  display: none;
+}
+.bottom-nav-sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 10px;
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--text-body-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+.bottom-nav-sheet-item.active {
+  color: var(--accent);
+  font-weight: 600;
+}
 
 @container (max-width: 560px) {
   .sidebar {
@@ -319,6 +345,15 @@
   }
   .bottom-nav {
     display: flex;
+  }
+  .bottom-nav-sheet {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--sidebar-bg);
+    flex-shrink: 0;
   }
   .mobile-user-bar {
     display: flex;

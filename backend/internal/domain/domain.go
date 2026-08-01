@@ -137,6 +137,21 @@ type BondPurchase struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 }
 
+// BigExpense mirrors the big_expenses table: one large one-off purchase
+// logged by hand — a bond, a laptop, a hotel stay — kept separate from the
+// recurring monthly envelope budget in FixedExpense. Permanent and
+// user-scoped; never copies forward, never locks.
+type BigExpense struct {
+	ID          uuid.UUID `json:"id"`
+	UserID      uuid.UUID `json:"-"`
+	Name        string    `json:"name"`
+	AmountIdr   int64     `json:"amount_idr"`
+	ExpenseDate Date      `json:"expense_date"`
+	Category    string    `json:"category"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 // ExpensePeriod mirrors the expense_periods table: a custom pay-cycle
 // window (25th of one month through the 24th of the next) rather than a
 // calendar month. Never locks — every period stays editable indefinitely.

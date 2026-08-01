@@ -1,5 +1,8 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type {
+  BigExpense,
+  BigExpenseInput,
+  BigExpenseSummary,
   BondLedgerSummary,
   BondPurchase,
   BondPurchaseInput,
@@ -164,6 +167,13 @@ export const api = {
     update: (id: string, input: BondPurchaseInput) =>
       put<BondPurchase>(`/bond-purchases/${id}`, input),
     remove: (id: string) => del<void>(`/bond-purchases/${id}`),
+  },
+  bigExpenses: {
+    list: () => get<BigExpense[]>('/big-expenses'),
+    summary: (year: number) => get<BigExpenseSummary>(`/big-expenses/summary?year=${year}`),
+    create: (input: BigExpenseInput) => post<BigExpense>('/big-expenses', input),
+    update: (id: string, input: BigExpenseInput) => put<BigExpense>(`/big-expenses/${id}`, input),
+    remove: (id: string) => del<void>(`/big-expenses/${id}`),
   },
   passiveIncome: {
     list: () => get<PassiveIncomeSource[]>('/passive-income'),

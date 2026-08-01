@@ -24,6 +24,9 @@
   overflow-y: auto;
   box-shadow: var(--shadow-modal);
 }
+.modal-card-wide {
+  width: min(640px, 100%);
+}
 
 .modal-header {
   padding: 22px 22px 8px;

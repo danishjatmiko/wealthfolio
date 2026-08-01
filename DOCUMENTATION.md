@@ -204,6 +204,7 @@ Module path `wealthfolio/backend`, Go 1.25. Key deps: `chi/v5` + `go-chi/cors`, 
 | `DebtEntry` | `debt_entries` | `Name`, `Type`, `ValueIdr`, `Direction` (i_owe / owed_to_me) |
 | `PassiveIncomeSource` | `passive_income_sources` (+ `categories` join) | `CategoryKey`, `CategoryLabel`, `Name`, `PerYearIdr` |
 | `BondPurchase` | `bond_purchases` | `BondName`, `Platform`, `InterestRate` (percent), `BuyDate`, `MaturityDate`, `Quantity`, `FaceValueUsd`, `PriceUsd` (whole lot), `AccruedInterestUsd`, `UsdIdrAtPurchase` — a pure column mirror; totals/coupons/pay-dates are derived in `service/bondcalc.go` |
+| `BigExpense` | `big_expenses` | `Name`, `AmountIdr`, `ExpenseDate`, `Category` — a manually-logged large one-off purchase, kept separate from the monthly envelope budget in `FixedExpense`; never copies forward, never locks |
 | `ExpensePeriod` | `expense_periods` | `StartDate`, `EndDate` |
 | `BudgetEnvelope` | `budget_envelopes` | `PeriodID`, `Name`, `CommittedAmountIdr` |
 | `FixedExpense` | `fixed_expenses` | `PeriodID`, `EnvelopeID`, `Name`, `AmountIdr`, `Source *string` (nil unless notification-created), `Notes *string` |
@@ -371,6 +372,8 @@ Located in `backend/migrations/`, embedded via `//go:embed *.sql`, run automatic
 | 00017 | `fixed_expense_source.sql` | Adds nullable, write-once `source` column to `fixed_expenses` |
 | 00018 | `fixed_expense_notes.sql` | Adds nullable, manual-entry-only `notes` column to `fixed_expenses` |
 | 00019 | `bond_purchases.sql` | `bond_purchases` — the permanent, user-scoped ledger of individual USD bond buys that Assets' Bonds USD rows are now derived from |
+| 00020 | `piutang_category.sql` | Seeds a `piutang` (receivable) asset category, mirroring `owed_to_me` debt entries onto the Assets page |
+| 00021 | `big_expenses.sql` | `big_expenses` — the permanent, user-scoped ledger of large one-off purchases behind the Big Expense page |
 
 ---
 
@@ -472,6 +475,16 @@ bond_purchases            -- permanent ledger; never copies forward, never locks
   usd_idr_at_purchase numeric(14,2)  -- frozen; the rate actually paid
   created_at / updated_at timestamptz
   INDEX (user_id, bond_name)
+
+big_expenses               -- permanent ledger; never copies forward, never locks
+  id uuid PK
+  user_id uuid FK → users
+  name text
+  amount_idr bigint          -- full/raw IDR
+  expense_date date
+  category text                -- free text (Travel / Home Appliance / … / Other)
+  created_at / updated_at timestamptz
+  INDEX (user_id, expense_date DESC)
 
 expense_periods
   id uuid PK
@@ -660,6 +673,14 @@ POST /bond-purchases
 
 `GET /bond-purchases/summary` rolls purchases up per `bond_name` (nesting the purchases behind each) plus portfolio totals and the blended `average_usd_idr`. `GET /bond-purchases/coupon-calendar?year=2026` returns exactly 12 month buckets — zero months included, since the UI still needs a row for them — each with a `color_oklch` slice colour and the exact-dated `entries[]` behind it, alongside the manual passive-income totals for a combined figure. `POST /snapshots/{date}/sync-bonds` rebuilds that snapshot's Bonds USD holdings from the ledger (latest snapshot only, `409` otherwise).
 
+### Big Expenses
+
+```json
+POST /big-expenses
+{ "name": "Hotel Bali 2 malam", "amount_idr": 3600000, "expense_date": "2026-07-25", "category": "Travel" }
+```
+A blank `category` defaults to `"Other"` server-side. `GET /big-expenses/summary?year=2026` buckets that year's entries into 12 month rows (zero months included, entries nested per month) and by category (each with a backend-assigned `color_oklch`, cycled alphabetically so a category's colour stays stable across requests), plus `all_time_idr`/`all_time_count` across every year on file so the hero cards don't need a second call.
+
 ### Passive Income / Targets
 
 ```json
@@ -726,20 +747,22 @@ Creating a snapshot dated *before* the current latest immediately locks it (`is_
 | `/assets` | `Assets` (+ `AssetModal`, `NewSnapshotModal`) | Snapshot picker, category-filtered holdings table, add/edit/copy-forward |
 | `/debts` | `Debts` (+ `DebtModal`, `DebtSnapshotModal`) | Mirrors Assets: "I Owe"/"Owed to Me" columns, debt-to-equity ratio banner |
 | `/expenses` | `MonthlyExpenses` (+ `FixedExpenseModal`, `NewPeriodModal`, `BudgetEnvelopeModal`) | Period picker, envelope cards with actual-vs-committed + progress bar, fixed-expense rows (with a source badge for notification-created ones), new period/envelope/expense flows |
-| `/passive-income` | `PassiveIncome` (+ `PassiveIncomeModal`) | Source list with per-source bars, total/year vs target, monthly equivalents — *hidden from nav, but fully functional* |
+| `/big-expenses` | `BigExpenses` (+ `BigExpenseModal`) | Hero totals (this year / all-time / biggest category), a year-scoped month-by-month bar chart + category donut with click-to-drill-down, and the full sortable ledger table below with a category chip filter |
+| `/passive-income` | `PassiveIncome` (+ `PassiveIncomeModal`) | Bond coupon calendar (year picker, month bars, category donut, click-to-drill-down) plus manual income sources with per-source bars |
 | `/targets` | `Targets` (+ `TargetModal`) | Goal cards with progress bars — *hidden from nav, but fully functional* |
 | `/progress` | `Progress` | Line charts (monthly/quarterly/yearly): net-equity trend and debt trend (with a secondary debt-ratio series) |
 | `/rates` | `Rates` | Latest gold/USD summary cards, new-entry form, full price history table |
+| `/bonds` | `Bonds` (+ `BondPurchaseModal`) | Sortable per-bond-name ledger (Coupon/YTM/Matures/Qty/Invested), expandable to individual purchases, hero cards for invested/paid/average rate/coupons-per-year — *desktop only* |
 | *(standalone)* | `Login` (`pages/auth/`) | Google OAuth button + email/password form; not wrapped in `AppShell` |
 
 ### 8.2 Hooks
 
-One React Query hook per API resource in `src/hooks/`, each mutation invalidating its own query key plus any derived ones (`dashboard`, `targets`, `progress`, `debtProgress` as relevant): `useCategories`, `useRates`, `useSnapshots`, `useHoldings`, `useDebtSnapshots`, `useDebtEntries` (bundled in `useDebtSnapshots.ts`), `useDebtProgress`, `useExpensePeriods`, `useBudgetEnvelopes`, `useFixedExpenses`, `usePassiveIncome`, `useTargets`, `useDashboard`, `useProgress`. `usePullToRefresh` is the odd one out — a reusable touch-gesture hook, not API-backed (see below).
+One React Query hook per API resource in `src/hooks/`, each mutation invalidating its own query key plus any derived ones (`dashboard`, `targets`, `progress`, `debtProgress` as relevant): `useCategories`, `useRates`, `useSnapshots`, `useHoldings`, `useDebtSnapshots`, `useDebtEntries` (bundled in `useDebtSnapshots.ts`), `useDebtProgress`, `useExpensePeriods`, `useBudgetEnvelopes`, `useFixedExpenses`, `useBigExpenses` (list/summary/create/update/delete), `usePassiveIncome`, `useBondPurchases` (list/summary/coupon-calendar/create/update/delete, also invalidating `dashboard`/`targets`), `useTargets`, `useDashboard`, `useProgress`. `usePullToRefresh` is the odd one out — a reusable touch-gesture hook, not API-backed (see below).
 
 ### 8.3 Components
 
 - **`layout/AppShell.tsx`** — sidebar (nav, snapshot net-worth footer, user card, sign-out), header (title, date, hide/show-values toggle, and — only inside the Android WebView, detected via `window.WealthfolioNative` — sync/settings icon links), a mobile user bar, the routed `<Outlet/>`, and a bottom nav for mobile. Implements pull-to-refresh: wraps `<main>` (keyed on route, so it fully remounts on navigation — which is why `usePullToRefresh` returns a *callback* ref, not a plain `RefObject`, to correctly re-attach after each remount) and calls `queryClient.refetchQueries({ type: 'active' })` on a completed pull gesture.
-- **`layout/nav.ts`** — `NAV_ITEMS` (the 6 linked routes) and `PAGE_TITLES`.
+- **`layout/nav.ts`** — `NAV_ITEMS` (every linked route, `desktopOnly` ones hidden from the mobile bottom nav) and `PAGE_TITLES`.
 - **`Modal.tsx`** — the generic modal shell every add/edit form uses.
 - **`charts/DonutChart.tsx`** / **`charts/LineChart.tsx`** — hand-rolled SVG charts with hover interaction; `LineChart` supports an optional secondary dashed series on its own right-hand axis (used for debt-ratio alongside debt totals).
 

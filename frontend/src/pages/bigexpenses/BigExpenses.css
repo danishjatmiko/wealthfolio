@@ -1,0 +1,247 @@
+.bigexp-header {
+  margin-bottom: 14px;
+}
+.bigexp-header-copy {
+  font-size: 13px;
+  color: var(--text-body-secondary);
+  max-width: 46ch;
+}
+
+.bigexp-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.bigexp-hero-card {
+  padding: 16px 18px;
+}
+.bigexp-hero-value {
+  font-size: 19px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.bigexp-hero-sub {
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+  margin-top: 3px;
+}
+
+.bigexp-year-row {
+  margin-bottom: 4px;
+}
+
+.bigexp-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+  margin-top: 10px;
+  margin-bottom: 18px;
+}
+
+/* One clickable row per calendar month, same idiom as the Passive Income
+   coupon calendar this was modeled on. */
+.bigexp-month-row {
+  margin-bottom: 11px;
+  cursor: pointer;
+  padding: 4px 6px;
+  margin-left: -6px;
+  margin-right: -6px;
+  border-radius: var(--radius-input);
+}
+.bigexp-month-row:last-of-type {
+  margin-bottom: 0;
+}
+.bigexp-month-row:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+.bigexp-month-row-active {
+  background: var(--accent-soft);
+}
+.bigexp-month-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+.bigexp-month-val {
+  font-weight: 600;
+}
+
+/* Mirrors .dash-donut-* and .passive-donut-* — each page duplicates its own
+   copy rather than importing another page's CSS, same convention as
+   .line-chart-tooltip in Progress.css/Simulation.css. */
+.bigexp-donut-wrap {
+  position: relative;
+  /* Must match DonutChart's default size prop (190) — the center overlay
+     below centers on THIS box, so any mismatch between the two offsets the
+     text from the ring's actual visual center. */
+  width: 190px;
+  height: 190px;
+  margin: 0 auto 14px;
+}
+.bigexp-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.bigexp-donut-center-label {
+  font-size: 11px;
+  color: var(--text-muted-2);
+}
+.bigexp-donut-center-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bigexp-cat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12.5px;
+}
+.bigexp-cat-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.bigexp-cat-name {
+  flex: 1;
+  min-width: 0;
+}
+.bigexp-cat-val {
+  font-weight: 600;
+}
+.bigexp-cat-pct {
+  color: var(--text-muted-2);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* The month popup's entry list — same sortable grid as the main ledger
+   table below, just narrower (inside a 440px modal), so it scrolls
+   sideways rather than squeezing the columns unreadable. */
+.bigexp-modal-table {
+  overflow-x: auto;
+  margin: 0 -22px;
+  padding: 0 22px;
+}
+.bigexp-modal-table .bigexp-row {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.bigexp-chips {
+  margin-bottom: 10px;
+}
+
+.bigexp-table-card {
+  padding: 0;
+  overflow-x: auto;
+}
+
+/* Grid fake-table, same approach as every other ledger page in this app —
+   there are no <table> elements anywhere. */
+.bigexp-row {
+  display: grid;
+  grid-template-columns: 0.9fr 2fr 1fr 1fr 24px;
+  gap: 14px;
+  align-items: center;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--divider);
+  min-width: 560px;
+  cursor: pointer;
+}
+.bigexp-row:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+.bigexp-row-head {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted-2);
+  border-bottom: 1px solid var(--divider-2);
+  cursor: default;
+}
+.bigexp-row-head:hover {
+  background: none;
+}
+.bigexp-sort {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.bigexp-sort:hover {
+  color: var(--text-primary);
+}
+.bigexp-sort-arrow {
+  margin-left: 3px;
+  font-size: 8px;
+  vertical-align: middle;
+}
+.bigexp-num {
+  text-align: right;
+}
+.bigexp-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  min-width: 0;
+}
+.bigexp-cat-badge {
+  margin-left: 0;
+}
+
+.bigexp-net-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--sidebar-bg);
+  font-size: 13px;
+}
+.bigexp-net-label {
+  flex: 1;
+  font-weight: 600;
+}
+.bigexp-net-sub {
+  color: var(--text-muted-2);
+  margin-right: 16px;
+}
+.bigexp-net-total {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+@container (max-width: 560px) {
+  .bigexp-grid {
+    grid-template-columns: 1fr;
+  }
+  .bigexp-row-head {
+    display: none;
+  }
+  .bigexp-row {
+    position: relative;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 3px;
+    min-width: 0;
+    padding-right: 34px;
+  }
+  .bigexp-name {
+    grid-column: 1 / -1;
+  }
+  .bigexp-num {
+    text-align: left;
+  }
+  .bigexp-row .a-edit-btn {
+    position: absolute;
+    top: 8px;
+    right: 0;
+  }
+}

@@ -345,6 +345,51 @@ export interface CouponCalendar {
   combined_per_year_idr: number
 }
 
+/** One manually-logged big expense — a bond, a laptop, a hotel stay. Kept
+ *  separate from the recurring monthly envelope budget in FixedExpense. */
+export interface BigExpense {
+  id: string
+  name: string
+  amount_idr: number
+  expense_date: string
+  category: string
+  created_at: string
+  updated_at: string
+}
+
+export interface BigExpenseInput {
+  name: string
+  amount_idr: number
+  expense_date: string
+  category: string
+}
+
+export interface BigExpenseMonth {
+  month: number
+  label: string
+  amount_idr: number
+  percent: number
+  entries: BigExpense[]
+}
+
+export interface BigExpenseCategory {
+  category: string
+  color_oklch: string
+  amount_idr: number
+  percent: number
+  count: number
+}
+
+/** Big Expense ledger summary for one reference year. `months` is always
+ *  exactly 12 — a month with no entries still needs a row. */
+export interface BigExpenseSummary {
+  reference_year: number
+  months: BigExpenseMonth[]
+  categories: BigExpenseCategory[]
+  total_idr: number
+  entries_count: number
+}
+
 export type TargetMetricType =
   | 'equity'
   | 'gold_grams'

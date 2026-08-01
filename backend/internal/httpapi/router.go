@@ -121,6 +121,12 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Put("/bond-purchases/{id}", h.updateBondPurchase)
 			r.Delete("/bond-purchases/{id}", h.deleteBondPurchase)
 
+			r.Get("/big-expenses", h.listBigExpenses)
+			r.Get("/big-expenses/summary", h.getBigExpensesSummary)
+			r.Post("/big-expenses", h.createBigExpense)
+			r.Put("/big-expenses/{id}", h.updateBigExpense)
+			r.Delete("/big-expenses/{id}", h.deleteBigExpense)
+
 			r.Get("/passive-income", h.listPassiveIncome)
 			r.Post("/passive-income", h.createPassiveIncome)
 			r.Put("/passive-income/{id}", h.updatePassiveIncome)
