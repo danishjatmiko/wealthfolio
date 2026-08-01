@@ -28,12 +28,26 @@ import com.wealthfolio.mobile.auth.TokenStore
  * before touching onNavigateNative (which drives Compose state) is
  * required, not just cautious.
  */
-private class WealthfolioJsBridge(private val onNavigateNative: (String) -> Unit) {
+private class WealthfolioJsBridge(
+    private val onNavigateNative: (String) -> Unit,
+    private val webView: WebView,
+) {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     @JavascriptInterface
     fun openNative(route: String) {
         mainHandler.post { onNavigateNative(route) }
+    }
+
+    // Reloads the current URL (not just AppConfig.WEB_ORIGIN), so a pull-
+    // to-refresh on e.g. /big-expenses lands back on that same page rather
+    // than bouncing to the dashboard. Called from usePullToRefresh
+    // (AppShell.tsx) — see index.html's Cache-Control: no-cache, which is
+    // what makes this actually fetch a fresh bundle instead of Caddy's
+    // year-long immutable cache on /assets/* short-circuiting it.
+    @JavascriptInterface
+    fun reload() {
+        mainHandler.post { webView.reload() }
     }
 }
 
@@ -81,7 +95,7 @@ fun WebTabScreen(tokenStore: TokenStore, onNavigateNative: (String) -> Unit) {
                 // supports no popups at all out of the box.
                 settings.setSupportMultipleWindows(true)
                 settings.javaScriptCanOpenWindowsAutomatically = true
-                addJavascriptInterface(WealthfolioJsBridge(onNavigateNative), "WealthfolioNative")
+                addJavascriptInterface(WealthfolioJsBridge(onNavigateNative, this), "WealthfolioNative")
                 webChromeClient = object : WebChromeClient() {
                     // The site is single-origin (see shouldOverrideUrlLoading
                     // below), so a "popup" should just navigate this same

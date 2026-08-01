@@ -29,9 +29,20 @@ export function AppShell() {
   const todayLabel = useTodayLabel()
   const title = PAGE_TITLES[location.pathname] ?? 'Etherna'
   const queryClient = useQueryClient()
-  const { ref: pullRef, pullDistance, refreshing } = usePullToRefresh<HTMLElement>(() =>
-    queryClient.refetchQueries({ type: 'active' }),
-  )
+  const { ref: pullRef, pullDistance, refreshing } = usePullToRefresh<HTMLElement>(() => {
+    // Inside the Android app, a swipe-down should behave like a real
+    // reload — the WebView is only ever loaded once per app launch (see
+    // WebTabScreen.kt), so a plain data refetch can leave it running a
+    // stale JS bundle indefinitely even past a fresh deploy. Falls back to
+    // a data-only refetch on an app build predating this bridge method,
+    // and always on plain mobile/desktop web, where there's no WebView to
+    // reload in the first place.
+    if (window.WealthfolioNative?.reload) {
+      window.WealthfolioNative.reload()
+      return
+    }
+    return queryClient.refetchQueries({ type: 'active' })
+  })
 
   // desktopOnly nav items (e.g. Simulation) never appear in the bottom nav
   // at all — that alone is enough on the web, since the sidebar that DOES
