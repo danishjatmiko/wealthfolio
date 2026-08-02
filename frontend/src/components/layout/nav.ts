@@ -21,7 +21,9 @@ export interface NavItem {
 //
 // Labels are kept short because the mobile bottom bar's "More" sheet still
 // only has half its normal width per item; PAGE_TITLES below carries the
-// full names for page headers.
+// full names for page headers. "Passive Income" is the practical ceiling —
+// it fills a More-sheet cell at 375px without wrapping, so anything longer
+// needs checking there before it goes in.
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: '◫', bottomPrimary: true },
   { to: '/assets', label: 'Assets', icon: '▤', bottomPrimary: true },
@@ -30,7 +32,7 @@ export const NAV_ITEMS: NavItem[] = [
   // Not desktopOnly — logging a big purchase is exactly the kind of thing
   // that happens on a phone, in the moment, not at a desk.
   { to: '/big-expenses', label: 'Big Exp', icon: '▣' },
-  { to: '/passive-income', label: 'Passive', icon: '⊛' },
+  { to: '/passive-income', label: 'Passive Income', icon: '⊛' },
   { to: '/progress', label: 'Progress', icon: '∿' },
   { to: '/rates', label: 'Rates', icon: '¤' },
   { to: '/bonds', label: 'Bonds', icon: '◈', desktopOnly: true },

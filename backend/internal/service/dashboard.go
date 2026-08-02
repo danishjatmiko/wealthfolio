@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sort"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -119,10 +120,16 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	}
 
 	// Passive income and its target exist independently of snapshots.
-	// Bond coupons count alongside hand-entered sources — TargetsService
+	// Bond coupons count alongside hand-entered entries — TargetsService
 	// adds the same summand for metric_type "passive_income", so the two
 	// pages always report the same figure.
-	perYear, err := s.repos.PassiveIncome.Sum(ctx, userID)
+	//
+	// The two halves are measured differently on purpose: manual entries are
+	// dated receipts, so only the current year's count, while coupons stay
+	// the forward-looking full-year figure. That makes this a floor early in
+	// the year — the dividends simply haven't been paid yet — that fills in
+	// as the year runs, rather than a projection of income never received.
+	perYear, err := s.repos.PassiveIncome.SumForYear(ctx, userID, time.Now().UTC().Year())
 	if err != nil {
 		return out, err
 	}

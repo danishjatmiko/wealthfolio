@@ -2,12 +2,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import type { BondPurchaseInput } from '../types'
 
-// A ledger write moves the coupon calendar, the dashboard's passive-income
-// block and any passive-income target, so all of them get invalidated.
+// A ledger write moves the Passive Income calendar (coupons are half of
+// what it shows), the dashboard's passive-income block and any
+// passive-income target, so all of them get invalidated.
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: ['bondPurchases'] })
   qc.invalidateQueries({ queryKey: ['bondSummary'] })
-  qc.invalidateQueries({ queryKey: ['couponCalendar'] })
+  qc.invalidateQueries({ queryKey: ['incomeCalendar'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })
   qc.invalidateQueries({ queryKey: ['targets'] })
 }
@@ -18,13 +19,6 @@ export function useBondPurchases() {
 
 export function useBondSummary() {
   return useQuery({ queryKey: ['bondSummary'], queryFn: () => api.bondPurchases.summary() })
-}
-
-export function useCouponCalendar(year: number) {
-  return useQuery({
-    queryKey: ['couponCalendar', year],
-    queryFn: () => api.bondPurchases.calendar(year),
-  })
 }
 
 export function useCreateBondPurchase() {

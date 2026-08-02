@@ -116,7 +116,6 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 
 			r.Get("/bond-purchases", h.listBondPurchases)
 			r.Get("/bond-purchases/summary", h.getBondPurchasesSummary)
-			r.Get("/bond-purchases/coupon-calendar", h.getCouponCalendar)
 			r.Post("/bond-purchases", h.createBondPurchase)
 			r.Put("/bond-purchases/{id}", h.updateBondPurchase)
 			r.Delete("/bond-purchases/{id}", h.deleteBondPurchase)
@@ -128,6 +127,7 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Delete("/big-expenses/{id}", h.deleteBigExpense)
 
 			r.Get("/passive-income", h.listPassiveIncome)
+			r.Get("/passive-income/calendar", h.getPassiveIncomeCalendar)
 			r.Post("/passive-income", h.createPassiveIncome)
 			r.Put("/passive-income/{id}", h.updatePassiveIncome)
 			r.Delete("/passive-income/{id}", h.deletePassiveIncome)

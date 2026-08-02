@@ -211,19 +211,32 @@ export interface CreateExpensePeriodInput {
   copy_envelopes: boolean
 }
 
-export interface PassiveIncomeSource {
+/** One passive-income payment actually received on one date — a dividend, a
+ *  realized capital gain, a fund redemption. `amount_idr` may be negative: a
+ *  realized loss is part of what the year paid out. `income_type` (Dividen,
+ *  Capital, IPO, …) is orthogonal to the category, which is the asset class
+ *  the income came from. */
+export interface PassiveIncomeEntry {
   id: string
   category_id: number
   category_key: string
   category_label: string
   name: string
-  per_year_idr: number
+  amount_idr: number
+  received_date: string
+  income_type: string
+  note: string
+  created_at: string
+  updated_at: string
 }
 
 export interface PassiveIncomeInput {
   category_id: number
   name: string
-  per_year_idr: number
+  amount_idr: number
+  received_date: string
+  income_type: string
+  note: string
 }
 
 /** One USD bond purchase. Fields after usd_idr_at_purchase are derived by
@@ -314,35 +327,80 @@ export interface BondLedgerSummary {
   latest_usd_idr: number
 }
 
-export interface CouponEntry {
-  bond_name: string
-  platform: string
+/** Where one income entry came from. A `coupon` is derived from the bond
+ *  ledger — it has a dollar amount and an empty `id`, so it's editable only
+ *  on the Bonds page. A `manual` entry is a row in the passive-income
+ *  ledger: IDR-only, and its `id` is what the Passive Income page edits. */
+export type IncomeEntryKind = 'coupon' | 'manual'
+
+/** One payment landing on one date, from either source. `source` is the
+ *  bond's platform for coupons and the income type for manual entries —
+ *  distinct from the category fields, which are the asset class it came
+ *  from (coupons file under Bonds USD). */
+export interface IncomeEntry {
+  kind: IncomeEntryKind
+  id: string
+  name: string
+  source: string
+  category_key: string
+  category_label: string
+  color_oklch: string
   pay_date: string
   amount_usd: number
   amount_idr: number
+  note: string
 }
 
-export interface CouponMonth {
+/** One category's contribution to a single month — what the month's bar is
+ *  stacked out of. Emitted in the same order for every month, so a category
+ *  keeps its position along the bar and months stay comparable. */
+export interface IncomeMonthSlice {
+  category_key: string
+  label: string
+  color_oklch: string
+  amount_idr: number
+}
+
+/** One calendar month's income. The two sources stay separately visible
+ *  alongside the combined `amount_idr` — coupons are forward-looking and
+ *  dollar-denominated, manual entries are realized and in Rupiah. */
+export interface IncomeMonth {
   month: number
   label: string
-  amount_usd: number
+  coupon_usd: number
+  coupon_idr: number
+  manual_idr: number
   amount_idr: number
   percent: number
-  color_oklch: string
-  entries: CouponEntry[]
+  slices: IncomeMonthSlice[]
+  entries: IncomeEntry[]
 }
 
-/** Bond coupons bucketed by month for one reference year. `months` is
- *  always exactly 12 — a month with no coupons still needs a row. */
-export interface CouponCalendar {
+/** One asset class's share of the year's income — which part of the
+ *  portfolio actually paid out. Bond coupons file under `bonds_usd`, so the
+ *  ring covers every source and not just the hand-logged ones. Ordered
+ *  biggest-first by the backend. */
+export interface IncomeCategory {
+  category_key: string
+  label: string
+  color_oklch: string
+  amount_idr: number
+  percent: number
+  count: number
+}
+
+/** Every source of passive income for one reference year, bucketed by month
+ *  and by category. `months` is always exactly 12 — a month with nothing in
+ *  it still needs a row. */
+export interface IncomeCalendar {
   reference_year: number
-  months: CouponMonth[]
-  total_usd: number
+  months: IncomeMonth[]
+  categories: IncomeCategory[]
+  coupon_total_usd: number
+  coupon_total_idr: number
+  manual_total_idr: number
   total_idr: number
   latest_usd_idr: number
-  manual_per_year_idr: number
-  manual_per_month_idr: number
-  combined_per_year_idr: number
 }
 
 /** One manually-logged big expense — a bond, a laptop, a hotel stay. Kept

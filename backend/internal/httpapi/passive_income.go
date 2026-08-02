@@ -1,54 +1,80 @@
 package httpapi
 
 import (
-	"errors"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"wealthfolio/backend/internal/db"
+	"wealthfolio/backend/internal/domain"
+	"wealthfolio/backend/internal/service"
 )
 
 type passiveIncomeRequest struct {
-	CategoryID *int16  `json:"category_id"`
-	Name       *string `json:"name"`
-	PerYearIdr *int64  `json:"per_year_idr"`
+	CategoryID   *int16  `json:"category_id"`
+	Name         *string `json:"name"`
+	AmountIdr    *int64  `json:"amount_idr"`
+	ReceivedDate *string `json:"received_date"`
+	IncomeType   *string `json:"income_type"`
+	Note         *string `json:"note"`
 }
 
-func (req passiveIncomeRequest) validate() error {
-	if req.CategoryID == nil {
-		return errors.New("category_id is required")
+func (req passiveIncomeRequest) toServiceRequest() (service.PassiveIncomeRequest, error) {
+	var out service.PassiveIncomeRequest
+	if req.CategoryID != nil {
+		out.CategoryID = *req.CategoryID
 	}
-	if req.Name == nil || *req.Name == "" {
-		return errors.New("name is required")
+	if req.Name != nil {
+		out.Name = *req.Name
 	}
-	if req.PerYearIdr == nil {
-		return errors.New("per_year_idr is required")
+	if req.AmountIdr != nil {
+		out.AmountIdr = *req.AmountIdr
 	}
-	return nil
-}
-
-func (h *Handler) validateCategory(r *http.Request, id int16) error {
-	if _, err := h.repos.Categories.GetByID(r.Context(), id); err != nil {
-		if errors.Is(err, db.ErrNotFound) {
-			return errInvalidCategory
+	if req.IncomeType != nil {
+		out.IncomeType = *req.IncomeType
+	}
+	if req.Note != nil {
+		out.Note = *req.Note
+	}
+	if req.ReceivedDate != nil {
+		d, err := domain.ParseDate(*req.ReceivedDate)
+		if err != nil {
+			return service.PassiveIncomeRequest{}, err
 		}
-		return err
+		out.ReceivedDate = d
 	}
-	return nil
+	return out, nil
 }
-
-var errInvalidCategory = errors.New("invalid category_id")
 
 func (h *Handler) listPassiveIncome(w http.ResponseWriter, r *http.Request) {
 	userID := currentUserID(r.Context())
-	list, err := h.repos.PassiveIncome.List(r.Context(), userID)
+	list, err := h.svc.PassiveIncome.List(r.Context(), userID)
 	if err != nil {
 		handleServiceError(w, err)
 		return
 	}
 	writeJSON(w, http.StatusOK, list)
+}
+
+func (h *Handler) getPassiveIncomeCalendar(w http.ResponseWriter, r *http.Request) {
+	// An absent or unparseable ?year= means "this year" rather than an
+	// error — the page loads without a year on first paint.
+	year := time.Now().UTC().Year()
+	if raw := r.URL.Query().Get("year"); raw != "" {
+		if parsed, err := strconv.Atoi(raw); err == nil {
+			year = parsed
+		}
+	}
+
+	userID := currentUserID(r.Context())
+	calendar, err := h.svc.PassiveIncome.Calendar(r.Context(), userID, year)
+	if err != nil {
+		handleServiceError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, calendar)
 }
 
 func (h *Handler) createPassiveIncome(w http.ResponseWriter, r *http.Request) {
@@ -57,26 +83,19 @@ func (h *Handler) createPassiveIncome(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
-	if err := req.validate(); err != nil {
+	svcReq, err := req.toServiceRequest()
+	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if err := h.validateCategory(r, *req.CategoryID); err != nil {
-		if errors.Is(err, errInvalidCategory) {
-			writeError(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		handleServiceError(w, err)
 		return
 	}
 
 	userID := currentUserID(r.Context())
-	p, err := h.repos.PassiveIncome.Create(r.Context(), userID, *req.CategoryID, *req.Name, *req.PerYearIdr)
+	entry, err := h.svc.PassiveIncome.Create(r.Context(), userID, svcReq)
 	if err != nil {
 		handleServiceError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusCreated, p)
+	writeJSON(w, http.StatusCreated, entry)
 }
 
 func (h *Handler) updatePassiveIncome(w http.ResponseWriter, r *http.Request) {
@@ -91,26 +110,19 @@ func (h *Handler) updatePassiveIncome(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
-	if err := req.validate(); err != nil {
+	svcReq, err := req.toServiceRequest()
+	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if err := h.validateCategory(r, *req.CategoryID); err != nil {
-		if errors.Is(err, errInvalidCategory) {
-			writeError(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		handleServiceError(w, err)
 		return
 	}
 
 	userID := currentUserID(r.Context())
-	p, err := h.repos.PassiveIncome.Update(r.Context(), userID, id, *req.CategoryID, *req.Name, *req.PerYearIdr)
+	entry, err := h.svc.PassiveIncome.Update(r.Context(), userID, id, svcReq)
 	if err != nil {
 		handleServiceError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, p)
+	writeJSON(w, http.StatusOK, entry)
 }
 
 func (h *Handler) deletePassiveIncome(w http.ResponseWriter, r *http.Request) {
@@ -120,7 +132,7 @@ func (h *Handler) deletePassiveIncome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userID := currentUserID(r.Context())
-	if err := h.repos.PassiveIncome.Delete(r.Context(), userID, id); err != nil {
+	if err := h.svc.PassiveIncome.Delete(r.Context(), userID, id); err != nil {
 		handleServiceError(w, err)
 		return
 	}

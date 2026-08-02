@@ -66,20 +66,42 @@
   align-items: center;
   gap: 7px;
 }
-.passive-month-swatch {
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
-  flex-shrink: 0;
+
+/* The bar is stacked out of one segment per category (see monthSegments),
+   so its colours match the ring above rather than coming from a month
+   palette — that's what makes a row readable as "who paid me this month".
+   Length still encodes the month's size; the segments divide it. */
+.passive-month-bar {
+  display: flex;
+  height: 100%;
+  border-radius: 99px;
+  overflow: hidden;
+  transition: width 0.6s;
 }
-.passive-month-usd {
+.passive-month-seg {
+  height: 100%;
+  /* No gap between segments: adjacent categories meet flush, so the bar
+     still reads as one length rather than a row of separate chips. */
+  min-width: 0;
+}
+.passive-month-total {
   font-weight: 600;
 }
-.passive-month-idr {
+/* The per-source breakdown behind a month's combined figure: coupons in
+   dollars, hand-logged income in Rupiah. Secondary to the total, and the
+   first thing dropped when the container gets narrow. */
+.passive-month-split {
   font-size: 11.5px;
   color: var(--text-muted-2);
   min-width: 84px;
   text-align: right;
+}
+
+/* Realized losses are real ledger entries here (a cut-loss redemption, a
+   capital loss), so they need to read as negative at a glance rather than
+   blending into the income they're netted against. */
+.passive-negative {
+  color: var(--red);
 }
 
 .passive-side {
@@ -122,6 +144,154 @@
   line-height: 1.45;
 }
 
+/* Legend under the ring: hovering either one highlights the other, so the
+   amount is readable without having to hold the pointer steady on a thin
+   slice. */
+.passive-cat-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 6px;
+  margin: 0 -6px;
+  border-radius: var(--radius-input);
+  font-size: 12.5px;
+  cursor: default;
+}
+.passive-cat-row-active {
+  background: var(--accent-soft);
+}
+.passive-cat-name {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+.passive-cat-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  align-self: center;
+}
+.passive-cat-count {
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+.passive-cat-amounts {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.passive-cat-val {
+  font-weight: 600;
+}
+.passive-cat-pct {
+  font-size: 10.5px;
+  color: var(--text-muted-2);
+  min-width: 38px;
+  text-align: right;
+}
+
+/* Which months a category paid in, revealed by clicking its slice or row.
+   Indented under the row it belongs to, and each month jumps the detail
+   panel to that month. */
+.passive-cat-row-open {
+  background: var(--accent-soft);
+}
+.passive-cat-months {
+  margin: 2px 0 8px 16px;
+  padding-left: 10px;
+  border-left: 2px solid var(--divider);
+}
+.passive-cat-month {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 6px;
+  margin: 0 -6px;
+  border-radius: var(--radius-input);
+  font-size: 12px;
+  cursor: pointer;
+}
+.passive-cat-month:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+.passive-cat-month-name {
+  color: var(--text-body-secondary);
+}
+.passive-cat-month-val {
+  font-weight: 600;
+}
+
+/* Follows the pointer across a stacked bar. Fixed rather than absolute so
+   it can't be clipped by the month card, and pointer-events:none so it
+   never steals the hover that spawned it. Dark treatment matches
+   .line-chart-tooltip on Progress/Simulation — same job, same look. */
+.passive-bar-tooltip {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  background: #16130f;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: var(--shadow-tooltip);
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+.passive-bar-tooltip-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--border);
+}
+.passive-bar-tooltip-value {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.passive-bar-tooltip-sub {
+  font-size: 11px;
+  color: var(--border);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+/* Sort controls for the month detail list. */
+.passive-sort-bar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.passive-sort-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: var(--radius-chip);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.passive-sort-btn:hover {
+  color: var(--text-body);
+}
+.passive-sort-btn-active {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+.passive-sort-arrow {
+  font-size: 9px;
+}
+
 .passive-entry-row {
   display: flex;
   align-items: center;
@@ -133,6 +303,14 @@
 .passive-entry-row:last-of-type {
   border-bottom: none;
 }
+/* Manual entries open the editor on click; coupons are derived from the
+   bond ledger and have nothing to edit here, so only these get the affordance. */
+.passive-entry-row-editable {
+  cursor: pointer;
+}
+.passive-entry-row-editable:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
 .passive-entry-info {
   min-width: 0;
 }
@@ -140,52 +318,47 @@
   font-size: 13px;
   font-weight: 500;
 }
+/* Category colour for the row, matching the bar segments and the ring. */
+.passive-entry-swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 7px;
+  flex-shrink: 0;
+}
 .passive-entry-date {
   font-size: 10.5px;
   color: var(--text-faint);
   margin-top: 2px;
 }
+.passive-entry-note {
+  font-size: 10.5px;
+  color: var(--text-muted-2);
+  margin-top: 3px;
+  line-height: 1.4;
+}
 .passive-entry-amounts {
   text-align: right;
   flex-shrink: 0;
 }
-.passive-entry-usd {
+.passive-entry-primary {
   font-size: 13.5px;
   font-weight: 600;
 }
-.passive-entry-idr {
+.passive-entry-secondary {
   font-size: 10.5px;
   color: var(--text-muted-2);
   margin-top: 2px;
-}
-
-.passive-manual-card {
-  margin-top: 14px;
-}
-.passive-row {
-  margin-bottom: 13px;
-  cursor: pointer;
-}
-.passive-row:last-child {
-  margin-bottom: 0;
-}
-.passive-row-head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-.passive-row-val {
-  font-weight: 600;
 }
 
 @container (max-width: 560px) {
   .passive-grid {
     grid-template-columns: 1fr;
   }
-  /* The Rupiah column is the first thing to go when space is tight — the
-     dollar figure is the one that matters here. */
-  .passive-month-idr {
+  /* The per-source split is the first thing to go when space is tight —
+     the combined total is the figure that matters here. */
+  .passive-month-split {
     display: none;
   }
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -84,7 +85,7 @@ func (s *TargetsService) computeCurrentValue(ctx context.Context, userID uuid.UU
 		// Must stay in step with DashboardService.Get, which adds the same
 		// coupon summand — otherwise this page and the dashboard would
 		// disagree about how much passive income the user has.
-		sum, err := s.repos.PassiveIncome.Sum(ctx, userID)
+		sum, err := s.repos.PassiveIncome.SumForYear(ctx, userID, time.Now().UTC().Year())
 		if err != nil {
 			return 0, err
 		}

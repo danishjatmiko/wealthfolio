@@ -2,8 +2,6 @@ package httpapi
 
 import (
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -96,25 +94,6 @@ func (h *Handler) getBondPurchasesSummary(w http.ResponseWriter, r *http.Request
 		return
 	}
 	writeJSON(w, http.StatusOK, summary)
-}
-
-func (h *Handler) getCouponCalendar(w http.ResponseWriter, r *http.Request) {
-	// An absent or unparseable ?year= means "this year" rather than an
-	// error — the page loads without a year on first paint.
-	year := time.Now().UTC().Year()
-	if raw := r.URL.Query().Get("year"); raw != "" {
-		if parsed, err := strconv.Atoi(raw); err == nil {
-			year = parsed
-		}
-	}
-
-	userID := currentUserID(r.Context())
-	calendar, err := h.svc.BondPurchases.CouponCalendar(r.Context(), userID, year)
-	if err != nil {
-		handleServiceError(w, err)
-		return
-	}
-	writeJSON(w, http.StatusOK, calendar)
 }
 
 func (h *Handler) createBondPurchase(w http.ResponseWriter, r *http.Request) {

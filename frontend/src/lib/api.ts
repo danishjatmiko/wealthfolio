@@ -8,7 +8,6 @@ import type {
   BondPurchaseInput,
   BudgetEnvelope,
   BudgetEnvelopeInput,
-  CouponCalendar,
   Category,
   CreateExpensePeriodInput,
   Dashboard,
@@ -24,8 +23,9 @@ import type {
   FixedExpenseInput,
   Holding,
   HoldingInput,
+  IncomeCalendar,
+  PassiveIncomeEntry,
   PassiveIncomeInput,
-  PassiveIncomeSource,
   Progress,
   ProgressGranularity,
   RateEntry,
@@ -162,7 +162,6 @@ export const api = {
   bondPurchases: {
     list: () => get<BondPurchase[]>('/bond-purchases'),
     summary: () => get<BondLedgerSummary>('/bond-purchases/summary'),
-    calendar: (year: number) => get<CouponCalendar>(`/bond-purchases/coupon-calendar?year=${year}`),
     create: (input: BondPurchaseInput) => post<BondPurchase>('/bond-purchases', input),
     update: (id: string, input: BondPurchaseInput) =>
       put<BondPurchase>(`/bond-purchases/${id}`, input),
@@ -176,10 +175,11 @@ export const api = {
     remove: (id: string) => del<void>(`/big-expenses/${id}`),
   },
   passiveIncome: {
-    list: () => get<PassiveIncomeSource[]>('/passive-income'),
-    create: (input: PassiveIncomeInput) => post<PassiveIncomeSource>('/passive-income', input),
+    list: () => get<PassiveIncomeEntry[]>('/passive-income'),
+    calendar: (year: number) => get<IncomeCalendar>(`/passive-income/calendar?year=${year}`),
+    create: (input: PassiveIncomeInput) => post<PassiveIncomeEntry>('/passive-income', input),
     update: (id: string, input: PassiveIncomeInput) =>
-      put<PassiveIncomeSource>(`/passive-income/${id}`, input),
+      put<PassiveIncomeEntry>(`/passive-income/${id}`, input),
     remove: (id: string) => del<void>(`/passive-income/${id}`),
   },
   targets: {

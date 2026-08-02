@@ -126,10 +126,24 @@ export function sourceLabel(source: string): string {
   return SOURCE_LABELS[source] ?? source.charAt(0).toUpperCase() + source.slice(1)
 }
 
-/** Parse a free-typed numeric string the same way the prototype does. */
+/** Parse a free-typed numeric string the same way the prototype does. Drops
+ *  any minus sign — every field using this is a magnitude that can't go
+ *  negative (a price, a gram weight, an expense). For a field that can, use
+ *  `parseSignedNumeric`. */
 export function parseNumeric(input: string | number | null | undefined): number {
   if (typeof input === 'number') return Number.isFinite(input) ? input : 0
   const cleaned = (input ?? '').toString().replace(/[^0-9.]/g, '')
   const n = parseFloat(cleaned)
   return Number.isFinite(n) ? n : 0
+}
+
+/** Like `parseNumeric`, but keeps a leading minus sign. For amounts that
+ *  are genuinely signed — a passive-income entry can be a realized loss,
+ *  and silently flipping it positive would overstate the year's income. */
+export function parseSignedNumeric(input: string | number | null | undefined): number {
+  if (typeof input === 'number') return Number.isFinite(input) ? input : 0
+  const raw = (input ?? '').toString().trim()
+  const negative = raw.startsWith('-') || raw.startsWith('−')
+  const magnitude = parseNumeric(raw)
+  return negative ? -magnitude : magnitude
 }

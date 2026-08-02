@@ -9,13 +9,20 @@ export function usePassiveIncome() {
   })
 }
 
+export function useIncomeCalendar(year: number) {
+  return useQuery({
+    queryKey: ['incomeCalendar', year],
+    queryFn: () => api.passiveIncome.calendar(year),
+  })
+}
+
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: ['passiveIncome'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })
   qc.invalidateQueries({ queryKey: ['targets'] })
-  // The coupon calendar carries manual_per_year_idr alongside the bond
-  // figures, so a manual-source edit moves it too.
-  qc.invalidateQueries({ queryKey: ['couponCalendar'] })
+  // The calendar merges these entries with the bond coupons, so any write
+  // here moves a month bucket and the year's totals.
+  qc.invalidateQueries({ queryKey: ['incomeCalendar'] })
 }
 
 export function useCreatePassiveIncome() {

@@ -100,15 +100,29 @@ type DebtEntry struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-// PassiveIncomeSource mirrors the passive_income_sources table.
-type PassiveIncomeSource struct {
+// PassiveIncomeEntry mirrors the passive_income_entries table, joined with
+// its category for the category_key/category_label convenience fields: one
+// payment actually received on one date — a dividend, a realized capital
+// gain, a mutual fund redemption. Dated rather than a standing per-year
+// estimate, so it buckets into the same monthly calendar as a bond coupon.
+//
+// AmountIdr may be negative: a realized loss or a cut-loss redemption is
+// part of what the year paid out, and dropping the sign would overstate it.
+// IncomeType (Dividen, Capital, IPO, ...) is orthogonal to CategoryID,
+// which stays the asset class the income came from.
+type PassiveIncomeEntry struct {
 	ID            uuid.UUID `json:"id"`
 	UserID        uuid.UUID `json:"-"`
 	CategoryID    int16     `json:"category_id"`
 	CategoryKey   string    `json:"category_key"`
 	CategoryLabel string    `json:"category_label"`
 	Name          string    `json:"name"`
-	PerYearIdr    int64     `json:"per_year_idr"`
+	AmountIdr     int64     `json:"amount_idr"`
+	ReceivedDate  Date      `json:"received_date"`
+	IncomeType    string    `json:"income_type"`
+	Note          string    `json:"note"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 // BondPurchase mirrors the bond_purchases table: one USD bond bought on

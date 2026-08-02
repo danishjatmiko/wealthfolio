@@ -13,6 +13,9 @@ interface DonutChartProps {
   size?: number
   thickness?: number
   onHover?: (datum: DonutDatum | null) => void
+  /** Called when a segment is clicked. Optional — pages that only read the
+   *  ring pass nothing, and the segments stay hover-only. */
+  onSelect?: (datum: DonutDatum) => void
   /** Emphasises the slice with this label, for pages that drive selection
    *  from a table rather than the ring — matched by label rather than index
    *  because zero-value entries are filtered out below, so a caller's index
@@ -25,6 +28,7 @@ export function DonutChart({
   size = 190,
   thickness = 26,
   onHover,
+  onSelect,
   selectedLabel = null,
 }: DonutChartProps) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
@@ -82,6 +86,7 @@ export function DonutChart({
         style={{ cursor: 'pointer', transition: 'opacity 0.15s, stroke-width 0.15s' }}
         onMouseEnter={() => handleEnter(i, d)}
         onMouseLeave={handleLeave}
+        onClick={onSelect ? () => onSelect(d) : undefined}
       />
     )
   })
