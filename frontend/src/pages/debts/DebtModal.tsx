@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Modal, ModalCancelButton } from '../../components/Modal'
 import { errorMessage, useToast } from '../../context/ToastContext'
-import { useCreateDebtEntry, useUpdateDebtEntry } from '../../hooks/useDebtSnapshots'
+import { useCreateDebtEntry, useDeleteDebtEntry, useUpdateDebtEntry } from '../../hooks/useDebtSnapshots'
 import { parseNumeric } from '../../lib/format'
 import type { DebtEntry, DebtDirection } from '../../types'
 
@@ -20,6 +20,7 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
   const { showError, showSuccess } = useToast()
   const createEntry = useCreateDebtEntry()
   const updateEntry = useUpdateDebtEntry()
+  const deleteEntry = useDeleteDebtEntry()
   const types = direction === 'i_owe' ? DEBT_TYPES : RECEIVABLE_TYPES
 
   const [name, setName] = useState('')
@@ -67,6 +68,18 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
     }
   }
 
+  async function handleDelete() {
+    if (!editingEntry) return
+    if (!window.confirm(`Delete "${editingEntry.name}"? This cannot be undone.`)) return
+    try {
+      await deleteEntry.mutateAsync(editingEntry.id)
+      showSuccess('Deleted.')
+      onClose()
+    } catch (err) {
+      showError(errorMessage(err))
+    }
+  }
+
   const saving = createEntry.isPending || updateEntry.isPending
 
   return (
@@ -77,6 +90,17 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
       subtitle={subtitle}
       footer={
         <>
+          {editingEntry && (
+            <button
+              type="button"
+              className="btn btn-danger"
+              style={{ marginRight: 'auto' }}
+              onClick={handleDelete}
+              disabled={deleteEntry.isPending}
+            >
+              🗑 Delete
+            </button>
+          )}
           <ModalCancelButton onClick={onClose} />
           <button type="button" className="btn btn-primary" onClick={handleSave} disabled={saving}>
             {cta}
