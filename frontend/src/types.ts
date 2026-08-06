@@ -98,15 +98,29 @@ export interface DebtSnapshotSummary {
   owed_to_me_idr: number
 }
 
+/** `value_idr` is the initial debt exactly as typed — set once and never
+ *  rewritten. `remaining_debt_idr` is what's still owed, reported by the
+ *  matching receivable loan's terms and updated as it's paid down; it's the
+ *  figure pages display and total. The two are always sent separately and
+ *  never overwrite each other. `remaining_debt_idr` is 0 when no loan
+ *  reports one (and always 0 for `i_owe` debts and locked snapshots), in
+ *  which case `value_idr` is what's shown. */
 export interface DebtEntry {
   id: string
   debt_snapshot_id: string
   name: string
   type: string
   value_idr: number
+  remaining_debt_idr: number
   direction: DebtDirection
   created_at: string
   updated_at: string
+}
+
+/** The figure to display and total for a debt entry: the remaining debt
+ *  once its loan reports one, otherwise the initial debt as typed. */
+export function debtEntryShownIdr(d: DebtEntry): number {
+  return d.remaining_debt_idr > 0 ? d.remaining_debt_idr : d.value_idr
 }
 
 export interface DebtSnapshot {
@@ -334,13 +348,15 @@ export interface BondLedgerSummary {
  *  foreign key. `interest_idr` is reported directly, the same way a bond's
  *  `price_usd` is. `monthly_amount_idr` is never typed in — the API derives
  *  it as `interest_idr / term_months`, the total interest spread evenly
- *  across the term. */
+ *  across the term. `remaining_debt_idr` is purely informational — how much
+ *  principal is still owed — and never factors into that calculation. */
 export interface ReceivableLoan {
   id: string
   borrower_name: string
   start_date: string
   term_months: number
   interest_idr: number
+  remaining_debt_idr: number
   note: string
 
   end_date: string
@@ -356,6 +372,7 @@ export interface ReceivableLoanInput {
   start_date: string
   term_months: number
   interest_idr: number
+  remaining_debt_idr: number
   note: string
 }
 

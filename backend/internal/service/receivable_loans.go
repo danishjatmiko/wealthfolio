@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,16 +25,77 @@ func NewReceivableLoansService(repos *db.Repos) *ReceivableLoansService {
 	return &ReceivableLoansService{repos: repos}
 }
 
+// DebtEntryDTO is one debt entry as the API returns it: the stored row
+// exactly as typed, plus — for a receivable whose loan terms report one —
+// the remaining debt alongside it. The two never overwrite each other.
+// ValueIdr is always the initial debt, set once and left alone;
+// RemainingDebtIdr is the live figure that pages display and total, and is
+// 0 when no loan reports one.
+type DebtEntryDTO struct {
+	domain.DebtEntry
+	RemainingDebtIdr int64 `json:"remaining_debt_idr"`
+}
+
+// ShownIdr is the figure to display and total for this entry: the remaining
+// debt once a loan reports one, otherwise the initial debt as typed.
+func (d DebtEntryDTO) ShownIdr() int64 {
+	if d.RemainingDebtIdr > 0 {
+		return d.RemainingDebtIdr
+	}
+	return d.ValueIdr
+}
+
+// AttachRemainingDebt pairs each owed_to_me entry with its matching loan's
+// remaining debt (matched on borrower name, case-insensitively), leaving
+// the stored ValueIdr untouched so the initial debt always round-trips
+// intact through an edit. i_owe entries and receivables with no matching
+// loan simply carry a zero RemainingDebtIdr. Callers are responsible for
+// only applying this to the latest snapshot — remaining debt is a live,
+// current figure, not something that belongs on locked history.
+func (s *ReceivableLoansService) AttachRemainingDebt(ctx context.Context, userID uuid.UUID, entries []domain.DebtEntry) ([]DebtEntryDTO, error) {
+	loans, err := s.repos.ReceivableLoans.List(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	remainingByName := make(map[string]int64, len(loans))
+	for _, l := range loans {
+		if l.RemainingDebtIdr > 0 {
+			remainingByName[strings.ToLower(l.BorrowerName)] = l.RemainingDebtIdr
+		}
+	}
+
+	out := make([]DebtEntryDTO, 0, len(entries))
+	for _, e := range entries {
+		dto := DebtEntryDTO{DebtEntry: e}
+		if e.Direction == "owed_to_me" {
+			dto.RemainingDebtIdr = remainingByName[strings.ToLower(e.Name)]
+		}
+		out = append(out, dto)
+	}
+	return out, nil
+}
+
+// PlainDebtEntryDTOs wraps entries with no remaining debt attached — used
+// for locked historical snapshots, which show exactly what was recorded.
+func PlainDebtEntryDTOs(entries []domain.DebtEntry) []DebtEntryDTO {
+	out := make([]DebtEntryDTO, 0, len(entries))
+	for _, e := range entries {
+		out = append(out, DebtEntryDTO{DebtEntry: e})
+	}
+	return out
+}
+
 // ReceivableLoanDTO is one loan — the stored columns plus everything
 // derivable from them, computed at read time so an edit can't leave a
 // derived figure stale.
 type ReceivableLoanDTO struct {
-	ID           uuid.UUID   `json:"id"`
-	BorrowerName string      `json:"borrower_name"`
-	StartDate    domain.Date `json:"start_date"`
-	TermMonths   int         `json:"term_months"`
-	InterestIdr  int64       `json:"interest_idr"`
-	Note         string      `json:"note"`
+	ID               uuid.UUID   `json:"id"`
+	BorrowerName     string      `json:"borrower_name"`
+	StartDate        domain.Date `json:"start_date"`
+	TermMonths       int         `json:"term_months"`
+	InterestIdr      int64       `json:"interest_idr"`
+	RemainingDebtIdr int64       `json:"remaining_debt_idr"`
+	Note             string      `json:"note"`
 
 	EndDate          domain.Date `json:"end_date"`
 	MonthlyAmountIdr int64       `json:"monthly_amount_idr"`
@@ -48,8 +110,9 @@ func receivableLoanDTO(l domain.ReceivableLoan, today time.Time) ReceivableLoanD
 	return ReceivableLoanDTO{
 		ID: l.ID, BorrowerName: l.BorrowerName,
 		StartDate: l.StartDate, TermMonths: l.TermMonths,
-		InterestIdr: l.InterestIdr,
-		Note:        l.Note,
+		InterestIdr:      l.InterestIdr,
+		RemainingDebtIdr: l.RemainingDebtIdr,
+		Note:             l.Note,
 
 		EndDate:          domain.NewDate(end),
 		MonthlyAmountIdr: receivableMonthlyAmountIdr(l),
@@ -75,11 +138,12 @@ func (s *ReceivableLoansService) List(ctx context.Context, userID uuid.UUID) ([]
 
 // ReceivableLoanRequest is the parsed POST/PUT body for a loan write.
 type ReceivableLoanRequest struct {
-	BorrowerName string
-	StartDate    domain.Date
-	TermMonths   int
-	InterestIdr  int64
-	Note         string
+	BorrowerName     string
+	StartDate        domain.Date
+	TermMonths       int
+	InterestIdr      int64
+	RemainingDebtIdr int64
+	Note             string
 }
 
 func (r ReceivableLoanRequest) validate() error {
@@ -95,13 +159,17 @@ func (r ReceivableLoanRequest) validate() error {
 	if r.InterestIdr <= 0 {
 		return fmt.Errorf("%w: interest_idr must be greater than 0", ErrInvalidInput)
 	}
+	if r.RemainingDebtIdr < 0 {
+		return fmt.Errorf("%w: remaining_debt_idr cannot be negative", ErrInvalidInput)
+	}
 	return nil
 }
 
 func (r ReceivableLoanRequest) toWrite() db.ReceivableLoanWrite {
 	return db.ReceivableLoanWrite{
 		BorrowerName: r.BorrowerName, StartDate: r.StartDate,
-		TermMonths: r.TermMonths, InterestIdr: r.InterestIdr, Note: r.Note,
+		TermMonths: r.TermMonths, InterestIdr: r.InterestIdr,
+		RemainingDebtIdr: r.RemainingDebtIdr, Note: r.Note,
 	}
 }
 

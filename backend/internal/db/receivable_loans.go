@@ -23,7 +23,7 @@ func NewReceivableLoansRepo(pool *pgxpool.Pool) *ReceivableLoansRepo {
 }
 
 const receivableLoanSelectCols = `id, user_id, borrower_name, start_date,
-	term_months, interest_idr, note, created_at, updated_at`
+	term_months, interest_idr, remaining_debt_idr, note, created_at, updated_at`
 
 func scanReceivableLoan(row interface{ Scan(dest ...any) error }) (domain.ReceivableLoan, error) {
 	var (
@@ -31,7 +31,7 @@ func scanReceivableLoan(row interface{ Scan(dest ...any) error }) (domain.Receiv
 		startDate time.Time
 	)
 	err := row.Scan(&l.ID, &l.UserID, &l.BorrowerName, &startDate,
-		&l.TermMonths, &l.InterestIdr, &l.Note, &l.CreatedAt, &l.UpdatedAt)
+		&l.TermMonths, &l.InterestIdr, &l.RemainingDebtIdr, &l.Note, &l.CreatedAt, &l.UpdatedAt)
 	if err != nil {
 		return domain.ReceivableLoan{}, err
 	}
@@ -76,22 +76,23 @@ func (r *ReceivableLoansRepo) GetByID(ctx context.Context, userID, id uuid.UUID)
 
 // ReceivableLoanWrite is the set of columns needed to insert/update a loan.
 type ReceivableLoanWrite struct {
-	BorrowerName string
-	StartDate    domain.Date
-	TermMonths   int
-	InterestIdr  int64
-	Note         string
+	BorrowerName     string
+	StartDate        domain.Date
+	TermMonths       int
+	InterestIdr      int64
+	RemainingDebtIdr int64
+	Note             string
 }
 
 // Create inserts a new loan and returns the full row.
 func (r *ReceivableLoansRepo) Create(ctx context.Context, userID uuid.UUID, w ReceivableLoanWrite) (domain.ReceivableLoan, error) {
 	row := r.pool.QueryRow(ctx, `
 		INSERT INTO receivable_loans (user_id, borrower_name, start_date,
-			term_months, interest_idr, note)
-		VALUES ($1, $2, $3, $4, $5, $6)
+			term_months, interest_idr, remaining_debt_idr, note)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING `+receivableLoanSelectCols,
 		userID, w.BorrowerName, w.StartDate.Time,
-		w.TermMonths, w.InterestIdr, w.Note)
+		w.TermMonths, w.InterestIdr, w.RemainingDebtIdr, w.Note)
 	return scanReceivableLoan(row)
 }
 
@@ -101,11 +102,11 @@ func (r *ReceivableLoansRepo) Update(ctx context.Context, userID, id uuid.UUID, 
 	row := r.pool.QueryRow(ctx, `
 		UPDATE receivable_loans
 		SET borrower_name = $1, start_date = $2,
-			term_months = $3, interest_idr = $4, note = $5, updated_at = now()
-		WHERE id = $6 AND user_id = $7
+			term_months = $3, interest_idr = $4, remaining_debt_idr = $5, note = $6, updated_at = now()
+		WHERE id = $7 AND user_id = $8
 		RETURNING `+receivableLoanSelectCols,
 		w.BorrowerName, w.StartDate.Time,
-		w.TermMonths, w.InterestIdr, w.Note, id, userID)
+		w.TermMonths, w.InterestIdr, w.RemainingDebtIdr, w.Note, id, userID)
 	l, err := scanReceivableLoan(row)
 	if err != nil {
 		return domain.ReceivableLoan{}, wrapNotFound(err)

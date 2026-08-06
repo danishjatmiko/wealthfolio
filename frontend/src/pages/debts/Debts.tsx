@@ -12,6 +12,7 @@ import { useTargets } from '../../hooks/useTargets'
 import { api } from '../../lib/api'
 import { DebtModal } from './DebtModal'
 import { DebtSnapshotModal } from './DebtSnapshotModal'
+import { debtEntryShownIdr } from '../../types'
 import type { DebtEntry, DebtDirection } from '../../types'
 import './Debts.css'
 
@@ -43,7 +44,11 @@ export function Debts() {
   const myDebts = useMemo(() => entries.filter((d) => d.direction === 'i_owe'), [entries])
   const receivables = useMemo(() => entries.filter((d) => d.direction === 'owed_to_me'), [entries])
   const totalDebt = useMemo(() => myDebts.reduce((s, d) => s + d.value_idr, 0), [myDebts])
-  const totalReceivable = useMemo(() => receivables.reduce((s, d) => s + d.value_idr, 0), [receivables])
+  // Receivables total what's still owed, not what was originally lent.
+  const totalReceivable = useMemo(
+    () => receivables.reduce((s, d) => s + debtEntryShownIdr(d), 0),
+    [receivables],
+  )
 
   const ratioTarget = targets.find((t) => t.metric_type === 'debt_ratio')
   const ratioPct = isViewingLatest ? (dashboard?.debt.ratio_pct ?? 0) : undefined
@@ -162,9 +167,14 @@ export function Debts() {
             >
               <div className="debt-row-info">
                 <div className="debt-row-name">{d.name}</div>
-                <div className="debt-row-type">{d.type}</div>
+                <div className="debt-row-type">
+                  {d.type}
+                  {d.remaining_debt_idr > 0 && ` · left of ${fmt(d.value_idr)}`}
+                </div>
               </div>
-              <span className="mono debt-row-val debt-row-val-green">{fmt(d.value_idr)}</span>
+              <span className="mono debt-row-val debt-row-val-green">
+                {fmt(debtEntryShownIdr(d))}
+              </span>
             </div>
           ))}
           <button

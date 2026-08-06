@@ -179,15 +179,20 @@ type BigExpense struct {
 // BondPurchase.PriceUsd follows. The monthly amount that feeds Passive
 // Income is never stored on this struct — it's InterestIdr/TermMonths (the
 // total interest spread evenly across the term), computed at read time.
+//
+// RemainingDebtIdr is purely informational — how much principal is still
+// owed, updated by hand as it gets paid down. It never factors into the
+// Passive Income figure, which only ever tracks InterestIdr/TermMonths.
 type ReceivableLoan struct {
-	ID           uuid.UUID `json:"id"`
-	UserID       uuid.UUID `json:"-"`
-	BorrowerName string    `json:"borrower_name"`
-	StartDate    Date      `json:"start_date"`
-	TermMonths   int       `json:"term_months"`
-	InterestIdr  int64     `json:"interest_idr"`
-	Note         string    `json:"note"`
-	CreatedAt    time.Time `json:"created_at"`
+	ID               uuid.UUID `json:"id"`
+	UserID           uuid.UUID `json:"-"`
+	BorrowerName     string    `json:"borrower_name"`
+	StartDate        Date      `json:"start_date"`
+	TermMonths       int       `json:"term_months"`
+	InterestIdr      int64     `json:"interest_idr"`
+	RemainingDebtIdr int64     `json:"remaining_debt_idr"`
+	Note             string    `json:"note"`
+	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 

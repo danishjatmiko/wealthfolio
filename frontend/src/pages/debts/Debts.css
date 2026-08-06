@@ -40,6 +40,9 @@
 }
 .debt-row-info {
   flex: 1;
+  /* Lets a long sub-label wrap inside this column instead of pushing the
+     value out of the row. */
+  min-width: 0;
 }
 .debt-row-name {
   font-size: 13.5px;
@@ -52,6 +55,8 @@
 .debt-row-val {
   font-size: 14px;
   font-weight: 600;
+  padding-left: 10px;
+  white-space: nowrap;
 }
 .debt-row-val-red {
   color: var(--red);

@@ -43,6 +43,7 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
   const [startDate, setStartDate] = useState('')
   const [termMonths, setTermMonths] = useState('')
   const [interest, setInterest] = useState('')
+  const [remainingDebt, setRemainingDebt] = useState('')
 
   const existingLoan = useMemo(
     () => loans.find((l) => l.borrower_name.toLowerCase() === name.trim().toLowerCase()) ?? null,
@@ -66,10 +67,12 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
       setStartDate(loan.start_date)
       setTermMonths(String(loan.term_months))
       setInterest(String(loan.interest_idr))
+      setRemainingDebt(String(loan.remaining_debt_idr))
     } else {
       setStartDate('')
       setTermMonths('')
       setInterest('')
+      setRemainingDebt('')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editingEntry])
@@ -80,8 +83,15 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
   const nameLabel = isDebt ? 'Debt name' : 'Person / name'
   const namePlaceholder = isDebt ? 'e.g. OCBC KPA' : 'e.g. Edo Tole'
   const cta = isDebt ? (editingEntry ? 'Save changes' : 'Add debt') : editingEntry ? 'Save changes' : 'Add receivable'
+  // For a receivable this is the initial debt — set once when the loan
+  // starts and left alone after that. It's stored separately from the
+  // loan's remaining debt and the two never overwrite each other; the
+  // remaining debt is simply what pages display and total.
+  const amountLabel = isDebt ? 'Amount (Rp)' : 'Initial debt (Rp)'
 
+  const activeRemainingDebtIdr = existingLoan?.remaining_debt_idr ?? 0
   const interestNum = parseNumeric(interest)
+  const remainingDebtNum = parseNumeric(remainingDebt)
   const termMonthsNum = Math.round(parseNumeric(termMonths))
   const termFilledIn = startDate !== '' && termMonthsNum > 0 && interestNum > 0
   const monthlyPreviewIdr = termMonthsNum > 0 ? Math.round(interestNum / termMonthsNum) : 0
@@ -91,6 +101,12 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
   // filled in and none existed, updating the matching one if there is one,
   // or deleting it if the fields were cleared back out. A no-op for `i_owe`
   // debts and for a receivable with no terms and no existing loan.
+  //
+  // If nothing in the loan terms actually changed, the update is skipped
+  // entirely rather than resubmitted as-is — an unconditional resubmit
+  // would re-trigger the backend's remaining-debt sync every time, silently
+  // clobbering an Amount (Rp) edit made in the same save with the loan's
+  // unchanged (and now stale) remaining debt.
   async function saveLoanTerms() {
     if (isDebt) return
     if (termFilledIn) {
@@ -99,9 +115,16 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
         start_date: startDate,
         term_months: termMonthsNum,
         interest_idr: Math.round(interestNum),
+        remaining_debt_idr: Math.round(remainingDebtNum),
         note: '',
       }
       if (existingLoan) {
+        const unchanged =
+          existingLoan.start_date === loanInput.start_date &&
+          existingLoan.term_months === loanInput.term_months &&
+          existingLoan.interest_idr === loanInput.interest_idr &&
+          existingLoan.remaining_debt_idr === loanInput.remaining_debt_idr
+        if (unchanged) return
         await updateLoan.mutateAsync({ id: existingLoan.id, input: loanInput })
       } else {
         await createLoan.mutateAsync(loanInput)
@@ -193,7 +216,7 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
         </select>
       </label>
       <label className="field">
-        Amount (Rp)
+        {amountLabel}
         <input
           className="field-input mono"
           value={amount}
@@ -201,6 +224,12 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
           placeholder={isDebt ? '8800000' : '4800000'}
         />
       </label>
+      {!isDebt && activeRemainingDebtIdr > 0 && (
+        <div className="field-hint">
+          What the loan started at. Pages show Remaining debt below ({fmtIdrExact(activeRemainingDebtIdr)}) — update
+          that one as they pay it down.
+        </div>
+      )}
 
       {!isDebt && (
         <>
@@ -225,15 +254,26 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
               />
             </label>
           </div>
-          <label className="field">
-            Interest debt (Rp)
-            <input
-              className="field-input mono"
-              value={interest}
-              onChange={(e) => setInterest(e.target.value)}
-              placeholder="200000"
-            />
-          </label>
+          <div className="field-row">
+            <label className="field">
+              Interest debt (Rp)
+              <input
+                className="field-input mono"
+                value={interest}
+                onChange={(e) => setInterest(e.target.value)}
+                placeholder="200000"
+              />
+            </label>
+            <label className="field">
+              Remaining debt (Rp)
+              <input
+                className="field-input mono"
+                value={remainingDebt}
+                onChange={(e) => setRemainingDebt(e.target.value)}
+                placeholder="4800000"
+              />
+            </label>
+          </div>
 
           {termFilledIn && (
             <div className="computed-box">
@@ -245,6 +285,16 @@ export function DebtModal({ open, onClose, direction, editingEntry, snapshotDate
                 {fmtIdrExact(Math.round(interestNum))} total interest over {termMonthsNum} months, counted as passive
                 income
               </div>
+            </div>
+          )}
+
+          {remainingDebtNum > 0 && (
+            <div className="computed-box">
+              <div>
+                <div className="computed-box-label">Remaining debt</div>
+                <div className="computed-box-value mono">{fmtIdrExact(Math.round(remainingDebtNum))}</div>
+              </div>
+              <div className="computed-box-note">Principal debt still owed — not counted as passive income.</div>
             </div>
           )}
         </>

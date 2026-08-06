@@ -191,7 +191,24 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	if len(debtAggs) > 0 {
 		latestDebt := debtAggs[0]
 		iOwe = latestDebt.IOweIdr
-		owedToMe = latestDebt.OwedToMeIdr
+
+		// owedToMe is recomputed from the entries rather than trusted from
+		// the aggregate, so it counts each receivable's remaining debt where
+		// a loan reports one — the same figure the Debt & Loans page totals.
+		latestEntries, err := s.repos.DebtEntries.ListByDebtSnapshot(ctx, latestDebt.Snapshot.ID)
+		if err != nil {
+			return out, err
+		}
+		latestDTOs, err := s.receivables.AttachRemainingDebt(ctx, userID, latestEntries)
+		if err != nil {
+			return out, err
+		}
+		for _, e := range latestDTOs {
+			if e.Direction == "owed_to_me" {
+				owedToMe += e.ShownIdr()
+			}
+		}
+
 		debtUpdatedAt, err = s.repos.DebtEntries.MaxUpdatedAt(ctx, latestDebt.Snapshot.ID)
 		if err != nil {
 			return out, err

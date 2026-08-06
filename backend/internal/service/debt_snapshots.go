@@ -16,12 +16,13 @@ import (
 // creation. Debt snapshots run on their own independent timeline from asset
 // snapshots.
 type DebtSnapshotsService struct {
-	repos   *db.Repos
-	entries *DebtEntriesService
+	repos       *db.Repos
+	entries     *DebtEntriesService
+	receivables *ReceivableLoansService
 }
 
-func NewDebtSnapshotsService(repos *db.Repos, entries *DebtEntriesService) *DebtSnapshotsService {
-	return &DebtSnapshotsService{repos: repos, entries: entries}
+func NewDebtSnapshotsService(repos *db.Repos, entries *DebtEntriesService, receivables *ReceivableLoansService) *DebtSnapshotsService {
+	return &DebtSnapshotsService{repos: repos, entries: entries, receivables: receivables}
 }
 
 // DebtSnapshotSummary is the shape returned by GET /debt-snapshots.
@@ -37,10 +38,10 @@ type DebtSnapshotSummary struct {
 // DebtSnapshotDetail is the shape returned by GET /debt-snapshots/latest,
 // GET /debt-snapshots/{date}, and POST /debt-snapshots.
 type DebtSnapshotDetail struct {
-	ID           uuid.UUID          `json:"id"`
-	SnapshotDate domain.Date        `json:"snapshot_date"`
-	IsEditable   bool               `json:"is_editable"`
-	Entries      []domain.DebtEntry `json:"entries"`
+	ID           uuid.UUID      `json:"id"`
+	SnapshotDate domain.Date    `json:"snapshot_date"`
+	IsEditable   bool           `json:"is_editable"`
+	Entries      []DebtEntryDTO `json:"entries"`
 }
 
 // ListSummaries returns every debt snapshot for the user, newest first,
@@ -73,11 +74,21 @@ func (s *DebtSnapshotsService) detailFromSnapshot(ctx context.Context, userID uu
 	if err != nil {
 		return DebtSnapshotDetail{}, err
 	}
+	isLatest := snap.ID == latest.ID
+	// Remaining debt rides along with the *current* snapshot only — it's a
+	// live figure, not something that belongs on locked history.
+	dtos := PlainDebtEntryDTOs(entries)
+	if isLatest {
+		dtos, err = s.receivables.AttachRemainingDebt(ctx, userID, entries)
+		if err != nil {
+			return DebtSnapshotDetail{}, err
+		}
+	}
 	return DebtSnapshotDetail{
 		ID:           snap.ID,
 		SnapshotDate: snap.SnapshotDate,
-		IsEditable:   snap.ID == latest.ID,
-		Entries:      entries,
+		IsEditable:   isLatest,
+		Entries:      dtos,
 	}, nil
 }
 
@@ -148,19 +159,7 @@ func (s *DebtSnapshotsService) Create(ctx context.Context, userID uuid.UUID, dat
 		}
 	}
 
-	entries, err := s.repos.DebtEntries.ListByDebtSnapshot(ctx, newSnap.ID)
-	if err != nil {
-		return DebtSnapshotDetail{}, err
-	}
-
-	isEditable := !hasLatest || date.Time.After(latest.SnapshotDate.Time)
-
-	return DebtSnapshotDetail{
-		ID:           newSnap.ID,
-		SnapshotDate: newSnap.SnapshotDate,
-		IsEditable:   isEditable,
-		Entries:      entries,
-	}, nil
+	return s.detailFromSnapshot(ctx, userID, newSnap)
 }
 
 // Delete soft-deletes a debt snapshot. Any snapshot may be deleted, not just

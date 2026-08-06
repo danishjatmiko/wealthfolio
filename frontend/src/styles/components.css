@@ -150,6 +150,12 @@ input.field-input {
   max-width: 150px;
 }
 
+.field-hint {
+  font-size: 11px;
+  color: var(--text-muted-2);
+  margin-top: -8px;
+}
+
 .chip {
   border: 1px solid var(--border);
   background: var(--card);

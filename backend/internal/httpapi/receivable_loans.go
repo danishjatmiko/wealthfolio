@@ -11,11 +11,12 @@ import (
 )
 
 type receivableLoanRequest struct {
-	BorrowerName *string `json:"borrower_name"`
-	StartDate    *string `json:"start_date"`
-	TermMonths   *int    `json:"term_months"`
-	InterestIdr  *int64  `json:"interest_idr"`
-	Note         *string `json:"note"`
+	BorrowerName     *string `json:"borrower_name"`
+	StartDate        *string `json:"start_date"`
+	TermMonths       *int    `json:"term_months"`
+	InterestIdr      *int64  `json:"interest_idr"`
+	RemainingDebtIdr *int64  `json:"remaining_debt_idr"`
+	Note             *string `json:"note"`
 }
 
 // toServiceRequest returns an error because start_date arrives as a string
@@ -31,6 +32,9 @@ func (req receivableLoanRequest) toServiceRequest() (service.ReceivableLoanReque
 	}
 	if req.InterestIdr != nil {
 		out.InterestIdr = *req.InterestIdr
+	}
+	if req.RemainingDebtIdr != nil {
+		out.RemainingDebtIdr = *req.RemainingDebtIdr
 	}
 	if req.Note != nil {
 		out.Note = *req.Note

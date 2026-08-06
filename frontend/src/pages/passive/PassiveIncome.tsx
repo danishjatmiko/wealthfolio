@@ -145,6 +145,10 @@ export function PassiveIncome() {
     [months],
   )
   const selected = months.find((m) => m.month === selectedMonth) ?? null
+  // "Logged income" folds in receivable payments alongside hand-logged
+  // dividends/capital/redemptions — everything Rupiah-denominated that
+  // isn't a bond coupon, which gets its own USD-native hero card.
+  const loggedIncomeIdr = (calendar?.manual_total_idr ?? 0) + (calendar?.receivable_total_idr ?? 0)
 
   function openAdd() {
     setEditingEntry(null)
@@ -205,12 +209,12 @@ export function PassiveIncome() {
           <div
             className={
               'mono passive-hero-value' +
-              ((calendar?.manual_total_idr ?? 0) < 0 ? ' passive-negative' : '')
+              (loggedIncomeIdr < 0 ? ' passive-negative' : '')
             }
           >
-            {fmtExact(calendar?.manual_total_idr ?? 0)}
+            {fmtExact(loggedIncomeIdr)}
           </div>
-          <div className="mono passive-hero-sub">Dividends, capital, redemptions</div>
+          <div className="mono passive-hero-sub">Dividends, capital, redemptions, receivable payments</div>
         </div>
         <div className="card passive-hero-card">
           <div className="dash-mini-label">Combined · {year}</div>
