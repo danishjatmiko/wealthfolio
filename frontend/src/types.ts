@@ -327,16 +327,51 @@ export interface BondLedgerSummary {
   latest_usd_idr: number
 }
 
+/** The loan terms behind a receivable — how long it runs and how much
+ *  interest it pays back in total. The principal isn't duplicated here; it
+ *  already lives on the matching DebtEntry's balance. Linked to a DebtEntry
+ *  only by matching `borrower_name` to that row's `name`, cosmetically, no
+ *  foreign key. `interest_idr` is reported directly, the same way a bond's
+ *  `price_usd` is. `monthly_amount_idr` is never typed in — the API derives
+ *  it as `interest_idr / term_months`, the total interest spread evenly
+ *  across the term. */
+export interface ReceivableLoan {
+  id: string
+  borrower_name: string
+  start_date: string
+  term_months: number
+  interest_idr: number
+  note: string
+
+  end_date: string
+  monthly_amount_idr: number
+  is_active: boolean
+
+  created_at: string
+  updated_at: string
+}
+
+export interface ReceivableLoanInput {
+  borrower_name: string
+  start_date: string
+  term_months: number
+  interest_idr: number
+  note: string
+}
+
 /** Where one income entry came from. A `coupon` is derived from the bond
  *  ledger — it has a dollar amount and an empty `id`, so it's editable only
- *  on the Bonds page. A `manual` entry is a row in the passive-income
- *  ledger: IDR-only, and its `id` is what the Passive Income page edits. */
-export type IncomeEntryKind = 'coupon' | 'manual'
+ *  on the Bonds page. A `receivable` payment is derived from a loan's
+ *  terms the same way, IDR-only, editable only on the Debts page. A
+ *  `manual` entry is a row in the passive-income ledger: IDR-only, and its
+ *  `id` is what the Passive Income page edits. */
+export type IncomeEntryKind = 'coupon' | 'manual' | 'receivable'
 
-/** One payment landing on one date, from either source. `source` is the
- *  bond's platform for coupons and the income type for manual entries —
- *  distinct from the category fields, which are the asset class it came
- *  from (coupons file under Bonds USD). */
+/** One payment landing on one date, from any source. `source` is the
+ *  bond's platform for coupons, the income type for manual entries, and a
+ *  fixed label ("Cicilan") for receivable payments — distinct from the
+ *  category fields, which are the asset class it came from (coupons file
+ *  under Bonds USD, receivable payments under Piutang). */
 export interface IncomeEntry {
   kind: IncomeEntryKind
   id: string
@@ -361,15 +396,17 @@ export interface IncomeMonthSlice {
   amount_idr: number
 }
 
-/** One calendar month's income. The two sources stay separately visible
+/** One calendar month's income. The three sources stay separately visible
  *  alongside the combined `amount_idr` — coupons are forward-looking and
- *  dollar-denominated, manual entries are realized and in Rupiah. */
+ *  dollar-denominated, manual entries are realized and in Rupiah,
+ *  receivable payments are projected and in Rupiah. */
 export interface IncomeMonth {
   month: number
   label: string
   coupon_usd: number
   coupon_idr: number
   manual_idr: number
+  receivable_idr: number
   amount_idr: number
   percent: number
   slices: IncomeMonthSlice[]
@@ -399,6 +436,7 @@ export interface IncomeCalendar {
   coupon_total_usd: number
   coupon_total_idr: number
   manual_total_idr: number
+  receivable_total_idr: number
   total_idr: number
   latest_usd_idr: number
 }

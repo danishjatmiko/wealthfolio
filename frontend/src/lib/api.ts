@@ -30,6 +30,8 @@ import type {
   ProgressGranularity,
   RateEntry,
   RateEntryInput,
+  ReceivableLoan,
+  ReceivableLoanInput,
   Snapshot,
   SnapshotSummary,
   Target,
@@ -173,6 +175,13 @@ export const api = {
     create: (input: BigExpenseInput) => post<BigExpense>('/big-expenses', input),
     update: (id: string, input: BigExpenseInput) => put<BigExpense>(`/big-expenses/${id}`, input),
     remove: (id: string) => del<void>(`/big-expenses/${id}`),
+  },
+  receivableLoans: {
+    list: () => get<ReceivableLoan[]>('/receivable-loans'),
+    create: (input: ReceivableLoanInput) => post<ReceivableLoan>('/receivable-loans', input),
+    update: (id: string, input: ReceivableLoanInput) =>
+      put<ReceivableLoan>(`/receivable-loans/${id}`, input),
+    remove: (id: string) => del<void>(`/receivable-loans/${id}`),
   },
   passiveIncome: {
     list: () => get<PassiveIncomeEntry[]>('/passive-income'),

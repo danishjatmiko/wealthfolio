@@ -22,19 +22,22 @@ import (
 // something has to own combining the two sources, and neither the bond
 // ledger nor a bare repo is the right home for it.
 type PassiveIncomeService struct {
-	repos *db.Repos
-	bonds *BondPurchasesService
+	repos       *db.Repos
+	bonds       *BondPurchasesService
+	receivables *ReceivableLoansService
 }
 
-func NewPassiveIncomeService(repos *db.Repos, bonds *BondPurchasesService) *PassiveIncomeService {
-	return &PassiveIncomeService{repos: repos, bonds: bonds}
+func NewPassiveIncomeService(repos *db.Repos, bonds *BondPurchasesService, receivables *ReceivableLoansService) *PassiveIncomeService {
+	return &PassiveIncomeService{repos: repos, bonds: bonds, receivables: receivables}
 }
 
-// Income entry kinds. Coupons are derived from bond_purchases and have no
-// row of their own, so only "manual" entries carry an ID the UI can edit.
+// Income entry kinds. Coupons and receivable payments are both derived
+// (from bond_purchases and receivable_loans respectively) and have no row
+// of their own, so only "manual" entries carry an ID the UI can edit.
 const (
-	incomeKindCoupon = "coupon"
-	incomeKindManual = "manual"
+	incomeKindCoupon     = "coupon"
+	incomeKindManual     = "manual"
+	incomeKindReceivable = "receivable"
 )
 
 // defaultIncomeType is filled in whenever an entry arrives with no type
@@ -105,20 +108,22 @@ type IncomeMonthSliceDTO struct {
 	AmountIdr   int64  `json:"amount_idr"`
 }
 
-// IncomeMonthDTO is one of the twelve calendar buckets. The two sources
+// IncomeMonthDTO is one of the twelve calendar buckets. The three sources
 // stay separately visible alongside the combined AmountIdr — coupons are
 // forward-looking and dollar-denominated, manual entries are realized and
-// in Rupiah, and collapsing that distinction would hide it.
+// in Rupiah, receivable payments are projected and in Rupiah, and
+// collapsing those distinctions would hide them.
 type IncomeMonthDTO struct {
-	Month     int                   `json:"month"`
-	Label     string                `json:"label"`
-	CouponUsd float64               `json:"coupon_usd"`
-	CouponIdr int64                 `json:"coupon_idr"`
-	ManualIdr int64                 `json:"manual_idr"`
-	AmountIdr int64                 `json:"amount_idr"`
-	Percent   float64               `json:"percent"`
-	Slices    []IncomeMonthSliceDTO `json:"slices"`
-	Entries   []IncomeEntryDTO      `json:"entries"`
+	Month         int                   `json:"month"`
+	Label         string                `json:"label"`
+	CouponUsd     float64               `json:"coupon_usd"`
+	CouponIdr     int64                 `json:"coupon_idr"`
+	ManualIdr     int64                 `json:"manual_idr"`
+	ReceivableIdr int64                 `json:"receivable_idr"`
+	AmountIdr     int64                 `json:"amount_idr"`
+	Percent       float64               `json:"percent"`
+	Slices        []IncomeMonthSliceDTO `json:"slices"`
+	Entries       []IncomeEntryDTO      `json:"entries"`
 }
 
 // IncomeCategoryDTO is one asset class's share of the year's income —
@@ -137,14 +142,15 @@ type IncomeCategoryDTO struct {
 // IncomeCalendarDTO is the Passive Income page's payload: every source of
 // income for one reference year, bucketed by month and by category.
 type IncomeCalendarDTO struct {
-	ReferenceYear  int                 `json:"reference_year"`
-	Months         []IncomeMonthDTO    `json:"months"`
-	Categories     []IncomeCategoryDTO `json:"categories"`
-	CouponTotalUsd float64             `json:"coupon_total_usd"`
-	CouponTotalIdr int64               `json:"coupon_total_idr"`
-	ManualTotalIdr int64               `json:"manual_total_idr"`
-	TotalIdr       int64               `json:"total_idr"`
-	LatestUsdIdr   float64             `json:"latest_usd_idr"`
+	ReferenceYear      int                 `json:"reference_year"`
+	Months             []IncomeMonthDTO    `json:"months"`
+	Categories         []IncomeCategoryDTO `json:"categories"`
+	CouponTotalUsd     float64             `json:"coupon_total_usd"`
+	CouponTotalIdr     int64               `json:"coupon_total_idr"`
+	ManualTotalIdr     int64               `json:"manual_total_idr"`
+	ReceivableTotalIdr int64               `json:"receivable_total_idr"`
+	TotalIdr           int64               `json:"total_idr"`
+	LatestUsdIdr       float64             `json:"latest_usd_idr"`
 }
 
 // bondIncomeCategoryKey is the category coupons are filed under. Coupons
@@ -152,6 +158,12 @@ type IncomeCalendarDTO struct {
 // the Assets page already surfaces bonds under this same key, so reusing it
 // keeps the ring's colors matching the allocation donut.
 const bondIncomeCategoryKey = "bonds_usd"
+
+// receivableIncomeCategoryKey is the category receivable payments are
+// filed under — the same "piutang" category DebtEntriesService.
+// mirrorReceivableToAssets uses, so the Passive Income ring and the Assets
+// donut agree on what a receivable is.
+const receivableIncomeCategoryKey = "piutang"
 
 // resolveCategory looks a category up by key, falling back to a neutral
 // stand-in named after the key itself. A category row deleted out from
@@ -275,6 +287,10 @@ func (s *PassiveIncomeService) Calendar(ctx context.Context, userID uuid.UUID, y
 	if err != nil {
 		return IncomeCalendarDTO{}, err
 	}
+	receivablePayments, err := s.receivables.receivableEntriesInYear(ctx, userID, year)
+	if err != nil {
+		return IncomeCalendarDTO{}, err
+	}
 	categories, err := s.repos.Categories.List(ctx)
 	if err != nil {
 		return IncomeCalendarDTO{}, err
@@ -360,14 +376,27 @@ func (s *PassiveIncomeService) Calendar(ctx context.Context, userID uuid.UUID, y
 		addToCategory(e.CategoryKey, idx, e.AmountIdr)
 	}
 
-	out.TotalIdr = out.CouponTotalIdr + out.ManualTotalIdr
+	receivableCat := resolveCategory(byKey, receivableIncomeCategoryKey)
+	for _, p := range receivablePayments {
+		idx := int(p.PayDate.Time.Month()) - 1
+		m := &out.Months[idx]
+		p.CategoryKey = receivableCat.Key
+		p.CategoryLabel = receivableCat.Label
+		p.ColorOKLCH = receivableCat.ColorOKLCH
+		m.ReceivableIdr += p.AmountIdr
+		m.Entries = append(m.Entries, p)
+		out.ReceivableTotalIdr += p.AmountIdr
+		addToCategory(receivableIncomeCategoryKey, idx, p.AmountIdr)
+	}
+
+	out.TotalIdr = out.CouponTotalIdr + out.ManualTotalIdr + out.ReceivableTotalIdr
 	// Percentages are shares of the year's positive income only: a month
 	// that nets negative has no share of what came in, and letting losses
 	// into the denominator would inflate every other month's slice.
 	var positiveTotal float64
 	for i := range out.Months {
 		m := &out.Months[i]
-		m.AmountIdr = m.CouponIdr + m.ManualIdr
+		m.AmountIdr = m.CouponIdr + m.ManualIdr + m.ReceivableIdr
 		if m.AmountIdr > 0 {
 			positiveTotal += float64(m.AmountIdr)
 		}

@@ -15,12 +15,13 @@ import (
 // DashboardService assembles the GET /dashboard payload from the latest
 // snapshot plus current debts/passive-income/targets.
 type DashboardService struct {
-	repos *db.Repos
-	bonds *BondPurchasesService
+	repos       *db.Repos
+	bonds       *BondPurchasesService
+	receivables *ReceivableLoansService
 }
 
-func NewDashboardService(repos *db.Repos, bonds *BondPurchasesService) *DashboardService {
-	return &DashboardService{repos: repos, bonds: bonds}
+func NewDashboardService(repos *db.Repos, bonds *BondPurchasesService, receivables *ReceivableLoansService) *DashboardService {
+	return &DashboardService{repos: repos, bonds: bonds, receivables: receivables}
 }
 
 // CategoryBreakdown is one entry of equity.by_category / allocation.
@@ -120,15 +121,16 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	}
 
 	// Passive income and its target exist independently of snapshots.
-	// Bond coupons count alongside hand-entered entries — TargetsService
-	// adds the same summand for metric_type "passive_income", so the two
-	// pages always report the same figure.
+	// Bond coupons and receivable payments both count alongside hand-entered
+	// entries — TargetsService adds the same three summands for metric_type
+	// "passive_income", so the two pages always report the same figure.
 	//
-	// The two halves are measured differently on purpose: manual entries are
-	// dated receipts, so only the current year's count, while coupons stay
-	// the forward-looking full-year figure. That makes this a floor early in
-	// the year — the dividends simply haven't been paid yet — that fills in
-	// as the year runs, rather than a projection of income never received.
+	// The halves are measured differently on purpose: manual entries are
+	// dated receipts, so only the current year's count, while coupons and
+	// receivable payments stay the forward-looking full-year figure. That
+	// makes this a floor early in the year — the dividends simply haven't
+	// been paid yet — that fills in as the year runs, rather than a
+	// projection of income never received.
 	perYear, err := s.repos.PassiveIncome.SumForYear(ctx, userID, time.Now().UTC().Year())
 	if err != nil {
 		return out, err
@@ -137,7 +139,11 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	if err != nil {
 		return out, err
 	}
-	perYear += coupons
+	receivableIncome, err := s.receivables.MonthlyIncomePerYearIdr(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+	perYear += coupons + receivableIncome
 
 	targetPerYear, _, err := s.repos.Targets.FirstTargetValueByMetricType(ctx, userID, "passive_income")
 	if err != nil {
@@ -155,6 +161,13 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	}
 	if bondsUpdatedAt != nil && (passiveUpdatedAt == nil || bondsUpdatedAt.Time.After(passiveUpdatedAt.Time)) {
 		passiveUpdatedAt = bondsUpdatedAt
+	}
+	receivablesUpdatedAt, err := s.repos.ReceivableLoans.MaxUpdatedAt(ctx, userID)
+	if err != nil {
+		return out, err
+	}
+	if receivablesUpdatedAt != nil && (passiveUpdatedAt == nil || receivablesUpdatedAt.Time.After(passiveUpdatedAt.Time)) {
+		passiveUpdatedAt = receivablesUpdatedAt
 	}
 
 	out.Passive = PassiveDTO{

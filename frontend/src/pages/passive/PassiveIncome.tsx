@@ -168,8 +168,9 @@ export function PassiveIncome() {
     <div>
       <div className="row-wrap passive-header">
         <div className="passive-header-copy">
-          Every source of passive income, month by month — bond coupons and the dividends, capital
-          gains and redemptions you log by hand. Click a month to see the exact dates.
+          Every source of passive income, month by month — bond coupons, receivable loan payments,
+          and the dividends, capital gains and redemptions you log by hand. Click a month to see the
+          exact dates.
         </div>
         <div className="btn-group">
           <div className="segmented">
@@ -249,7 +250,11 @@ export function PassiveIncome() {
                 </span>
                 <span className="mono passive-month-split">
                   {m.coupon_idr !== 0 && <span title="Bond coupons">◈ {fmtUsd(m.coupon_usd)}</span>}
-                  {m.coupon_idr !== 0 && m.manual_idr !== 0 && ' · '}
+                  {m.coupon_idr !== 0 && (m.manual_idr !== 0 || m.receivable_idr !== 0) && ' · '}
+                  {m.receivable_idr !== 0 && (
+                    <span title="Receivable payments">⇄ {fmtExact(m.receivable_idr)}</span>
+                  )}
+                  {m.receivable_idr !== 0 && m.manual_idr !== 0 && ' · '}
                   {m.manual_idr !== 0 && <span title="Logged income">✎ {fmtExact(m.manual_idr)}</span>}
                 </span>
               </div>
@@ -383,9 +388,10 @@ export function PassiveIncome() {
 
             <div className="passive-donut-note">
               Click a slice or a row to see which months it paid in. Bond coupons count under Bonds
-              USD; coupons dated before a bond was bought are excluded, so a purchase year looks
-              lighter than the steady state. A category that nets a loss leaves the ring but stays
-              listed.
+              USD and receivable payments under Piutang; coupons dated before a bond was bought — and
+              payments before a loan started or after its term ends — are excluded, so a start year
+              looks lighter than the steady state. A category that nets a loss leaves the ring but
+              stays listed.
             </div>
           </div>
 

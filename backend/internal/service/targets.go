@@ -15,12 +15,13 @@ import (
 // TargetsService computes the derived current_value/percent/lower_is_better
 // fields for targets on top of the stored row.
 type TargetsService struct {
-	repos *db.Repos
-	bonds *BondPurchasesService
+	repos       *db.Repos
+	bonds       *BondPurchasesService
+	receivables *ReceivableLoansService
 }
 
-func NewTargetsService(repos *db.Repos, bonds *BondPurchasesService) *TargetsService {
-	return &TargetsService{repos: repos, bonds: bonds}
+func NewTargetsService(repos *db.Repos, bonds *BondPurchasesService, receivables *ReceivableLoansService) *TargetsService {
+	return &TargetsService{repos: repos, bonds: bonds, receivables: receivables}
 }
 
 var validMetricTypes = map[string]bool{
@@ -83,8 +84,8 @@ func (s *TargetsService) computeCurrentValue(ctx context.Context, userID uuid.UU
 
 	case "passive_income":
 		// Must stay in step with DashboardService.Get, which adds the same
-		// coupon summand — otherwise this page and the dashboard would
-		// disagree about how much passive income the user has.
+		// coupon and receivable summands — otherwise this page and the
+		// dashboard would disagree about how much passive income the user has.
 		sum, err := s.repos.PassiveIncome.SumForYear(ctx, userID, time.Now().UTC().Year())
 		if err != nil {
 			return 0, err
@@ -93,7 +94,11 @@ func (s *TargetsService) computeCurrentValue(ctx context.Context, userID uuid.UU
 		if err != nil {
 			return 0, err
 		}
-		return float64(sum + coupons), nil
+		receivableIncome, err := s.receivables.MonthlyIncomePerYearIdr(ctx, userID)
+		if err != nil {
+			return 0, err
+		}
+		return float64(sum + coupons + receivableIncome), nil
 
 	case "debt_ratio":
 		holdings, ok, err := s.latestHoldings(ctx, userID)

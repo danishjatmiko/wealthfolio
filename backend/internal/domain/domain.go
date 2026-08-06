@@ -166,6 +166,31 @@ type BigExpense struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// ReceivableLoan mirrors the receivable_loans table: the terms behind a
+// receivable — how long it runs and how much interest it pays back in
+// total. The principal itself isn't duplicated here; it already lives on
+// the matching DebtEntry's balance. Linked to a DebtEntry only by matching
+// BorrowerName to that row's Name, cosmetically, no foreign key — same
+// relationship BondPurchase.BondName has to Assets holdings. Permanent and
+// user-scoped; never copies forward, never locks.
+//
+// InterestIdr is what was actually agreed, reported directly rather than
+// derived, the same "record what was actually reported" rule
+// BondPurchase.PriceUsd follows. The monthly amount that feeds Passive
+// Income is never stored on this struct — it's InterestIdr/TermMonths (the
+// total interest spread evenly across the term), computed at read time.
+type ReceivableLoan struct {
+	ID           uuid.UUID `json:"id"`
+	UserID       uuid.UUID `json:"-"`
+	BorrowerName string    `json:"borrower_name"`
+	StartDate    Date      `json:"start_date"`
+	TermMonths   int       `json:"term_months"`
+	InterestIdr  int64     `json:"interest_idr"`
+	Note         string    `json:"note"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
 // ExpensePeriod mirrors the expense_periods table: a custom pay-cycle
 // window (25th of one month through the 24th of the next) rather than a
 // calendar month. Never locks — every period stays editable indefinitely.
