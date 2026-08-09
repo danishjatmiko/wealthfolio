@@ -5,6 +5,56 @@
   padding-left: 2px;
 }
 
+/* Wrapper exists purely to give the pace marker room to break out above and
+   below the track — the track itself clips to its own rounded corners. */
+.expense-bar {
+  position: relative;
+  padding: 5px 0;
+}
+/* The "you are here" mark on the period. Deliberately heavy: full-contrast,
+   taller than the bar, with a caret on top, so it never reads as part of
+   the fill it's meant to be measured against. */
+.expense-pace-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  cursor: help;
+}
+.expense-pace-marker::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-primary);
+}
+.expense-pace-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10.5px;
+  color: var(--text-faint);
+  margin-top: 5px;
+}
+.expense-pace-ahead {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+/* Sits after the date range in the header, so the day count is stated once
+   rather than repeated under every envelope. */
+.expense-period-day {
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+}
+
 .expense-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

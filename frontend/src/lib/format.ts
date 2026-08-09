@@ -95,11 +95,18 @@ export function moneyUsd(value: number, hidden: boolean): string {
   return fmtUsd(value)
 }
 
+/** Parses a "YYYY-MM-DD" date string as local midnight. Deliberately not
+ * `new Date(str)`, which reads a bare date as UTC and so lands on the wrong
+ * calendar day for anyone behind UTC. */
+export function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
 /** Formats a "YYYY-MM-DD" date string as e.g. "20 Jul 2026". */
 export function formatShortDate(dateStr: string): string {
-  const [y, m, d] = dateStr.split('-').map(Number)
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(
-    new Date(y, m - 1, d),
+    parseLocalDate(dateStr),
   )
 }
 

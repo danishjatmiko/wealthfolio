@@ -3,7 +3,7 @@ import { Modal } from '../../components/Modal'
 import { DonutChart, type DonutDatum } from '../../components/charts/DonutChart'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { useBigExpenses, useBigExpenseSummary } from '../../hooks/useBigExpenses'
-import { formatShortDate } from '../../lib/format'
+import { formatShortDate, parseLocalDate } from '../../lib/format'
 import { BigExpenseModal } from './BigExpenseModal'
 import type { BigExpense } from '../../types'
 import './BigExpenses.css'
@@ -21,9 +21,13 @@ const COLUMNS: { key: SortKey; label: string; numeric?: boolean }[] = [
   { key: 'amount_idr', label: 'Amount', numeric: true },
 ]
 
+function expenseYear(e: BigExpense): number {
+  return parseLocalDate(e.expense_date).getFullYear()
+}
+
 function yearOptions(expenses: BigExpense[]): number[] {
   const current = new Date().getFullYear()
-  const years = new Set(expenses.map((e) => new Date(e.expense_date).getFullYear()))
+  const years = new Set(expenses.map(expenseYear))
   years.add(current)
   return Array.from(years).sort((a, b) => b - a)
 }
@@ -51,21 +55,30 @@ export function BigExpenses() {
   const maxMonth = useMemo(() => Math.max(1, ...months.map((m) => m.amount_idr)), [months])
   const selected = months.find((m) => m.month === selectedMonth) ?? null
 
-  const biggestExpense = useMemo(() => {
-    const inYear = expenses.filter((e) => new Date(e.expense_date).getFullYear() === year)
-    return inYear.reduce<BigExpense | null>(
-      (max, e) => (!max || e.amount_idr > max.amount_idr ? e : max),
-      null,
-    )
-  }, [expenses, year])
+  // Everything below the year picker reads the selected year, the ledger
+  // table included — the donut drives its category filter, so the two have
+  // to be counting the same entries or clicking a 2026 slice would list
+  // other years' spending alongside it.
+  const expensesInYear = useMemo(() => expenses.filter((e) => expenseYear(e) === year), [expenses, year])
+
+  const biggestExpense = useMemo(
+    () =>
+      expensesInYear.reduce<BigExpense | null>(
+        (max, e) => (!max || e.amount_idr > max.amount_idr ? e : max),
+        null,
+      ),
+    [expensesInYear],
+  )
 
   const filterCategories = useMemo(
-    () => Array.from(new Set(expenses.map((e) => e.category))).sort(),
-    [expenses],
+    () => Array.from(new Set(expensesInYear.map((e) => e.category))).sort(),
+    [expensesInYear],
   )
   const rows = useMemo(() => {
     const filtered =
-      categoryFilter === 'all' ? expenses : expenses.filter((e) => e.category === categoryFilter)
+      categoryFilter === 'all'
+        ? expensesInYear
+        : expensesInYear.filter((e) => e.category === categoryFilter)
     const sorted = [...filtered]
     sorted.sort((a, b) => {
       const av = a[sortKey]
@@ -75,7 +88,7 @@ export function BigExpenses() {
       return sortAsc ? cmp : -cmp
     })
     return sorted
-  }, [expenses, categoryFilter, sortKey, sortAsc])
+  }, [expensesInYear, categoryFilter, sortKey, sortAsc])
   const rowsTotal = useMemo(() => rows.reduce((s, e) => s + e.amount_idr, 0), [rows])
 
   const monthEntries = useMemo(() => {
@@ -121,6 +134,14 @@ export function BigExpenses() {
   function openEditFromMonth(e: BigExpense) {
     setSelectedMonth(null)
     openEdit(e)
+  }
+
+  /** Clicking a donut slice (or its row in the legend below) filters the
+   * ledger table to that category — clicking the one already selected
+   * clears back to all, so the chart doubles as the filter control the
+   * chips row already is. */
+  function toggleCategoryFilter(category: string) {
+    setCategoryFilter((current) => (current === category ? 'all' : category))
   }
 
   return (
@@ -169,6 +190,10 @@ export function BigExpenses() {
               onClick={() => {
                 setYear(y)
                 setSelectedMonth(null)
+                // The categories on offer are the ones that paid out this
+                // year, so a filter from the old year could otherwise stick
+                // around with no chip left to clear it.
+                setCategoryFilter('all')
               }}
             >
               {y}
@@ -210,6 +235,8 @@ export function BigExpenses() {
             <DonutChart
               data={categories.map((c) => ({ value: c.amount_idr, color: c.color_oklch, label: c.category }))}
               onHover={setHoverCategory}
+              onSelect={(d) => toggleCategoryFilter(d.label)}
+              selectedLabel={categoryFilter === 'all' ? null : categoryFilter}
             />
             <div className="bigexp-donut-center">
               <div className="bigexp-donut-center-label">{hoverCategory ? hoverCategory.label : year}</div>
@@ -220,13 +247,24 @@ export function BigExpenses() {
           </div>
           {categories.length === 0 && <div className="empty-state">No entries yet.</div>}
           {categories.map((c) => (
-            <div className="bigexp-cat-row" key={c.category}>
+            <div
+              className={
+                'bigexp-cat-row bigexp-cat-row-click' +
+                (categoryFilter === c.category ? ' bigexp-cat-row-active' : '')
+              }
+              key={c.category}
+              onClick={() => toggleCategoryFilter(c.category)}
+            >
               <span className="bigexp-cat-swatch" style={{ background: c.color_oklch }} />
               <span className="bigexp-cat-name">{c.category}</span>
               <span className="mono bigexp-cat-val">{fmtExact(c.amount_idr)}</span>
               <span className="mono bigexp-cat-pct">{c.percent.toFixed(1)}%</span>
             </div>
           ))}
+          <div className="bigexp-donut-note">
+            Click a slice or a row to filter the list below to that category; click it again to
+            clear.
+          </div>
         </div>
       </div>
 
@@ -265,7 +303,13 @@ export function BigExpenses() {
           <span />
         </div>
 
-        {rows.length === 0 && <div className="empty-state">No big expenses logged yet.</div>}
+        {rows.length === 0 && (
+          <div className="empty-state">
+            {categoryFilter === 'all'
+              ? `No big expenses logged in ${year}.`
+              : `No ${categoryFilter} expenses in ${year}.`}
+          </div>
+        )}
 
         {rows.map((e) => (
           <div className="bigexp-row" key={e.id} onClick={() => openEdit(e)}>
@@ -284,7 +328,7 @@ export function BigExpenses() {
         {rows.length > 0 && (
           <div className="bigexp-net-row">
             <span className="bigexp-net-label">
-              {categoryFilter === 'all' ? 'All expenses' : categoryFilter}
+              {categoryFilter === 'all' ? 'All expenses' : categoryFilter} · {year}
             </span>
             <span className="mono bigexp-net-sub">{rows.length} {entryWord(rows.length)}</span>
             <span className="mono bigexp-net-total">{fmtExact(rowsTotal)}</span>

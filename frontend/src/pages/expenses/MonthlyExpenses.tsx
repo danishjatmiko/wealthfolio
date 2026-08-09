@@ -11,9 +11,29 @@ import { api } from '../../lib/api'
 import { NewPeriodModal } from './NewPeriodModal'
 import { BudgetEnvelopeModal } from './BudgetEnvelopeModal'
 import { FixedExpenseModal } from './FixedExpenseModal'
-import { formatShortDate, formatTimestamp, sourceLabel } from '../../lib/format'
+import { formatShortDate, formatTimestamp, parseLocalDate, sourceLabel } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
+
+const MS_PER_DAY = 86_400_000
+
+/** How far today sits through a period: which day of how many, as a
+ * percentage. Both ends are inclusive, so a 25 Jul – 24 Aug period is 31
+ * days and its final day reads 100%. A period that hasn't started yet
+ * reports day 0, and one already finished caps at its last day, so the bar
+ * never runs past its track either way. */
+function periodProgress(startDate: string, endDate: string) {
+  const start = parseLocalDate(startDate)
+  const end = parseLocalDate(endDate)
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+  const totalDays = Math.round((end.getTime() - start.getTime()) / MS_PER_DAY) + 1
+  const elapsed = Math.round((today.getTime() - start.getTime()) / MS_PER_DAY) + 1
+  const dayOfPeriod = Math.min(Math.max(elapsed, 0), totalDays)
+
+  return { dayOfPeriod, totalDays, pct: totalDays > 0 ? (dayOfPeriod / totalDays) * 100 : 0 }
+}
 
 export function MonthlyExpenses() {
   const { fmt } = useMoney()
@@ -90,6 +110,8 @@ export function MonthlyExpenses() {
     )
   }
 
+  const dayProgress = periodProgress(period.start_date, period.end_date)
+
   return (
     <div>
       <div className="row-wrap assets-toolbar">
@@ -110,6 +132,10 @@ export function MonthlyExpenses() {
           </div>
           <div className="expense-period-range">
             {formatShortDate(period.start_date)} – {formatShortDate(period.end_date)}
+            <span className="expense-period-day">
+              Day {dayProgress.dayOfPeriod} of {dayProgress.totalDays} · {Math.round(dayProgress.pct)}
+              % elapsed
+            </span>
           </div>
         </div>
         <div className="btn-group">
@@ -136,6 +162,14 @@ export function MonthlyExpenses() {
           const pct =
             env.committed_amount_idr > 0 ? (env.actual_total_idr / env.committed_amount_idr) * 100 : 0
           const deltaAbs = Math.abs(env.actual_total_idr - env.committed_amount_idr)
+          // Spending faster than the period is running out. Only meaningful
+          // once something's actually been spent — an untouched envelope is
+          // trivially "on track" however far into the period we are.
+          const aheadOfPace = env.actual_total_idr > 0 && pct > dayProgress.pct
+
+          const spendPct = Math.min(100, pct)
+          const pacePct = Math.min(100, dayProgress.pct)
+          const paceTitle = `Day ${dayProgress.dayOfPeriod} of ${dayProgress.totalDays} — ${Math.round(dayProgress.pct)}% of the period gone`
 
           return (
             <div className="card" key={env.id}>
@@ -152,14 +186,27 @@ export function MonthlyExpenses() {
                   {fmt(deltaAbs)} {overBudget ? 'over' : 'under'}
                 </span>
               </div>
-              <div className="progress-track">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${Math.min(100, pct)}%`,
-                    background: overBudget ? 'var(--red)' : 'var(--green)',
-                  }}
-                />
+              {/* The marker crosses the whole bar and pokes out top and
+                  bottom so it reads as a ruler mark against the fill rather
+                  than as part of it: fill short of the mark is on track,
+                  past it is spending faster than the calendar. */}
+              <div className="expense-bar">
+                <div className="progress-track">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${spendPct}%`,
+                      background: overBudget ? 'var(--red)' : 'var(--green)',
+                    }}
+                  />
+                </div>
+                <span className="expense-pace-marker" style={{ left: `${pacePct}%` }} title={paceTitle} />
+              </div>
+              <div className="expense-pace-meta">
+                <span>{Math.round(pct)}% spent</span>
+                <span className={aheadOfPace ? 'expense-pace-ahead' : undefined}>
+                  {aheadOfPace ? 'ahead of pace' : 'on track'}
+                </span>
               </div>
 
               {env.fixed_expenses.length === 0 && <div className="empty-state">No expenses logged yet.</div>}

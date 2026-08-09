@@ -106,6 +106,29 @@
   padding: 6px 0;
   font-size: 12.5px;
 }
+/* The legend doubles as the category filter for the ledger below, so rows
+   read as clickable and the active one stays marked while filtered. */
+.bigexp-cat-row-click {
+  cursor: pointer;
+  border-radius: 8px;
+  padding-left: 6px;
+  padding-right: 6px;
+  margin: 0 -6px;
+}
+.bigexp-cat-row-click:hover {
+  background: var(--content-bg);
+}
+.bigexp-cat-row-active {
+  background: var(--content-bg);
+  font-weight: 600;
+}
+
+.bigexp-donut-note {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 12px;
+  line-height: 1.45;
+}
 .bigexp-cat-swatch {
   width: 9px;
   height: 9px;
