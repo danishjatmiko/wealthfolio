@@ -96,6 +96,16 @@
   margin-bottom: 10px;
 }
 
+/* Caps a long envelope at roughly six rows and scrolls the rest. The
+   padding-right keeps the scrollbar off the amounts; the matching negative
+   margin keeps the rows themselves flush with the rest of the card. */
+.expense-rows {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-right: -8px;
+}
+
 .expense-row {
   display: flex;
   align-items: center;

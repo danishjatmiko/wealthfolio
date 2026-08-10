@@ -172,11 +172,23 @@
   /* Nine columns of purchase detail can't survive a phone. Both tables drop
      to a two-up grid with the name on its own line and the chevron pinned
      to the corner, so figures pair off predictably instead of trailing
-     after the date. Headers go away since the values carry their own
-     units. */
+     after the date. The shared header row goes away with the columns, so
+     each cell carries its own caption instead (data-label in Bonds.tsx) —
+     without it a bare "5.79%" or "7" says nothing. */
   .bond-row-head,
   .bond-purchase-head {
     display: none;
+  }
+  .bond-row [data-label]::before,
+  .bond-purchase-row [data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--font-ui);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
   }
   .bond-row {
     position: relative;

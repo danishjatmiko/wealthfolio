@@ -80,7 +80,12 @@ export function Bonds() {
     setModalOpen(true)
   }
 
+  // data-label carries the column heading down onto the cell itself. At
+  // desktop width it's inert — the header row does the labelling — but the
+  // narrow layout drops that header, and there the CSS surfaces it so a
+  // stray "5.79%" or "7" still says what it is.
   function cell(b: BondNameSummary, key: SortKey) {
+    const label = COLUMNS.find((c) => c.key === key)?.label
     switch (key) {
       case 'bond_name':
         return (
@@ -91,31 +96,31 @@ export function Bonds() {
         )
       case 'interest_rate':
         return (
-          <span className="mono bond-num" key={key}>
+          <span className="mono bond-num" key={key} data-label={label}>
             {b.interest_rate.toFixed(2)}%
           </span>
         )
       case 'ytm_pct':
         return (
-          <span className="mono bond-num bond-ytm" key={key}>
+          <span className="mono bond-num bond-ytm" key={key} data-label={label}>
             {b.ytm_pct > 0 ? `${b.ytm_pct.toFixed(2)}%` : '—'}
           </span>
         )
       case 'maturity_date':
         return (
-          <span className="mono" key={key}>
+          <span className="mono" key={key} data-label={label}>
             {formatShortDate(b.maturity_date)}
           </span>
         )
       case 'quantity':
         return (
-          <span className="mono bond-num" key={key}>
+          <span className="mono bond-num" key={key} data-label={label}>
             {b.quantity}
           </span>
         )
       case 'total_usd':
         return (
-          <span className="mono bond-num" key={key}>
+          <span className="mono bond-num" key={key} data-label={label}>
             {fmtUsd(b.total_usd)}
           </span>
         )
@@ -238,17 +243,25 @@ export function Bonds() {
                   </div>
                   {b.purchases.map((p) => (
                     <div className="bond-purchase-row" key={p.id}>
-                      <span className="mono">{formatShortDate(p.buy_date)}</span>
+                      <span className="mono" data-label="Bought">{formatShortDate(p.buy_date)}</span>
                       <span>
                         {p.platform && <span className="source-badge bond-platform-badge">{p.platform}</span>}
                       </span>
-                      <span className="mono bond-num">{p.quantity}</span>
-                      <span className="mono bond-num">{fmtUsd(p.price_usd)}</span>
-                      <span className="mono bond-num">{fmtUsd(p.accrued_interest_usd)}</span>
-                      <span className="mono bond-num">{fmtUsd(p.settlement_usd)}</span>
-                      <span className="mono bond-num bond-ytm">{p.ytm_pct.toFixed(2)}%</span>
-                      <span className="mono bond-num">{fmtUsdIdrRate(p.usd_idr_at_purchase)}</span>
-                      <span className="mono bond-num">{fmtExact(p.settlement_idr)}</span>
+                      <span className="mono bond-num" data-label="Qty">{p.quantity}</span>
+                      <span className="mono bond-num" data-label="Price">{fmtUsd(p.price_usd)}</span>
+                      <span className="mono bond-num" data-label="Accrued">
+                        {fmtUsd(p.accrued_interest_usd)}
+                      </span>
+                      <span className="mono bond-num" data-label="Paid">{fmtUsd(p.settlement_usd)}</span>
+                      <span className="mono bond-num bond-ytm" data-label="YTM">
+                        {p.ytm_pct.toFixed(2)}%
+                      </span>
+                      <span className="mono bond-num" data-label="Rate paid">
+                        {fmtUsdIdrRate(p.usd_idr_at_purchase)}
+                      </span>
+                      <span className="mono bond-num" data-label="Total Rp">
+                        {fmtExact(p.settlement_idr)}
+                      </span>
                       <button
                         type="button"
                         title="Edit"

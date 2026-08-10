@@ -44,9 +44,11 @@ export function AppShell() {
     return queryClient.refetchQueries({ type: 'active' })
   })
 
-  // desktopOnly nav items (e.g. Simulation) never appear in the bottom nav
-  // at all — that alone is enough on the web, since the sidebar that DOES
-  // list them is already display:none below the mobile breakpoint. Inside
+  // desktopOnly nav items never appear in the bottom nav at all — that
+  // alone is enough on the web, since the sidebar that DOES list them is
+  // already display:none below the mobile breakpoint. Nothing currently
+  // sets the flag; it stays wired up for a page that genuinely can't work
+  // on a phone. Inside
   // the Android app's WebView, though, a wide-enough viewport (a tablet)
   // could still render the sidebar, so those items are additionally
   // stripped from the sidebar itself whenever window.WealthfolioNative is

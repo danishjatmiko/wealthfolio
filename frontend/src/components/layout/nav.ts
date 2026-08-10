@@ -35,7 +35,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/passive-income', label: 'Passive Income', icon: '⊛' },
   { to: '/progress', label: 'Progress', icon: '∿' },
   { to: '/rates', label: 'Rates', icon: '¤' },
-  { to: '/bonds', label: 'Bonds', icon: '◈', desktopOnly: true },
+  { to: '/bonds', label: 'Bonds', icon: '◈' },
   { to: '/simulation', label: 'Simulation', icon: '↗' },
 ]
 

@@ -210,24 +210,33 @@ export function MonthlyExpenses() {
               </div>
 
               {env.fixed_expenses.length === 0 && <div className="empty-state">No expenses logged yet.</div>}
-              {env.fixed_expenses.map((fe) => {
-                const edited = fe.updated_at !== fe.created_at
-                return (
-                  <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
-                    <div className="expense-row-info">
-                      <div className="expense-row-name">
-                        {fe.name}
-                        {fe.source && <span className="source-badge">{sourceLabel(fe.source)}</span>}
+              {/* A busy envelope can run to dozens of rows, which would leave
+                  every card in the row stretched to match it. Scrolling the
+                  list keeps the cards a readable height, with the total and
+                  the add button staying put outside it. */}
+              {env.fixed_expenses.length > 0 && (
+                <div className="expense-rows">
+                  {env.fixed_expenses.map((fe) => {
+                    const edited = fe.updated_at !== fe.created_at
+                    return (
+                      <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
+                        <div className="expense-row-info">
+                          <div className="expense-row-name">
+                            {fe.name}
+                            {fe.source && <span className="source-badge">{sourceLabel(fe.source)}</span>}
+                          </div>
+                          <div className="expense-row-date">
+                            {edited ? 'Updated' : 'Added'}{' '}
+                            {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
+                          </div>
+                          {fe.notes && <div className="expense-row-notes">{fe.notes}</div>}
+                        </div>
+                        <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
                       </div>
-                      <div className="expense-row-date">
-                        {edited ? 'Updated' : 'Added'} {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
-                      </div>
-                      {fe.notes && <div className="expense-row-notes">{fe.notes}</div>}
-                    </div>
-                    <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
-                  </div>
-                )
-              })}
+                    )
+                  })}
+                </div>
+              )}
               <button type="button" className="btn-dashed" onClick={() => openAddExpense(env.id)}>
                 + Add expense
               </button>
