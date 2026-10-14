@@ -6,7 +6,7 @@ import type { RateEntry } from '../types'
 
 export const GOLD_CATEGORY_LABEL = 'Logam Mulia'
 export const BONDS_USD_CATEGORY_LABEL = 'Bonds USD'
-export const US_ETF_CATEGORY_LABEL = 'US ETF'
+export const US_ETF_CATEGORY_LABEL = 'US ETF / Stocks'
 export const CASH_CATEGORY_LABEL = 'Uang Tunai'
 
 export const GOLD_TYPES = ['Antam', 'King Halim', 'UBS'] as const
@@ -61,7 +61,7 @@ export function isCashCategory(categoryLabel: string): boolean {
   return categoryLabel === CASH_CATEGORY_LABEL
 }
 
-/** Whether the form should show a USD input (bonds, US ETF, or cash-in-USD). */
+/** Whether the form should show a USD input (bonds, US ETF / Stocks, or cash-in-USD). */
 export function showsUsdInput(categoryLabel: string, currency: string): boolean {
   return isFixedUsdCategory(categoryLabel) || (categoryLabel === CASH_CATEGORY_LABEL && currency === 'USD')
 }
