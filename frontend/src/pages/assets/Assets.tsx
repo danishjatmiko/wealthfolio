@@ -60,6 +60,8 @@ export function Assets() {
     [holdings],
   )
 
+  const groupTotal = useMemo(() => visibleHoldings.reduce((s, h) => s + h.value_idr, 0), [visibleHoldings])
+
   const catById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
 
   function openAddAsset() {
@@ -241,6 +243,16 @@ export function Assets() {
             </div>
           )
         })}
+
+        {assetGroup !== 'all' && visibleHoldings.length > 0 && (
+          <div className="asset-net-row">
+            <span className="asset-net-label">{catById.get(Number(assetGroup))?.label ?? 'Category'} subtotal</span>
+            <span className="mono asset-net-breakdown">
+              {visibleHoldings.length} {visibleHoldings.length === 1 ? 'holding' : 'holdings'}
+            </span>
+            <span className="mono asset-net-total">{fmt(groupTotal)}</span>
+          </div>
+        )}
 
         {assetGroup === 'all' && holdings.length > 0 && (
           <div className="asset-net-row">
