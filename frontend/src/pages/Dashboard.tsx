@@ -1,10 +1,19 @@
 import { useState } from 'react'
 import { useMoney } from '../context/MoneyVisibilityContext'
-import { useDashboard } from '../hooks/useDashboard'
+import { useDashboard, useDashboardAssets, useDashboardExpense } from '../hooks/useDashboard'
+import { useExpensePeriods } from '../hooks/useExpensePeriods'
+import { useSnapshots } from '../hooks/useSnapshots'
 import { DonutChart, type DonutDatum } from '../components/charts/DonutChart'
 import { CategoryRowList } from '../components/CategoryRowList'
-import { formatShortDate } from '../lib/format'
+import { formatShortDate, parseLocalDate } from '../lib/format'
+import { BudgetVsActualCard, PeriodHistoryCard } from './DashboardBudget'
 import './Dashboard.css'
+
+const snapshotDateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+
+function snapshotLabel(date: string): string {
+  return snapshotDateFormat.format(parseLocalDate(date))
+}
 
 export function Dashboard() {
   const { fmt, fmtExact } = useMoney()
@@ -12,15 +21,70 @@ export function Dashboard() {
   const [hoverAllocation, setHoverAllocation] = useState<DonutDatum | null>(null)
   const [hoverSpent, setHoverSpent] = useState<DonutDatum | null>(null)
   const [hoverCommitted, setHoverCommitted] = useState<DonutDatum | null>(null)
+  const { data: snapshots = [] } = useSnapshots()
+  const [selectedSnapshotDate, setSelectedSnapshotDate] = useState<string | undefined>(undefined)
+  const { data: periods = [] } = useExpensePeriods()
+  const [selectedPeriodId, setSelectedPeriodId] = useState<string | undefined>(undefined)
+
+  // The latest period's expense block already arrives with the dashboard;
+  // only a different pick needs its own request. A pick that no longer
+  // exists (deleted on the Expenses page) falls back to the latest.
+  const latestPeriodId = data?.expense.period_id ?? undefined
+  const activePeriodId =
+    selectedPeriodId && periods.some((p) => p.id === selectedPeriodId) ? selectedPeriodId : latestPeriodId
+  const otherPeriodId = activePeriodId !== latestPeriodId ? activePeriodId : undefined
+  const { data: otherExpense } = useDashboardExpense(otherPeriodId)
+
+  // Same arrangement for asset snapshots: the latest rides along with the
+  // dashboard, any other pick is fetched on its own.
+  const latestSnapshotDate = data?.equity.as_of_date ?? undefined
+  const activeSnapshotDate =
+    selectedSnapshotDate && snapshots.some((s) => s.snapshot_date === selectedSnapshotDate)
+      ? selectedSnapshotDate
+      : latestSnapshotDate
+  const otherSnapshotDate = activeSnapshotDate !== latestSnapshotDate ? activeSnapshotDate : undefined
+  const { data: otherAssets } = useDashboardAssets(otherSnapshotDate)
 
   if (isLoading) return <div className="empty-state">Loading dashboard…</div>
   if (isError || !data) return <div className="empty-state">Couldn't load the dashboard.</div>
 
-  const { equity, debt, expense, allocation } = data
+  const { debt } = data
+  const assets = (otherSnapshotDate && otherAssets) || data
+  const { equity, allocation } = assets
+  const expense = (otherPeriodId && otherExpense) || data.expense
+
+  function selectPeriod(id: string) {
+    setSelectedPeriodId(id)
+    setHoverSpent(null)
+    setHoverCommitted(null)
+  }
 
   return (
     <div>
       <div className="dash-section">
+        {snapshots.length > 0 && (
+          <div className="row-wrap dash-expense-head">
+            <div className="dash-section-title">Assets</div>
+            <div className="snapshot-pill">
+              <span className="snapshot-pill-label">Snapshot</span>
+              <select
+                className="snapshot-pill-select"
+                value={activeSnapshotDate ?? ''}
+                onChange={(e) => {
+                  setSelectedSnapshotDate(e.target.value)
+                  setHoverAllocation(null)
+                }}
+              >
+                {snapshots.map((s) => (
+                  <option key={s.id} value={s.snapshot_date}>
+                    {snapshotLabel(s.snapshot_date)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {otherSnapshotDate && <span className="dash-expense-range">Debt card still shows your latest debt figures</span>}
+          </div>
+        )}
         <div className="dash-top-grid">
           <div className="dash-hero">
             <div className="dash-hero-label">Total Equity</div>
@@ -91,6 +155,30 @@ export function Dashboard() {
       </div>
 
       <div className="dash-section">
+        <div className="row-wrap dash-expense-head">
+          <div className="dash-section-title">Expenses</div>
+          {periods.length > 0 && (
+            <div className="snapshot-pill">
+              <span className="snapshot-pill-label">Period</span>
+              <select
+                className="snapshot-pill-select"
+                value={activePeriodId ?? ''}
+                onChange={(e) => selectPeriod(e.target.value)}
+              >
+                {periods.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {expense.start_date && expense.end_date && (
+            <span className="dash-expense-range">
+              {formatShortDate(expense.start_date)} – {formatShortDate(expense.end_date)}
+            </span>
+          )}
+        </div>
         <div className="dash-expense-grid">
           <div className="card dash-donut-card">
             <div className="card-title">Expenses — Spent by Envelope</div>
@@ -129,6 +217,18 @@ export function Dashboard() {
             </div>
             <CategoryRowList rows={expense.committed_by_envelope} fmt={fmt} emptyMessage="No budget envelopes yet." />
           </div>
+        </div>
+      </div>
+
+      <div className="dash-section">
+        <div className="dash-budget-grid">
+          <BudgetVsActualCard expense={expense} fmt={fmt} />
+          <PeriodHistoryCard
+            periods={periods}
+            selectedId={activePeriodId}
+            onSelect={selectPeriod}
+            fmt={fmt}
+          />
         </div>
       </div>
     </div>

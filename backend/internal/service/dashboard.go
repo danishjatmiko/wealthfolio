@@ -62,16 +62,23 @@ type PassiveDTO struct {
 	UpdatedAt         *domain.Date `json:"updated_at"`
 }
 
-// ExpenseDTO is dashboard.expense. ActualTotalIdr sums every fixed expense
-// in the latest period; CommittedTotalIdr sums every envelope's target.
+// ExpenseDTO is dashboard.expense (the latest period) and the body of
+// GET /dashboard/expense (any one period). ActualTotalIdr sums every fixed
+// expense in the period; CommittedTotalIdr sums every envelope's target.
 // ActualByEnvelope/CommittedByEnvelope break both down per envelope, for
-// the two Dashboard pie charts.
+// the two Dashboard pie charts; Envelopes pairs the two figures per
+// envelope for the budget-vs-actual section. PeriodID is nil when the user
+// has no periods yet.
 type ExpenseDTO struct {
+	PeriodID            *uuid.UUID          `json:"period_id"`
 	PeriodLabel         string              `json:"period_label"`
+	StartDate           *domain.Date        `json:"start_date"`
+	EndDate             *domain.Date        `json:"end_date"`
 	ActualTotalIdr      int64               `json:"actual_total_idr"`
 	CommittedTotalIdr   int64               `json:"committed_total_idr"`
 	ActualByEnvelope    []CategoryBreakdown `json:"actual_by_envelope"`
 	CommittedByEnvelope []CategoryBreakdown `json:"committed_by_envelope"`
+	Envelopes           []EnvelopeBudgetDTO `json:"envelopes"`
 	UpdatedAt           *domain.Date        `json:"updated_at"`
 }
 
@@ -90,6 +97,16 @@ var expenseEnvelopePalette = []string{
 	"oklch(0.58 0.13 28)",
 }
 
+// EnvelopeBudgetDTO is one envelope's target next to what was actually
+// spent against it, in the same order and color as the pie charts.
+type EnvelopeBudgetDTO struct {
+	EnvelopeID   uuid.UUID `json:"envelope_id"`
+	Label        string    `json:"label"`
+	ColorOKLCH   string    `json:"color_oklch"`
+	CommittedIdr int64     `json:"committed_idr"`
+	ActualIdr    int64     `json:"actual_idr"`
+}
+
 // DashboardDTO is the full GET /dashboard response.
 type DashboardDTO struct {
 	Equity     EquityDTO           `json:"equity"`
@@ -99,13 +116,18 @@ type DashboardDTO struct {
 	Allocation []CategoryBreakdown `json:"allocation"`
 }
 
+func emptyExpense() ExpenseDTO {
+	return ExpenseDTO{
+		ActualByEnvelope:    []CategoryBreakdown{},
+		CommittedByEnvelope: []CategoryBreakdown{},
+		Envelopes:           []EnvelopeBudgetDTO{},
+	}
+}
+
 func emptyDashboard() DashboardDTO {
 	return DashboardDTO{
-		Equity: EquityDTO{ByCategory: []CategoryBreakdown{}},
-		Expense: ExpenseDTO{
-			ActualByEnvelope:    []CategoryBreakdown{},
-			CommittedByEnvelope: []CategoryBreakdown{},
-		},
+		Equity:     EquityDTO{ByCategory: []CategoryBreakdown{}},
+		Expense:    emptyExpense(),
 		Allocation: []CategoryBreakdown{},
 	}
 }
@@ -131,19 +153,10 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 	// makes this a floor early in the year — the dividends simply haven't
 	// been paid yet — that fills in as the year runs, rather than a
 	// projection of income never received.
-	perYear, err := s.repos.PassiveIncome.SumForYear(ctx, userID, time.Now().UTC().Year())
+	perYear, err := s.passivePerYear(ctx, userID)
 	if err != nil {
 		return out, err
 	}
-	coupons, err := s.bonds.CouponPerYearIdr(ctx, userID)
-	if err != nil {
-		return out, err
-	}
-	receivableIncome, err := s.receivables.MonthlyIncomePerYearIdr(ctx, userID)
-	if err != nil {
-		return out, err
-	}
-	perYear += coupons + receivableIncome
 
 	targetPerYear, _, err := s.repos.Targets.FirstTargetValueByMetricType(ctx, userID, "passive_income")
 	if err != nil {
@@ -217,74 +230,16 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 
 	// Expense periods run on their own independent timeline too, computed
 	// regardless of whether the user has any asset snapshots yet.
-	// ActualTotalIdr/CommittedTotalIdr sum every fixed expense/envelope
-	// target in the latest period; ActualByEnvelope/CommittedByEnvelope
-	// break both down per envelope.
-	expense := ExpenseDTO{
-		ActualByEnvelope:    []CategoryBreakdown{},
-		CommittedByEnvelope: []CategoryBreakdown{},
-	}
 	latestPeriod, err := s.repos.ExpensePeriods.GetLatest(ctx, userID)
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
 		return out, err
 	}
 	if err == nil {
-		fixedExpenses, err := s.repos.FixedExpenses.ListByPeriod(ctx, latestPeriod.ID)
+		out.Expense, err = s.expenseFor(ctx, latestPeriod)
 		if err != nil {
 			return out, err
-		}
-		envelopes, err := s.repos.BudgetEnvelopes.ListByPeriod(ctx, latestPeriod.ID)
-		if err != nil {
-			return out, err
-		}
-
-		actualByEnvelope := map[uuid.UUID]int64{}
-		var actualTotal int64
-		var expenseUpdatedAt *domain.Date
-		for _, fe := range fixedExpenses {
-			actualTotal += fe.AmountIdr
-			actualByEnvelope[fe.EnvelopeID] += fe.AmountIdr
-			d := domain.NewDate(fe.UpdatedAt)
-			if expenseUpdatedAt == nil || d.Time.After(expenseUpdatedAt.Time) {
-				expenseUpdatedAt = &d
-			}
-		}
-
-		var committedTotal int64
-		for _, env := range envelopes {
-			committedTotal += env.CommittedAmountIdr
-		}
-
-		actualByEnv := make([]CategoryBreakdown, 0, len(envelopes))
-		committedByEnv := make([]CategoryBreakdown, 0, len(envelopes))
-		for i, env := range envelopes {
-			color := expenseEnvelopePalette[i%len(expenseEnvelopePalette)]
-			actualByEnv = append(actualByEnv, CategoryBreakdown{
-				CategoryKey: env.ID.String(),
-				Label:       env.Name,
-				ColorOKLCH:  color,
-				ValueIdr:    actualByEnvelope[env.ID],
-				Percent:     percentOf(float64(actualByEnvelope[env.ID]), float64(actualTotal)),
-			})
-			committedByEnv = append(committedByEnv, CategoryBreakdown{
-				CategoryKey: env.ID.String(),
-				Label:       env.Name,
-				ColorOKLCH:  color,
-				ValueIdr:    env.CommittedAmountIdr,
-				Percent:     percentOf(float64(env.CommittedAmountIdr), float64(committedTotal)),
-			})
-		}
-
-		expense = ExpenseDTO{
-			PeriodLabel:         periodLabel(latestPeriod.EndDate),
-			ActualTotalIdr:      actualTotal,
-			CommittedTotalIdr:   committedTotal,
-			ActualByEnvelope:    actualByEnv,
-			CommittedByEnvelope: committedByEnv,
-			UpdatedAt:           expenseUpdatedAt,
 		}
 	}
-	out.Expense = expense
 
 	if len(aggs) == 0 {
 		out.Debt = DebtDTO{
@@ -296,14 +251,87 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		return out, nil
 	}
 
-	latest := aggs[0]
-	holdings, err := s.repos.Holdings.ListBySnapshot(ctx, latest.Snapshot.ID)
+	out.Equity, out.Allocation, err = s.equityAt(ctx, aggs, 0, perYear)
 	if err != nil {
 		return out, err
 	}
+	out.Debt = DebtDTO{
+		TotalDebtIdr:       iOwe,
+		TotalReceivableIdr: owedToMe,
+		RatioPct:           percentOf(float64(iOwe), float64(out.Equity.TotalIdr)),
+		UpdatedAt:          debtUpdatedAt,
+	}
+
+	return out, nil
+}
+
+// passivePerYear is the year's passive income: hand-logged receipts for the
+// current year plus the forward-looking bond coupons and receivable
+// payments. See Get for why the halves are measured differently.
+func (s *DashboardService) passivePerYear(ctx context.Context, userID uuid.UUID) (int64, error) {
+	perYear, err := s.repos.PassiveIncome.SumForYear(ctx, userID, time.Now().UTC().Year())
+	if err != nil {
+		return 0, err
+	}
+	coupons, err := s.bonds.CouponPerYearIdr(ctx, userID)
+	if err != nil {
+		return 0, err
+	}
+	receivableIncome, err := s.receivables.MonthlyIncomePerYearIdr(ctx, userID)
+	if err != nil {
+		return 0, err
+	}
+	return perYear + coupons + receivableIncome, nil
+}
+
+// DashboardAssetsDTO is the snapshot-dependent half of the dashboard — the
+// equity hero and the allocation breakdown — for GET /dashboard/assets.
+type DashboardAssetsDTO struct {
+	Equity     EquityDTO           `json:"equity"`
+	Allocation []CategoryBreakdown `json:"allocation"`
+}
+
+// Assets returns the equity hero and allocation as of one of the user's
+// asset snapshots, so the Home page can show any snapshot rather than only
+// the latest. ErrNotFound if the user has no snapshot on that date.
+func (s *DashboardService) Assets(ctx context.Context, userID uuid.UUID, date domain.Date) (DashboardAssetsDTO, error) {
+	aggs, err := s.repos.Snapshots.ListWithAgg(ctx, userID)
+	if err != nil {
+		return DashboardAssetsDTO{}, err
+	}
+	idx := -1
+	for i, a := range aggs {
+		if a.Snapshot.SnapshotDate.Time.Equal(date.Time) {
+			idx = i
+			break
+		}
+	}
+	if idx < 0 {
+		return DashboardAssetsDTO{}, db.ErrNotFound
+	}
+	perYear, err := s.passivePerYear(ctx, userID)
+	if err != nil {
+		return DashboardAssetsDTO{}, err
+	}
+	equity, allocation, err := s.equityAt(ctx, aggs, idx, perYear)
+	if err != nil {
+		return DashboardAssetsDTO{}, err
+	}
+	return DashboardAssetsDTO{Equity: equity, Allocation: allocation}, nil
+}
+
+// equityAt computes the equity hero and allocation for aggs[idx], where
+// aggs is newest first (SnapshotsRepo.ListWithAgg); the month-on-month
+// change compares against the snapshot just before it, aggs[idx+1].
+func (s *DashboardService) equityAt(ctx context.Context, aggs []db.SnapshotAgg, idx int, perYear int64) (EquityDTO, []CategoryBreakdown, error) {
+	snap := aggs[idx]
+	holdings, err := s.repos.Holdings.ListBySnapshot(ctx, snap.Snapshot.ID)
+	if err != nil {
+		return EquityDTO{}, nil, err
+	}
 	categories, err := s.repos.Categories.List(ctx)
 	if err != nil {
-		return out, err
+		return EquityDTO{}, nil, err
 	}
 
 	colorByKey := map[string]string{}
@@ -321,13 +349,11 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 
 	var momIdr int64
 	var momPct float64
-	if len(aggs) >= 2 {
-		prev := aggs[1].NetEquityIdr
+	if idx+1 < len(aggs) {
+		prev := aggs[idx+1].NetEquityIdr
 		momIdr = total - prev
 		momPct = percentOf(float64(momIdr), float64(prev))
 	}
-
-	ratioPct := percentOf(float64(iOwe), float64(total))
 
 	grouped := map[string]int64{}
 	for _, h := range holdings {
@@ -354,8 +380,8 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		})
 	}
 
-	asOf := latest.Snapshot.SnapshotDate
-	out.Equity = EquityDTO{
+	asOf := snap.Snapshot.SnapshotDate
+	equity := EquityDTO{
 		TotalIdr:       total,
 		InvestedIdr:    invested,
 		InclPassiveIdr: total + perYear,
@@ -364,13 +390,85 @@ func (s *DashboardService) Get(ctx context.Context, userID uuid.UUID) (Dashboard
 		ByCategory:     byCategory,
 		AsOfDate:       &asOf,
 	}
-	out.Debt = DebtDTO{
-		TotalDebtIdr:       iOwe,
-		TotalReceivableIdr: owedToMe,
-		RatioPct:           ratioPct,
-		UpdatedAt:          debtUpdatedAt,
-	}
-	out.Allocation = byCategory
+	return equity, byCategory, nil
+}
 
+// Expense returns the dashboard's expense block for one of the user's
+// periods, so the Home page can show any period rather than only the
+// latest. ErrNotFound if the period doesn't exist or isn't the user's.
+func (s *DashboardService) Expense(ctx context.Context, userID, periodID uuid.UUID) (ExpenseDTO, error) {
+	period, err := s.repos.ExpensePeriods.GetByID(ctx, userID, periodID)
+	if err != nil {
+		return ExpenseDTO{}, err
+	}
+	return s.expenseFor(ctx, period)
+}
+
+// expenseFor builds the expense block for one period: totals, the two
+// per-envelope breakdowns for the pie charts, and each envelope's target
+// next to its spend. Envelope colors cycle expenseEnvelopePalette in
+// envelope order, so an envelope keeps its color across all three views.
+func (s *DashboardService) expenseFor(ctx context.Context, period domain.ExpensePeriod) (ExpenseDTO, error) {
+	fixedExpenses, err := s.repos.FixedExpenses.ListByPeriod(ctx, period.ID)
+	if err != nil {
+		return ExpenseDTO{}, err
+	}
+	envelopes, err := s.repos.BudgetEnvelopes.ListByPeriod(ctx, period.ID)
+	if err != nil {
+		return ExpenseDTO{}, err
+	}
+
+	actualByEnvelope := map[uuid.UUID]int64{}
+	var actualTotal int64
+	var updatedAt *domain.Date
+	for _, fe := range fixedExpenses {
+		actualTotal += fe.AmountIdr
+		actualByEnvelope[fe.EnvelopeID] += fe.AmountIdr
+		d := domain.NewDate(fe.UpdatedAt)
+		if updatedAt == nil || d.Time.After(updatedAt.Time) {
+			updatedAt = &d
+		}
+	}
+
+	var committedTotal int64
+	for _, env := range envelopes {
+		committedTotal += env.CommittedAmountIdr
+	}
+
+	out := emptyExpense()
+	for i, env := range envelopes {
+		color := expenseEnvelopePalette[i%len(expenseEnvelopePalette)]
+		actual := actualByEnvelope[env.ID]
+		out.ActualByEnvelope = append(out.ActualByEnvelope, CategoryBreakdown{
+			CategoryKey: env.ID.String(),
+			Label:       env.Name,
+			ColorOKLCH:  color,
+			ValueIdr:    actual,
+			Percent:     percentOf(float64(actual), float64(actualTotal)),
+		})
+		out.CommittedByEnvelope = append(out.CommittedByEnvelope, CategoryBreakdown{
+			CategoryKey: env.ID.String(),
+			Label:       env.Name,
+			ColorOKLCH:  color,
+			ValueIdr:    env.CommittedAmountIdr,
+			Percent:     percentOf(float64(env.CommittedAmountIdr), float64(committedTotal)),
+		})
+		out.Envelopes = append(out.Envelopes, EnvelopeBudgetDTO{
+			EnvelopeID:   env.ID,
+			Label:        env.Name,
+			ColorOKLCH:   color,
+			CommittedIdr: env.CommittedAmountIdr,
+			ActualIdr:    actual,
+		})
+	}
+
+	id, start, end := period.ID, period.StartDate, period.EndDate
+	out.PeriodID = &id
+	out.PeriodLabel = periodLabel(period.EndDate)
+	out.StartDate = &start
+	out.EndDate = &end
+	out.ActualTotalIdr = actualTotal
+	out.CommittedTotalIdr = committedTotal
+	out.UpdatedAt = updatedAt
 	return out, nil
 }

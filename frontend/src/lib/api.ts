@@ -11,6 +11,8 @@ import type {
   Category,
   CreateExpensePeriodInput,
   Dashboard,
+  DashboardAssets,
+  DashboardExpense,
   DebtEntry,
   DebtEntryInput,
   DebtProgress,
@@ -199,6 +201,10 @@ export const api = {
   },
   dashboard: {
     get: () => get<Dashboard>('/dashboard'),
+    assets: (snapshotDate: string) =>
+      get<DashboardAssets>(`/dashboard/assets?snapshot_date=${encodeURIComponent(snapshotDate)}`),
+    expense: (periodId: string) =>
+      get<DashboardExpense>(`/dashboard/expense?period_id=${encodeURIComponent(periodId)}`),
   },
   progress: {
     get: (granularity: ProgressGranularity) =>
