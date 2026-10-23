@@ -392,10 +392,10 @@ export function PassiveIncome() {
 
             <div className="passive-donut-note">
               Click a slice or a row to see which months it paid in. Bond coupons count under Bonds
-              USD and receivable payments under Piutang; coupons dated before a bond was bought — and
-              payments before a loan started or after its term ends — are excluded, so a start year
-              looks lighter than the steady state. A category that nets a loss leaves the ring but
-              stays listed.
+              Gov. or Bonds Corp. and receivable payments under Piutang; coupons dated before a bond
+              was bought — and payments before a loan started or after its term ends — are excluded,
+              so a start year looks lighter than the steady state. A category that nets a loss leaves
+              the ring but stays listed.
             </div>
           </div>
 
