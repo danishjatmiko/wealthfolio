@@ -412,8 +412,8 @@ export interface IncomeEntry {
 }
 
 /** One category's contribution to a single month — what the month's bar is
- *  stacked out of. Emitted in the same order for every month, so a category
- *  keeps its position along the bar and months stay comparable. */
+ *  stacked out of. Emitted smallest first within each month, so the month's
+ *  biggest payer always closes the bar. */
 export interface IncomeMonthSlice {
   category_key: string
   label: string
