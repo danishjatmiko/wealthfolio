@@ -2,10 +2,18 @@
 // preview the derived figures live while typing in the purchase modal. The
 // backend recomputes everything authoritatively on save — same relationship
 // holdingCalc.ts has with valuation.go. Keep the two in step.
+import type { BondCategoryKey } from '../types'
 
 // MyBCA first — it's the backend's default when a purchase arrives with no
 // platform named, so it should also be what the modal preselects.
 export const BOND_PLATFORMS = ['MyBCA', 'OCBC', 'Mandiri'] as const
+
+// The ledger's two Assets categories, government first — it's the backend's
+// default when a purchase arrives with no category, so the modal
+// preselects it too.
+export const BOND_CATEGORY_GOV: BondCategoryKey = 'bonds_usd'
+export const BOND_CATEGORY_CORP: BondCategoryKey = 'bonds_corp'
+export const BOND_CATEGORY_KEYS: readonly string[] = [BOND_CATEGORY_GOV, BOND_CATEGORY_CORP]
 
 const COUPONS_PER_YEAR = 2
 

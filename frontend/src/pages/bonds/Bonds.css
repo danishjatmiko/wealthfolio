@@ -113,6 +113,10 @@
   background: var(--progress-track);
   color: var(--text-muted);
 }
+.bond-badge-corp {
+  background: var(--progress-track);
+  color: var(--text-body-secondary);
+}
 /* Sole content of its own grid cell on a purchase row, unlike .source-badge's
    usual spot trailing some text — no left margin needed here. */
 .bond-platform-badge {

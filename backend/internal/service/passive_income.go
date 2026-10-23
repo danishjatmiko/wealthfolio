@@ -128,8 +128,8 @@ type IncomeMonthDTO struct {
 
 // IncomeCategoryDTO is one asset class's share of the year's income —
 // which part of the portfolio actually paid out. Bond coupons file under
-// the bonds_usd category so the ring covers every source, not just the
-// hand-logged ones.
+// their bond's ledger category (Bonds Gov. or Bonds Corp.) so the ring
+// covers every source, not just the hand-logged ones.
 type IncomeCategoryDTO struct {
 	CategoryKey string  `json:"category_key"`
 	Label       string  `json:"label"`
@@ -152,12 +152,6 @@ type IncomeCalendarDTO struct {
 	TotalIdr           int64               `json:"total_idr"`
 	LatestUsdIdr       float64             `json:"latest_usd_idr"`
 }
-
-// bondIncomeCategoryKey is the category coupons are filed under. Coupons
-// are derived from bond_purchases, which has no category_id of its own —
-// the Assets page already surfaces bonds under this same key, so reusing it
-// keeps the ring's colors matching the allocation donut.
-const bondIncomeCategoryKey = "bonds_usd"
 
 // receivableIncomeCategoryKey is the category receivable payments are
 // filed under — the same "piutang" category DebtEntriesService.
@@ -340,10 +334,13 @@ func (s *PassiveIncomeService) Calendar(ctx context.Context, userID uuid.UUID, y
 		}
 	}
 
-	bondCat := resolveCategory(byKey, bondIncomeCategoryKey)
+	// Each coupon already carries its bond's ledger category key — the same
+	// one the Assets page files that bond under, so the ring's colors match
+	// the allocation donut.
 	for _, c := range coupons {
 		idx := int(c.PayDate.Time.Month()) - 1
 		m := &out.Months[idx]
+		bondCat := resolveCategory(byKey, c.CategoryKey)
 		c.CategoryKey = bondCat.Key
 		c.CategoryLabel = bondCat.Label
 		c.ColorOKLCH = bondCat.ColorOKLCH
@@ -352,7 +349,7 @@ func (s *PassiveIncomeService) Calendar(ctx context.Context, userID uuid.UUID, y
 		m.Entries = append(m.Entries, c)
 		out.CouponTotalUsd += c.AmountUsd
 		out.CouponTotalIdr += c.AmountIdr
-		addToCategory(bondIncomeCategoryKey, idx, c.AmountIdr)
+		addToCategory(c.CategoryKey, idx, c.AmountIdr)
 	}
 
 	for _, e := range manual {

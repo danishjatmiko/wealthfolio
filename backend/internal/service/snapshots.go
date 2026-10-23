@@ -129,21 +129,29 @@ func holdingRequestFromHolding(h domain.Holding) HoldingRequest {
 }
 
 // bondHoldingRequests turns the bond ledger into one holding request per
-// bond name, as of the given date. Returns the bonds_usd category alongside
-// them so callers can identify existing bond rows without a second lookup.
+// bond name, as of the given date, each filed under its bond's ledger
+// category (Bonds Gov. or Bonds Corp.). Returns the ids of every
+// ledger-owned category alongside them so callers can identify existing
+// bond rows without a second lookup.
 //
 // Only purchases already bought and not yet matured count: a matured bond
 // has returned its principal and is no longer a position. value_idr is left
 // nil so ComputeHoldingValue derives it from usd_value at the latest rate,
 // exactly like a hand-entered bond row.
-func (s *SnapshotsService) bondHoldingRequests(ctx context.Context, userID uuid.UUID, asOf domain.Date) (domain.Category, []HoldingRequest, error) {
-	bondCat, err := s.repos.Categories.GetByKey(ctx, "bonds_usd")
-	if err != nil {
-		return domain.Category{}, nil, err
+func (s *SnapshotsService) bondHoldingRequests(ctx context.Context, userID uuid.UUID, asOf domain.Date) (map[int16]bool, []HoldingRequest, error) {
+	idByKey := make(map[string]int16, len(ledgerBondCategoryKeys))
+	ledgerCatIDs := make(map[int16]bool, len(ledgerBondCategoryKeys))
+	for _, key := range ledgerBondCategoryKeys {
+		cat, err := s.repos.Categories.GetByKey(ctx, key)
+		if err != nil {
+			return nil, nil, err
+		}
+		idByKey[key] = cat.ID
+		ledgerCatIDs[cat.ID] = true
 	}
 	active, err := s.repos.BondPurchases.ListActiveAsOf(ctx, userID, asOf)
 	if err != nil {
-		return domain.Category{}, nil, err
+		return nil, nil, err
 	}
 
 	summaries := summarizeByName(active, asOf.Time, 0)
@@ -152,20 +160,20 @@ func (s *SnapshotsService) bondHoldingRequests(ctx context.Context, userID uuid.
 		usd := sum.TotalUsd
 		name := sum.BondName
 		reqs = append(reqs, HoldingRequest{
-			CategoryID: bondCat.ID,
+			CategoryID: idByKey[sum.CategoryKey],
 			Name:       name,
 			UsdValue:   &usd,
 		})
 	}
-	return bondCat, reqs, nil
+	return ledgerCatIDs, reqs, nil
 }
 
-// SyncBonds rebuilds the snapshot's bonds_usd holdings from the ledger,
-// replacing whatever is there. Restricted to the latest snapshot: past
+// SyncBonds rebuilds the snapshot's bond holdings (Bonds Gov. and Bonds
+// Corp.) from the ledger, replacing whatever is there. Restricted to the latest snapshot: past
 // snapshots are frozen history and must not be rewritten from today's
 // ledger.
 //
-// Destructive by design — every existing bonds_usd row in the snapshot goes,
+// Destructive by design — every existing row in either bond category goes,
 // including a hand-typed one, which is why the UI confirms with counts
 // first. Not wrapped in a transaction (consistent with Create's
 // copy-forward); a partial failure is recoverable by running it again.
@@ -182,12 +190,14 @@ func (s *SnapshotsService) SyncBonds(ctx context.Context, userID uuid.UUID, date
 		return SnapshotDetail{}, ErrSnapshotLocked
 	}
 
-	bondCat, reqs, err := s.bondHoldingRequests(ctx, userID, date)
+	ledgerCatIDs, reqs, err := s.bondHoldingRequests(ctx, userID, date)
 	if err != nil {
 		return SnapshotDetail{}, err
 	}
-	if _, err := s.repos.Holdings.DeleteByCategory(ctx, userID, snap.ID, bondCat.ID); err != nil {
-		return SnapshotDetail{}, err
+	for catID := range ledgerCatIDs {
+		if _, err := s.repos.Holdings.DeleteByCategory(ctx, userID, snap.ID, catID); err != nil {
+			return SnapshotDetail{}, err
+		}
 	}
 	for _, req := range reqs {
 		if _, err := s.holdings.CreateUnlocked(ctx, userID, snap.ID, req); err != nil {
@@ -198,7 +208,7 @@ func (s *SnapshotsService) SyncBonds(ctx context.Context, userID uuid.UUID, date
 	return s.detailFromSnapshot(ctx, userID, snap)
 }
 
-// SyncBondsForLatest re-syncs the bonds_usd holdings on the user's latest
+// SyncBondsForLatest re-syncs the bond holdings on the user's latest
 // snapshot from the ledger. Called automatically after every bond_purchases
 // write (BondPurchasesService.Create/Update/Delete) so Assets never drifts
 // from the ledger without a manual "Sync bonds" click — the two are tied
@@ -266,7 +276,7 @@ func (s *SnapshotsService) Create(ctx context.Context, userID uuid.UUID, date do
 	// this whole branch is inert and copy-forward behaves exactly as it
 	// always did, so a user with a hand-typed bond row can't silently lose
 	// it just because the feature shipped.
-	bondCat, bondReqs, err := s.bondHoldingRequests(ctx, userID, date)
+	ledgerCatIDs, bondReqs, err := s.bondHoldingRequests(ctx, userID, date)
 	if err != nil {
 		return SnapshotDetail{}, err
 	}
@@ -278,7 +288,7 @@ func (s *SnapshotsService) Create(ctx context.Context, userID uuid.UUID, date do
 			return SnapshotDetail{}, err
 		}
 		for _, h := range sourceHoldings {
-			if ledgerOwnsBonds && h.CategoryID == bondCat.ID {
+			if ledgerOwnsBonds && ledgerCatIDs[h.CategoryID] {
 				continue
 			}
 			if _, err := s.holdings.CreateUnlocked(ctx, userID, newSnap.ID, holdingRequestFromHolding(h)); err != nil {

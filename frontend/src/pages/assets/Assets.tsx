@@ -12,7 +12,7 @@ import {
 } from '../../hooks/useSnapshots'
 import { useLatestRate } from '../../hooks/useRates'
 import { api } from '../../lib/api'
-import { BONDS_USD_CATEGORY_LABEL } from '../../lib/holdingCalc'
+import { BOND_CATEGORY_KEYS } from '../../lib/bondCalc'
 import { AssetModal } from './AssetModal'
 import { NewSnapshotModal } from './NewSnapshotModal'
 import type { Holding } from '../../types'
@@ -97,17 +97,20 @@ export function Assets() {
     }
   }
 
-  const bondCategoryId = categories.find((c) => c.label === BONDS_USD_CATEGORY_LABEL)?.id
-  const bondHoldingCount = holdings.filter((h) => h.category_id === bondCategoryId).length
+  // Bonds Gov. and Bonds Corp. are both built from the bond ledger.
+  const bondCategoryIds = new Set(
+    categories.filter((c) => BOND_CATEGORY_KEYS.includes(c.key)).map((c) => c.id),
+  )
+  const bondHoldingCount = holdings.filter((h) => bondCategoryIds.has(h.category_id)).length
 
   async function handleSyncBonds() {
     if (!snapshot) return
-    // This replaces every Bonds USD row in the snapshot, including any typed
-    // by hand, so say so with counts before doing it.
-    const existing = bondHoldingCount === 1 ? '1 Bonds USD row' : `${bondHoldingCount} Bonds USD rows`
+    // This replaces every bond row in the snapshot, including any typed by
+    // hand, so say so with counts before doing it.
+    const existing = bondHoldingCount === 1 ? '1 bond row' : `${bondHoldingCount} bond rows`
     if (
       !window.confirm(
-        `Replace ${existing} in this snapshot with rows built from your bond ledger?\n\nAnything you typed by hand in this category will be overwritten.`,
+        `Replace ${existing} (Bonds Gov. and Bonds Corp.) in this snapshot with rows built from your bond ledger?\n\nAnything you typed by hand in these categories will be overwritten.`,
       )
     )
       return
@@ -161,7 +164,7 @@ export function Assets() {
             className="btn btn-secondary"
             onClick={handleSyncBonds}
             disabled={!isEditable || syncBonds.isPending}
-            title="Rebuild the Bonds USD rows from your bond purchase ledger"
+            title="Rebuild the Bonds Gov. and Bonds Corp. rows from your bond purchase ledger"
           >
             ⟳ Sync bonds
           </button>
@@ -214,10 +217,10 @@ export function Assets() {
 
         {visibleHoldings.map((h) => {
           const cat = catById.get(h.category_id)
-          // Bonds USD rows are derived from the purchase ledger and kept in
-          // sync automatically — editing one here would just get overwritten
-          // by the next ledger change, so the edit path is the Bonds page.
-          const isBondHolding = bondCategoryId !== undefined && h.category_id === bondCategoryId
+          // Bond rows are derived from the purchase ledger and kept in sync
+          // automatically — editing one here would just get overwritten by
+          // the next ledger change, so the edit path is the Bonds page.
+          const isBondHolding = bondCategoryIds.has(h.category_id)
           return (
             <div className="asset-row" key={h.id}>
               <div className="a-name">
@@ -267,10 +270,10 @@ export function Assets() {
       <p className="assets-footnote">
         Values are stored per snapshot date. Editing a value here only changes this month — past months stay
         locked so your history stays accurate.
-        {bondCategoryId !== undefined && String(bondCategoryId) === assetGroup && (
+        {bondCategoryIds.has(Number(assetGroup)) && (
           <>
             {' '}
-            Bonds USD rows are built from your purchase ledger —{' '}
+            Bond rows are built from your purchase ledger —{' '}
             <Link to="/bonds">manage bond ledger →</Link>
           </>
         )}

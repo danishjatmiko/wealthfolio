@@ -139,6 +139,7 @@ type BondPurchase struct {
 	UserID             uuid.UUID `json:"-"`
 	BondName           string    `json:"bond_name"`
 	Platform           string    `json:"platform"`
+	CategoryKey        string    `json:"category_key"`
 	InterestRate       float64   `json:"interest_rate"`
 	BuyDate            Date      `json:"buy_date"`
 	MaturityDate       Date      `json:"maturity_date"`

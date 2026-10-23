@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react'
 import { Modal, ModalCancelButton } from '../../components/Modal'
 import { errorMessage, useToast } from '../../context/ToastContext'
 import {
+  useBondSummary,
   useCreateBondPurchase,
   useDeleteBondPurchase,
   useUpdateBondPurchase,
 } from '../../hooks/useBondPurchases'
+import { useCategories } from '../../hooks/useCategories'
 import { useLatestRate } from '../../hooks/useRates'
 import {
+  BOND_CATEGORY_GOV,
+  BOND_CATEGORY_KEYS,
   BOND_PLATFORMS,
   bondTotalIdr,
   bondTotalUsd,
@@ -15,7 +19,7 @@ import {
   couponScheduleLabel,
 } from '../../lib/bondCalc'
 import { fmtIdrExact, fmtUsd, fmtUsdIdrRate, parseNumeric } from '../../lib/format'
-import type { BondPurchase } from '../../types'
+import type { BondCategoryKey, BondPurchase } from '../../types'
 
 interface BondPurchaseModalProps {
   open: boolean
@@ -23,6 +27,11 @@ interface BondPurchaseModalProps {
   editingPurchase: BondPurchase | null
   /** Pre-fills the name when adding another lot of a bond already held. */
   defaultBondName?: string
+}
+
+const BOND_CATEGORY_FALLBACK_LABELS: Record<BondCategoryKey, string> = {
+  bonds_usd: 'Bonds Gov.',
+  bonds_corp: 'Bonds Corp.',
 }
 
 const OTHER_PLATFORM = '__other__'
@@ -38,8 +47,11 @@ export function BondPurchaseModal({
   const updatePurchase = useUpdateBondPurchase()
   const deletePurchase = useDeleteBondPurchase()
   const { data: latestRate } = useLatestRate()
+  const { data: categories = [] } = useCategories()
+  const { data: summary } = useBondSummary()
 
   const [bondName, setBondName] = useState('')
+  const [categoryKey, setCategoryKey] = useState<BondCategoryKey>(BOND_CATEGORY_GOV)
   const [platform, setPlatform] = useState<string>(BOND_PLATFORMS[0])
   const [otherPlatform, setOtherPlatform] = useState('')
   const [interestRate, setInterestRate] = useState('')
@@ -56,6 +68,7 @@ export function BondPurchaseModal({
     if (editingPurchase) {
       const known = (BOND_PLATFORMS as readonly string[]).includes(editingPurchase.platform)
       setBondName(editingPurchase.bond_name)
+      setCategoryKey(editingPurchase.category_key)
       setPlatform(known ? editingPurchase.platform : OTHER_PLATFORM)
       setOtherPlatform(known ? '' : editingPurchase.platform)
       setInterestRate(String(editingPurchase.interest_rate))
@@ -68,6 +81,7 @@ export function BondPurchaseModal({
       setUsdIdr(String(editingPurchase.usd_idr_at_purchase))
     } else {
       setBondName(defaultBondName ?? '')
+      setCategoryKey(BOND_CATEGORY_GOV)
       setPlatform(BOND_PLATFORMS[0])
       setOtherPlatform('')
       setInterestRate('')
@@ -83,6 +97,27 @@ export function BondPurchaseModal({
       setUsdIdr(latestRate ? String(latestRate.usd_idr) : '')
     }
   }, [open, editingPurchase, defaultBondName, latestRate])
+
+  // A bond sits in one category, and saving moves every purchase of it to
+  // whatever this form says. So when a new purchase names a bond already
+  // held, start from that bond's category rather than the default —
+  // otherwise adding a lot of a corporate bond would quietly refile it as
+  // government.
+  const existingBond = summary?.bonds.find((b) => b.bond_name === bondName.trim())
+  const existingBondCategory = existingBond?.category_key
+  useEffect(() => {
+    if (!open || editingPurchase || !existingBondCategory) return
+    setCategoryKey(existingBondCategory)
+  }, [open, editingPurchase, existingBondCategory])
+
+  const categoryOptions = BOND_CATEGORY_KEYS.map((key) => ({
+    key: key as BondCategoryKey,
+    label:
+      categories.find((c) => c.key === key)?.label ?? BOND_CATEGORY_FALLBACK_LABELS[key as BondCategoryKey],
+  }))
+  // How many purchases of this bond there will be once this one is saved —
+  // all of them move together when the category changes.
+  const lotsAfterSave = (existingBond?.purchases.length ?? 0) + (editingPurchase ? 0 : 1)
 
   const resolvedPlatform = platform === OTHER_PLATFORM ? otherPlatform.trim() : platform
   const totalUsd = bondTotalUsd(parseNumeric(price), parseNumeric(accrued))
@@ -106,6 +141,7 @@ export function BondPurchaseModal({
     const input = {
       bond_name: bondName.trim(),
       platform: resolvedPlatform,
+      category_key: categoryKey,
       interest_rate: parseNumeric(interestRate),
       buy_date: buyDate,
       maturity_date: maturityDate,
@@ -183,6 +219,27 @@ export function BondPurchaseModal({
           placeholder="e.g. INDON36NEWNEW"
         />
       </label>
+
+      <label className="field">
+        Category
+        <select
+          className="field-input"
+          value={categoryKey}
+          onChange={(e) => setCategoryKey(e.target.value as BondCategoryKey)}
+        >
+          {categoryOptions.map((c) => (
+            <option key={c.key} value={c.key}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      {lotsAfterSave > 1 && (
+        <div className="field-hint">
+          Applies to all {lotsAfterSave} purchases of {bondName.trim()} — a bond sits in one category
+          on Assets.
+        </div>
+      )}
 
       <div className="field-row">
         <label className="field">

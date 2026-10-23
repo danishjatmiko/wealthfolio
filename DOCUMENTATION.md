@@ -203,7 +203,7 @@ Module path `wealthfolio/backend`, Go 1.25. Key deps: `chi/v5` + `go-chi/cors`, 
 | `DebtSnapshot` | `debt_snapshots` | `SnapshotDate` |
 | `DebtEntry` | `debt_entries` | `Name`, `Type`, `ValueIdr`, `Direction` (i_owe / owed_to_me) |
 | `PassiveIncomeSource` | `passive_income_sources` (+ `categories` join) | `CategoryKey`, `CategoryLabel`, `Name`, `PerYearIdr` |
-| `BondPurchase` | `bond_purchases` | `BondName`, `Platform`, `InterestRate` (percent), `BuyDate`, `MaturityDate`, `Quantity`, `FaceValueUsd`, `PriceUsd` (whole lot), `AccruedInterestUsd`, `UsdIdrAtPurchase` — a pure column mirror; totals/coupons/pay-dates are derived in `service/bondcalc.go` |
+| `BondPurchase` | `bond_purchases` | `BondName`, `Platform`, `CategoryKey` (`bonds_usd`/`bonds_corp`), `InterestRate` (percent), `BuyDate`, `MaturityDate`, `Quantity`, `FaceValueUsd`, `PriceUsd` (whole lot), `AccruedInterestUsd`, `UsdIdrAtPurchase` — a pure column mirror; totals/coupons/pay-dates are derived in `service/bondcalc.go` |
 | `BigExpense` | `big_expenses` | `Name`, `AmountIdr`, `ExpenseDate`, `Category` — a manually-logged large one-off purchase, kept separate from the monthly envelope budget in `FixedExpense`; never copies forward, never locks |
 | `ExpensePeriod` | `expense_periods` | `StartDate`, `EndDate` |
 | `BudgetEnvelope` | `budget_envelopes` | `PeriodID`, `Name`, `CommittedAmountIdr` |
@@ -574,7 +574,7 @@ targets
 |---|---|---|---|
 | 1 | `logam_mulia` | Logam Mulia | asset |
 | 2 | `saham` | Saham | asset |
-| 3 | `bonds_usd` | Bonds USD | asset |
+| 3 | `bonds_usd` | Bonds Gov. | asset |
 | 4 | `bonds_corp` | Bonds Corp. | asset |
 | 5 | `uang_tunai` | Uang Tunai | asset |
 | 6 | `us_etf` | US ETF / Stocks | asset |
@@ -674,7 +674,7 @@ POST /bond-purchases
 ```
 `interest_rate` is a percent; `price_usd` is the clean price for the whole lot. Responses add derived `total_usd`, `total_idr`, `coupon_per_cycle_usd`, `price_pct`, `coupon_months`, `coupon_day`, `is_matured`.
 
-`GET /bond-purchases/summary` rolls purchases up per `bond_name` (nesting the purchases behind each) plus portfolio totals and the blended `average_usd_idr`. `GET /bond-purchases/coupon-calendar?year=2026` returns exactly 12 month buckets — zero months included, since the UI still needs a row for them — each with a `color_oklch` slice colour and the exact-dated `entries[]` behind it, alongside the manual passive-income totals for a combined figure. `POST /snapshots/{date}/sync-bonds` rebuilds that snapshot's Bonds USD holdings from the ledger (latest snapshot only, `409` otherwise).
+`GET /bond-purchases/summary` rolls purchases up per `bond_name` (nesting the purchases behind each) plus portfolio totals and the blended `average_usd_idr`. `GET /bond-purchases/coupon-calendar?year=2026` returns exactly 12 month buckets — zero months included, since the UI still needs a row for them — each with a `color_oklch` slice colour and the exact-dated `entries[]` behind it, alongside the manual passive-income totals for a combined figure. `POST /snapshots/{date}/sync-bonds` rebuilds that snapshot's Bonds Gov. and Bonds Corp. holdings from the ledger (latest snapshot only, `409` otherwise).
 
 ### Big Expenses
 
@@ -723,8 +723,8 @@ Price-linked categories never store a value the user typed directly:
 ### Bond Coupon Schedule
 A bullet bond is issued a whole number of years before it matures, so the maturity month/day *is* a coupon month/day; the other lands six months away (maturity 2 Jul → 2 Jul and 2 Jan). A day that overflows a shorter month clamps to that month's last day, leap years included (maturity 31 Aug → 28 or 29 Feb). A coupon counts for a given year when its date falls **strictly after** the buy date — the accrued interest paid at settlement is the seller's share of the current period, so the first coupon the buyer collects is the next one — and **on or before** maturity, since the final coupon is paid together with the principal. That maturity rule is what drops matured bonds out of the calendar, and it's evaluated per-date, so a bond maturing mid-year correctly half-drops-out. Semiannual is assumed throughout (`bondCouponsPerYear = 2`); a quarterly bond would need a frequency column.
 
-### The Bond Ledger Owns Bonds USD
-`bond_purchases` is permanent and user-scoped — it never copies forward and never locks, unlike holdings. Once it holds at least one active purchase it becomes the source of truth for the `bonds_usd` category: creating a snapshot skips copying forward the previous snapshot's bond rows and seeds one row per `bond_name` instead, valued at the summed settlement cost of purchases already bought and not yet matured. With an **empty** ledger this is entirely inert and copy-forward behaves exactly as it always did, so a hand-typed bond row can't be silently lost by a user who never adopts the feature. Coupon income folds into `dashboard.passive` *and* the `passive_income` target metric — both call the same `BondPurchasesService.CouponPerYearIdr`, so the Dashboard and Targets pages can't drift apart.
+### The Bond Ledger Owns Bonds Gov. and Bonds Corp.
+`bond_purchases` is permanent and user-scoped — it never copies forward and never locks, unlike holdings. Each purchase carries a `category_key` — `bonds_usd` (labelled Bonds Gov.) or `bonds_corp` — kept uniform across every purchase of the same `bond_name` (`BondPurchasesRepo.SetCategoryForName`, called after each write), since a bond is a single Assets row; its coupons file under that same category on the Passive Income ring. Once the ledger holds at least one active purchase it becomes the source of truth for both categories: creating a snapshot skips copying forward the previous snapshot's bond rows and seeds one row per `bond_name` instead, valued at the summed settlement cost of purchases already bought and not yet matured. With an **empty** ledger this is entirely inert and copy-forward behaves exactly as it always did, so a hand-typed bond row can't be silently lost by a user who never adopts the feature. Coupon income folds into `dashboard.passive` *and* the `passive_income` target metric — both call the same `BondPurchasesService.CouponPerYearIdr`, so the Dashboard and Targets pages can't drift apart.
 
 ### Multi-User Design
 Every account signs in with Google or email/password and gets its own isolated workspace; every table is scoped by `user_id` and every read/write path enforces it. The seeded pre-auth user is claimed in place by whichever account logs in first, so local data predating auth isn't lost.

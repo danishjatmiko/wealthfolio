@@ -22,7 +22,7 @@ func NewBondPurchasesRepo(pool *pgxpool.Pool) *BondPurchasesRepo {
 	return &BondPurchasesRepo{pool: pool}
 }
 
-const bondPurchaseSelectCols = `id, user_id, bond_name, platform, interest_rate, buy_date, maturity_date,
+const bondPurchaseSelectCols = `id, user_id, bond_name, platform, category_key, interest_rate, buy_date, maturity_date,
 	quantity, face_value_usd, price_usd, accrued_interest_usd, usd_idr_at_purchase, created_at, updated_at`
 
 func scanBondPurchase(row interface{ Scan(dest ...any) error }) (domain.BondPurchase, error) {
@@ -30,7 +30,7 @@ func scanBondPurchase(row interface{ Scan(dest ...any) error }) (domain.BondPurc
 		p             domain.BondPurchase
 		buy, maturity time.Time
 	)
-	err := row.Scan(&p.ID, &p.UserID, &p.BondName, &p.Platform, &p.InterestRate, &buy, &maturity,
+	err := row.Scan(&p.ID, &p.UserID, &p.BondName, &p.Platform, &p.CategoryKey, &p.InterestRate, &buy, &maturity,
 		&p.Quantity, &p.FaceValueUsd, &p.PriceUsd, &p.AccruedInterestUsd, &p.UsdIdrAtPurchase,
 		&p.CreatedAt, &p.UpdatedAt)
 	if err != nil {
@@ -106,6 +106,7 @@ func (r *BondPurchasesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (
 type BondPurchaseWrite struct {
 	BondName           string
 	Platform           string
+	CategoryKey        string
 	InterestRate       float64
 	BuyDate            domain.Date
 	MaturityDate       domain.Date
@@ -119,11 +120,11 @@ type BondPurchaseWrite struct {
 // Create inserts a new purchase and returns the full row.
 func (r *BondPurchasesRepo) Create(ctx context.Context, userID uuid.UUID, w BondPurchaseWrite) (domain.BondPurchase, error) {
 	row := r.pool.QueryRow(ctx, `
-		INSERT INTO bond_purchases (user_id, bond_name, platform, interest_rate, buy_date, maturity_date,
-			quantity, face_value_usd, price_usd, accrued_interest_usd, usd_idr_at_purchase)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		INSERT INTO bond_purchases (user_id, bond_name, platform, category_key, interest_rate, buy_date,
+			maturity_date, quantity, face_value_usd, price_usd, accrued_interest_usd, usd_idr_at_purchase)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING `+bondPurchaseSelectCols,
-		userID, w.BondName, w.Platform, w.InterestRate, w.BuyDate.Time, w.MaturityDate.Time,
+		userID, w.BondName, w.Platform, w.CategoryKey, w.InterestRate, w.BuyDate.Time, w.MaturityDate.Time,
 		w.Quantity, w.FaceValueUsd, w.PriceUsd, w.AccruedInterestUsd, w.UsdIdrAtPurchase)
 	return scanBondPurchase(row)
 }
@@ -133,12 +134,12 @@ func (r *BondPurchasesRepo) Create(ctx context.Context, userID uuid.UUID, w Bond
 func (r *BondPurchasesRepo) Update(ctx context.Context, userID, id uuid.UUID, w BondPurchaseWrite) (domain.BondPurchase, error) {
 	row := r.pool.QueryRow(ctx, `
 		UPDATE bond_purchases
-		SET bond_name = $1, platform = $2, interest_rate = $3, buy_date = $4, maturity_date = $5,
-			quantity = $6, face_value_usd = $7, price_usd = $8, accrued_interest_usd = $9,
-			usd_idr_at_purchase = $10, updated_at = now()
-		WHERE id = $11 AND user_id = $12
+		SET bond_name = $1, platform = $2, category_key = $3, interest_rate = $4, buy_date = $5,
+			maturity_date = $6, quantity = $7, face_value_usd = $8, price_usd = $9,
+			accrued_interest_usd = $10, usd_idr_at_purchase = $11, updated_at = now()
+		WHERE id = $12 AND user_id = $13
 		RETURNING `+bondPurchaseSelectCols,
-		w.BondName, w.Platform, w.InterestRate, w.BuyDate.Time, w.MaturityDate.Time,
+		w.BondName, w.Platform, w.CategoryKey, w.InterestRate, w.BuyDate.Time, w.MaturityDate.Time,
 		w.Quantity, w.FaceValueUsd, w.PriceUsd, w.AccruedInterestUsd, w.UsdIdrAtPurchase,
 		id, userID)
 	p, err := scanBondPurchase(row)
@@ -146,6 +147,17 @@ func (r *BondPurchasesRepo) Update(ctx context.Context, userID, id uuid.UUID, w 
 		return domain.BondPurchase{}, wrapNotFound(err)
 	}
 	return p, nil
+}
+
+// SetCategoryForName files every purchase of one bond under the same
+// category. A bond is a single Assets row, so its lots can't be split
+// across categories; the service calls this after each write so changing
+// one purchase moves the whole bond.
+func (r *BondPurchasesRepo) SetCategoryForName(ctx context.Context, userID uuid.UUID, bondName, categoryKey string) error {
+	_, err := r.pool.Exec(ctx, `
+		UPDATE bond_purchases SET category_key = $1, updated_at = now()
+		WHERE user_id = $2 AND bond_name = $3 AND category_key <> $1`, categoryKey, userID, bondName)
+	return err
 }
 
 // Delete removes a purchase. ErrNotFound if it didn't exist or isn't owned
