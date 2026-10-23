@@ -571,15 +571,41 @@ export interface Dashboard {
     per_month_target_idr: number
     updated_at: string | null
   }
-  expense: {
-    period_label: string
-    actual_total_idr: number
-    committed_total_idr: number
-    actual_by_envelope: DashboardCategoryRow[]
-    committed_by_envelope: DashboardCategoryRow[]
-    updated_at: string | null
-  }
+  expense: DashboardExpense
   allocation: DashboardCategoryRow[]
+}
+
+/** The Home page's equity hero and allocation as of one asset snapshot —
+ *  the dashboard holds the latest; GET /dashboard/assets?snapshot_date=
+ *  returns any other. */
+export interface DashboardAssets {
+  equity: Dashboard['equity']
+  allocation: DashboardCategoryRow[]
+}
+
+/** One envelope's target next to its spend, colored to match the pies. */
+export interface EnvelopeBudget {
+  envelope_id: string
+  label: string
+  color_oklch: string
+  committed_idr: number
+  actual_idr: number
+}
+
+/** The Home page's expense block for one period — dashboard.expense holds
+ *  the latest; GET /dashboard/expense?period_id= returns any other.
+ *  period_id and the dates are null when the user has no periods yet. */
+export interface DashboardExpense {
+  period_id: string | null
+  period_label: string
+  start_date: string | null
+  end_date: string | null
+  actual_total_idr: number
+  committed_total_idr: number
+  actual_by_envelope: DashboardCategoryRow[]
+  committed_by_envelope: DashboardCategoryRow[]
+  envelopes: EnvelopeBudget[]
+  updated_at: string | null
 }
 
 export type ProgressGranularity = 'monthly' | 'quarterly' | 'yearly'

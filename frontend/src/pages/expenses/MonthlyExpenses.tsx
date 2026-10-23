@@ -11,29 +11,10 @@ import { api } from '../../lib/api'
 import { NewPeriodModal } from './NewPeriodModal'
 import { BudgetEnvelopeModal } from './BudgetEnvelopeModal'
 import { FixedExpenseModal } from './FixedExpenseModal'
-import { formatShortDate, formatTimestamp, parseLocalDate, sourceLabel } from '../../lib/format'
+import { periodProgress } from '../../lib/budget'
+import { formatShortDate, formatTimestamp, sourceLabel } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
-
-const MS_PER_DAY = 86_400_000
-
-/** How far today sits through a period: which day of how many, as a
- * percentage. Both ends are inclusive, so a 25 Jul – 24 Aug period is 31
- * days and its final day reads 100%. A period that hasn't started yet
- * reports day 0, and one already finished caps at its last day, so the bar
- * never runs past its track either way. */
-function periodProgress(startDate: string, endDate: string) {
-  const start = parseLocalDate(startDate)
-  const end = parseLocalDate(endDate)
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-
-  const totalDays = Math.round((end.getTime() - start.getTime()) / MS_PER_DAY) + 1
-  const elapsed = Math.round((today.getTime() - start.getTime()) / MS_PER_DAY) + 1
-  const dayOfPeriod = Math.min(Math.max(elapsed, 0), totalDays)
-
-  return { dayOfPeriod, totalDays, pct: totalDays > 0 ? (dayOfPeriod / totalDays) * 100 : 0 }
-}
 
 export function MonthlyExpenses() {
   const { fmt } = useMoney()

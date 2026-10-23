@@ -143,6 +143,8 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Delete("/targets/{id}", h.deleteTarget)
 
 			r.Get("/dashboard", h.getDashboard)
+			r.Get("/dashboard/assets", h.getDashboardAssets)
+			r.Get("/dashboard/expense", h.getDashboardExpense)
 			r.Get("/progress", h.getProgress)
 			r.Get("/debt-progress", h.getDebtProgress)
 		})
