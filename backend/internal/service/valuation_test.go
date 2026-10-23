@@ -88,6 +88,14 @@ func TestComputeHoldingValue(t *testing.T) {
 			wantDetail:  "1000 USD",
 		},
 		{
+			name:        "bonds_corp priced from usd_idr",
+			categoryKey: "bonds_corp",
+			input:       HoldingInput{UsdValue: 2500},
+			rate:        rate,
+			wantValue:   round64(2500 * 15800.0),
+			wantDetail:  "2500 USD",
+		},
+		{
 			name:        "bonds_usd manual value fallback when usd_value<=0",
 			categoryKey: "bonds_usd",
 			input:       HoldingInput{UsdValue: 0, ValueIdr: 20000, Detail: "manual bond"},

@@ -67,7 +67,7 @@ func ComputeHoldingValue(categoryKey string, input HoldingInput, rate *domain.Ra
 		}
 		return input.ValueIdr, input.Detail, nil
 
-	case categoryKey == "bonds_usd" || categoryKey == "us_etf" || (categoryKey == "uang_tunai" && input.Currency == "USD"):
+	case categoryKey == "bonds_usd" || categoryKey == "bonds_corp" || categoryKey == "us_etf" || (categoryKey == "uang_tunai" && input.Currency == "USD"):
 		if input.UsdValue > 0 {
 			if rate == nil {
 				return 0, "", ErrNoRateEntry
