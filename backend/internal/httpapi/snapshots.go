@@ -134,7 +134,7 @@ func (h *Handler) listHoldingsForDate(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, holdings)
 }
 
-// syncSnapshotBonds rebuilds the snapshot's Bonds USD holdings from the
+// syncSnapshotBonds rebuilds the snapshot's bond holdings from the
 // user's purchase ledger. Latest snapshot only — anything older is frozen
 // history and comes back 409.
 func (h *Handler) syncSnapshotBonds(w http.ResponseWriter, r *http.Request) {

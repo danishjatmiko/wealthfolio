@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { useBondSummary } from '../../hooks/useBondPurchases'
+import { BOND_CATEGORY_CORP } from '../../lib/bondCalc'
 import { fmtUsdIdrRate, formatShortDate } from '../../lib/format'
 import { BondPurchaseModal } from './BondPurchaseModal'
 import type { BondNameSummary, BondPurchase } from '../../types'
@@ -91,6 +92,11 @@ export function Bonds() {
         return (
           <span className="bond-name" key={key}>
             {b.bond_name}
+            {/* Only corporate bonds get a badge — government is the default
+                and most of the ledger, so tagging it too would be noise. */}
+            {b.category_key === BOND_CATEGORY_CORP && (
+              <span className="source-badge bond-badge-corp">Corp.</span>
+            )}
             {b.is_matured && <span className="source-badge bond-badge-matured">Matured</span>}
           </span>
         )
@@ -140,7 +146,8 @@ export function Bonds() {
     <div>
       <div className="row-wrap bonds-header">
         <div className="bonds-header-copy">
-          Every USD bond purchase, rolled up per bond. Click a bond to see the individual buys behind
+          Every USD bond purchase, rolled up per bond — each one lands on Assets under Bonds Gov. or
+          Bonds Corp. Click a bond to see the individual buys behind
           it, or a column heading to sort.
         </div>
         <button type="button" className="btn btn-primary" onClick={() => openAdd()}>

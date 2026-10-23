@@ -13,6 +13,7 @@ import (
 type bondPurchaseRequest struct {
 	BondName           *string  `json:"bond_name"`
 	Platform           *string  `json:"platform"`
+	CategoryKey        *string  `json:"category_key"`
 	InterestRate       *float64 `json:"interest_rate"`
 	BuyDate            *string  `json:"buy_date"`
 	MaturityDate       *string  `json:"maturity_date"`
@@ -39,6 +40,9 @@ func (req bondPurchaseRequest) toServiceRequest() (service.BondPurchaseRequest, 
 	}
 	if req.Platform != nil {
 		out.Platform = *req.Platform
+	}
+	if req.CategoryKey != nil {
+		out.CategoryKey = *req.CategoryKey
 	}
 	if req.InterestRate != nil {
 		out.InterestRate = *req.InterestRate

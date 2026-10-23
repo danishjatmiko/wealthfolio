@@ -30,12 +30,23 @@ func NewBondPurchasesService(repos *db.Repos, snapshots *SnapshotsService) *Bond
 	return &BondPurchasesService{repos: repos, snapshots: snapshots}
 }
 
+// The two Assets categories the ledger feeds. Every bond is filed under
+// exactly one of them (see BondPurchasesRepo.SetCategoryForName); both are
+// rebuilt from the ledger on sync, so neither takes hand-typed rows.
+const (
+	bondCategoryGov  = "bonds_usd" // labelled "Bonds Gov."
+	bondCategoryCorp = "bonds_corp"
+)
+
+var ledgerBondCategoryKeys = []string{bondCategoryGov, bondCategoryCorp}
+
 // BondPurchaseDTO is one ledger row: the stored columns plus everything
 // derivable from them.
 type BondPurchaseDTO struct {
 	ID                 uuid.UUID   `json:"id"`
 	BondName           string      `json:"bond_name"`
 	Platform           string      `json:"platform"`
+	CategoryKey        string      `json:"category_key"`
 	InterestRate       float64     `json:"interest_rate"`
 	BuyDate            domain.Date `json:"buy_date"`
 	MaturityDate       domain.Date `json:"maturity_date"`
@@ -69,7 +80,7 @@ type BondPurchaseDTO struct {
 // paid stays visible as UsdIdrAtPurchase.
 func bondPurchaseDTO(p domain.BondPurchase, today time.Time, rate float64) BondPurchaseDTO {
 	return BondPurchaseDTO{
-		ID: p.ID, BondName: p.BondName, Platform: p.Platform,
+		ID: p.ID, BondName: p.BondName, Platform: p.Platform, CategoryKey: p.CategoryKey,
 		InterestRate: p.InterestRate, BuyDate: p.BuyDate, MaturityDate: p.MaturityDate,
 		Quantity: p.Quantity, FaceValueUsd: p.FaceValueUsd, PriceUsd: p.PriceUsd,
 		AccruedInterestUsd: p.AccruedInterestUsd, UsdIdrAtPurchase: p.UsdIdrAtPurchase,
@@ -96,6 +107,7 @@ func bondPurchaseDTO(p domain.BondPurchase, today time.Time, rate float64) BondP
 // fixed expenses.
 type BondNameSummaryDTO struct {
 	BondName          string            `json:"bond_name"`
+	CategoryKey       string            `json:"category_key"`
 	Platforms         []string          `json:"platforms"`
 	InterestRate      float64           `json:"interest_rate"`
 	MaturityDate      domain.Date       `json:"maturity_date"`
@@ -154,7 +166,8 @@ func summarizeByName(purchases []domain.BondPurchase, today time.Time, rate floa
 		if !ok {
 			a = &agg{
 				sum: BondNameSummaryDTO{
-					BondName: p.BondName,
+					BondName:    p.BondName,
+					CategoryKey: p.CategoryKey,
 					// The earliest purchase defines the bond's terms; a
 					// later one disagreeing is flagged via HasConflicts.
 					InterestRate: p.InterestRate,
@@ -234,6 +247,7 @@ func (s *BondPurchasesService) latestUsdIdr(ctx context.Context, userID uuid.UUI
 type BondPurchaseRequest struct {
 	BondName           string
 	Platform           string
+	CategoryKey        string
 	InterestRate       float64
 	BuyDate            domain.Date
 	MaturityDate       domain.Date
@@ -247,6 +261,9 @@ type BondPurchaseRequest struct {
 func (r BondPurchaseRequest) validate() error {
 	if r.BondName == "" {
 		return fmt.Errorf("%w: bond_name is required", ErrInvalidInput)
+	}
+	if r.CategoryKey != "" && r.CategoryKey != bondCategoryGov && r.CategoryKey != bondCategoryCorp {
+		return fmt.Errorf("%w: category_key must be %q or %q", ErrInvalidInput, bondCategoryGov, bondCategoryCorp)
 	}
 	if r.InterestRate <= 0 || r.InterestRate > 100 {
 		return fmt.Errorf("%w: interest_rate must be a percent between 0 and 100", ErrInvalidInput)
@@ -288,8 +305,14 @@ func (r BondPurchaseRequest) toWrite() db.BondPurchaseWrite {
 	if platform == "" {
 		platform = defaultPlatform
 	}
+	// Omitted means government: that's what every bond in the ledger was
+	// before Bonds Corp. existed, so older clients keep their behavior.
+	categoryKey := r.CategoryKey
+	if categoryKey == "" {
+		categoryKey = bondCategoryGov
+	}
 	return db.BondPurchaseWrite{
-		BondName: r.BondName, Platform: platform, InterestRate: r.InterestRate,
+		BondName: r.BondName, Platform: platform, CategoryKey: categoryKey, InterestRate: r.InterestRate,
 		BuyDate: r.BuyDate, MaturityDate: r.MaturityDate, Quantity: r.Quantity,
 		FaceValueUsd: r.FaceValueUsd, PriceUsd: r.PriceUsd,
 		AccruedInterestUsd: r.AccruedInterestUsd, UsdIdrAtPurchase: r.UsdIdrAtPurchase,
@@ -322,6 +345,9 @@ func (s *BondPurchasesService) Create(ctx context.Context, userID uuid.UUID, req
 	if err != nil {
 		return BondPurchaseDTO{}, err
 	}
+	if err := s.repos.BondPurchases.SetCategoryForName(ctx, userID, p.BondName, p.CategoryKey); err != nil {
+		return BondPurchaseDTO{}, err
+	}
 	if err := s.snapshots.SyncBondsForLatest(ctx, userID); err != nil {
 		return BondPurchaseDTO{}, err
 	}
@@ -340,6 +366,9 @@ func (s *BondPurchasesService) Update(ctx context.Context, userID, id uuid.UUID,
 	if err != nil {
 		return BondPurchaseDTO{}, err
 	}
+	if err := s.repos.BondPurchases.SetCategoryForName(ctx, userID, p.BondName, p.CategoryKey); err != nil {
+		return BondPurchaseDTO{}, err
+	}
 	if err := s.snapshots.SyncBondsForLatest(ctx, userID); err != nil {
 		return BondPurchaseDTO{}, err
 	}
@@ -351,7 +380,7 @@ func (s *BondPurchasesService) Update(ctx context.Context, userID, id uuid.UUID,
 }
 
 // Delete removes a purchase and immediately re-syncs Assets so a deleted
-// lot can't keep inflating the Bonds USD holding until the next manual
+// lot can't keep inflating its bond's holding until the next manual
 // sync or snapshot rollover.
 func (s *BondPurchasesService) Delete(ctx context.Context, userID, id uuid.UUID) error {
 	if err := s.repos.BondPurchases.Delete(ctx, userID, id); err != nil {
@@ -439,6 +468,7 @@ func (s *BondPurchasesService) couponEntriesInYear(ctx context.Context, userID u
 			if !ok {
 				e = &IncomeEntryDTO{
 					Kind: incomeKindCoupon, Name: p.BondName, Source: p.Platform, PayDate: d,
+					CategoryKey: p.CategoryKey,
 				}
 				merged[k] = e
 				order = append(order, k)

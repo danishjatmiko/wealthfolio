@@ -253,6 +253,11 @@ export interface PassiveIncomeInput {
   note: string
 }
 
+/** The two Assets categories the bond ledger feeds: government
+ *  (`bonds_usd`, labelled "Bonds Gov.") or corporate. Every purchase of one
+ *  bond shares the same key. */
+export type BondCategoryKey = 'bonds_usd' | 'bonds_corp'
+
 /** One USD bond purchase. Fields after usd_idr_at_purchase are derived by
  *  the backend, never sent on writes. interest_rate is a percent (5.69 =
  *  5.69%); price_usd is the aggregate lot price, not per unit. */
@@ -260,6 +265,7 @@ export interface BondPurchase {
   id: string
   bond_name: string
   platform: string
+  category_key: BondCategoryKey
   interest_rate: number
   buy_date: string
   maturity_date: string
@@ -291,6 +297,7 @@ export interface BondPurchase {
 export interface BondPurchaseInput {
   bond_name: string
   platform: string
+  category_key: BondCategoryKey
   interest_rate: number
   buy_date: string
   maturity_date: string
@@ -306,6 +313,7 @@ export interface BondPurchaseInput {
  *  different bonds accidentally sharing a name. */
 export interface BondNameSummary {
   bond_name: string
+  category_key: BondCategoryKey
   platforms: string[]
   interest_rate: number
   maturity_date: string
@@ -388,7 +396,7 @@ export type IncomeEntryKind = 'coupon' | 'manual' | 'receivable'
  *  bond's platform for coupons, the income type for manual entries, and a
  *  fixed label ("Cicilan") for receivable payments — distinct from the
  *  category fields, which are the asset class it came from (coupons file
- *  under Bonds USD, receivable payments under Piutang). */
+ *  under Bonds Gov. or Bonds Corp., receivable payments under Piutang). */
 export interface IncomeEntry {
   kind: IncomeEntryKind
   id: string

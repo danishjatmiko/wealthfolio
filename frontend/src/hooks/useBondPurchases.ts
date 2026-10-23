@@ -4,13 +4,17 @@ import type { BondPurchaseInput } from '../types'
 
 // A ledger write moves the Passive Income calendar (coupons are half of
 // what it shows), the dashboard's passive-income block and any
-// passive-income target, so all of them get invalidated.
+// passive-income target, so all of them get invalidated. The backend also
+// re-syncs the latest snapshot's bond rows (Bonds Gov./Corp.) on every
+// write, so Assets and its derived views refetch too.
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: ['bondPurchases'] })
   qc.invalidateQueries({ queryKey: ['bondSummary'] })
   qc.invalidateQueries({ queryKey: ['incomeCalendar'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })
   qc.invalidateQueries({ queryKey: ['targets'] })
+  qc.invalidateQueries({ queryKey: ['snapshot'] })
+  qc.invalidateQueries({ queryKey: ['progress'] })
 }
 
 export function useBondPurchases() {
