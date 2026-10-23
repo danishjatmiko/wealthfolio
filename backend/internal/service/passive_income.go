@@ -98,9 +98,9 @@ type IncomeEntryDTO struct {
 }
 
 // IncomeMonthSliceDTO is one category's contribution to a single month —
-// what the month's bar is stacked out of. Emitted in the same order for
-// every month (see Calendar), so a category keeps its position along the
-// bar and months stay visually comparable.
+// what the month's bar is stacked out of. Emitted smallest first within
+// each month (see Calendar), so the month's biggest payer always closes the
+// bar.
 type IncomeMonthSliceDTO struct {
 	CategoryKey string `json:"category_key"`
 	Label       string `json:"label"`
@@ -443,23 +443,27 @@ func (s *PassiveIncomeService) Calendar(ctx context.Context, userID uuid.UUID, y
 		return out.Categories[i].Label < out.Categories[j].Label
 	})
 
-	// Stack every month's bar in that same year-level order, so a category
-	// occupies the same position in every bar and the twelve rows read as
-	// one chart rather than twelve unrelated ones. Only categories that
-	// actually paid into the month get a slice.
+	// Stack each month's bar smallest payer first, so whatever paid the most
+	// that month always ends the bar. Collected in the year-level order above
+	// and stable-sorted, so categories paying the same amount keep that
+	// order rather than shuffling. Only categories that actually paid into
+	// the month get a slice.
 	for i := range out.Months {
+		slices := out.Months[i].Slices
 		for _, cat := range out.Categories {
 			amount, ok := monthCatTotals[i][cat.CategoryKey]
 			if !ok || amount == 0 {
 				continue
 			}
-			out.Months[i].Slices = append(out.Months[i].Slices, IncomeMonthSliceDTO{
+			slices = append(slices, IncomeMonthSliceDTO{
 				CategoryKey: cat.CategoryKey,
 				Label:       cat.Label,
 				ColorOKLCH:  cat.ColorOKLCH,
 				AmountIdr:   amount,
 			})
 		}
+		sort.SliceStable(slices, func(a, b int) bool { return slices[a].AmountIdr < slices[b].AmountIdr })
+		out.Months[i].Slices = slices
 	}
 
 	return out, nil
