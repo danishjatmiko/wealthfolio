@@ -6,6 +6,7 @@ import type { RateEntry } from '../types'
 
 export const GOLD_CATEGORY_LABEL = 'Logam Mulia'
 export const BONDS_USD_CATEGORY_LABEL = 'Bonds USD'
+export const BONDS_CORP_CATEGORY_LABEL = 'Bonds Corp.'
 export const US_ETF_CATEGORY_LABEL = 'US ETF / Stocks'
 export const CASH_CATEGORY_LABEL = 'Uang Tunai'
 
@@ -36,7 +37,11 @@ export interface AssetFormValues {
  */
 /** Categories that are always USD-denominated, regardless of a currency toggle. */
 function isFixedUsdCategory(categoryLabel: string): boolean {
-  return categoryLabel === BONDS_USD_CATEGORY_LABEL || categoryLabel === US_ETF_CATEGORY_LABEL
+  return (
+    categoryLabel === BONDS_USD_CATEGORY_LABEL ||
+    categoryLabel === BONDS_CORP_CATEGORY_LABEL ||
+    categoryLabel === US_ETF_CATEGORY_LABEL
+  )
 }
 
 export function computeHoldingValue(md: AssetFormValues, latestRate: RateEntry | undefined | null): number {
