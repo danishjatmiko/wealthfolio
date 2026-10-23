@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"wealthfolio/backend/internal/db"
+	"wealthfolio/backend/internal/domain"
 )
 
 // ExpenseIngestionRequest is a single notification capture forwarded by
@@ -60,6 +61,24 @@ func periodMonthForDate(t time.Time) (int, time.Month) {
 	return year, month
 }
 
+// pickIngestionPeriod chooses which period a captured payment is filed
+// under. Normally that's the period whose 25th-to-24th dates cover the
+// payment: dateStart is where that cycle starts, and covering is the
+// user's period for it (nil if they haven't one). But once the user has
+// started a later period, they've moved on to the next pay cycle — e.g.
+// paid early, a day or two before the 25th — so any payment made after
+// they created it (latest.CreatedAt) belongs there instead. A payment made
+// before that, which only synced late, keeps the period its date implies,
+// and nothing is ever filed into a period that starts before its own
+// cycle. Returns nil when neither applies, which Ingest reports as
+// retryable.
+func pickIngestionPeriod(dateStart domain.Date, covering, latest *domain.ExpensePeriod, occurredAt time.Time) *domain.ExpensePeriod {
+	if latest != nil && latest.StartDate.Time.After(dateStart.Time) && !occurredAt.Before(latest.CreatedAt) {
+		return latest
+	}
+	return covering
+}
+
 func deref(s *string) string {
 	if s == nil {
 		return ""
@@ -70,8 +89,9 @@ func deref(s *string) string {
 // Ingest resolves a captured notification into a Fixed Expense:
 //  1. parse the raw text — no match means "ignored", a terminal outcome
 //     the caller should stop retrying, not an error.
-//  2. resolve the period covering OccurredAt — missing period, source
-//     mapping, or envelope are all retryable failures (ErrNoActivePeriod /
+//  2. resolve the period for OccurredAt (see pickIngestionPeriod) —
+//     missing period, source mapping, or envelope are all retryable
+//     failures (ErrNoActivePeriod /
 //     ErrNoSourceMapping / ErrEnvelopeNotFound) rather than "ignored",
 //     since they resolve themselves once the user fixes their setup.
 //  3. idempotently create the fixed_expense + audit event.
@@ -99,12 +119,20 @@ func (s *ExpenseIngestionService) Ingest(ctx context.Context, userID uuid.UUID, 
 
 	year, month := periodMonthForDate(req.OccurredAt)
 	start, _ := boundsForPeriodMonth(year, month)
-	period, err := s.repos.ExpensePeriods.GetByStartDate(ctx, userID, start)
-	if err != nil {
-		if errors.Is(err, db.ErrNotFound) {
-			return ExpenseIngestionResult{}, ErrNoActivePeriod
-		}
+	var covering, latest *domain.ExpensePeriod
+	if p, err := s.repos.ExpensePeriods.GetByStartDate(ctx, userID, start); err == nil {
+		covering = &p
+	} else if !errors.Is(err, db.ErrNotFound) {
 		return ExpenseIngestionResult{}, err
+	}
+	if p, err := s.repos.ExpensePeriods.GetLatest(ctx, userID); err == nil {
+		latest = &p
+	} else if !errors.Is(err, db.ErrNotFound) {
+		return ExpenseIngestionResult{}, err
+	}
+	period := pickIngestionPeriod(start, covering, latest, req.OccurredAt)
+	if period == nil {
+		return ExpenseIngestionResult{}, ErrNoActivePeriod
 	}
 
 	mapping, err := s.repos.ExpenseSourceMappings.GetBySource(ctx, userID, req.Source)
