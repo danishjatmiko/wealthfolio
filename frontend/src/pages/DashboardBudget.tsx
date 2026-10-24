@@ -37,9 +37,10 @@ function DeltaText({ actual, committed, fmt }: { actual: number; committed: numb
 
 type ExpenseSort = 'amount' | 'date'
 
-/** The expenses behind one envelope, biggest first by default so a
- *  mistyped amount stands out. Clicking one opens the same edit form the
- *  Expenses page uses — edit, move to another envelope, or delete. */
+/** The expenses behind one envelope, newest first by default (toggle to
+ *  biggest first to make a mistyped amount stand out). Clicking one opens
+ *  the same edit form the Expenses page uses — edit, move to another
+ *  envelope, or delete. */
 function EnvelopeExpenses({
   envelope,
   sort,
@@ -104,7 +105,7 @@ function EnvelopeExpenses({
  *  an envelope opens the expenses behind it for checking or fixing. */
 export function BudgetVsActualCard({ expense, fmt }: { expense: DashboardExpense; fmt: Fmt }) {
   const [openEnvelopes, setOpenEnvelopes] = useState<Set<string>>(new Set())
-  const [sort, setSort] = useState<ExpenseSort>('amount')
+  const [sort, setSort] = useState<ExpenseSort>('date')
   const [editingExpense, setEditingExpense] = useState<FixedExpense | null>(null)
   const [addToEnvelopeId, setAddToEnvelopeId] = useState<string | null>(null)
   const [expenseModalOpen, setExpenseModalOpen] = useState(false)
