@@ -576,14 +576,16 @@ targets
 | 2 | `saham` | Saham | asset |
 | 3 | `bonds_usd` | Bonds Gov. | asset |
 | 4 | `bonds_corp` | Bonds Corp. | asset |
-| 5 | `uang_tunai` | Uang Tunai | asset |
-| 6 | `us_etf` | US ETF / Stocks | asset |
-| 7 | `esop` | ESOP | asset |
-| 8 | `properti` | Properti | asset |
-| 9 | `crypto` | Crypto | asset |
-| 10 | `reksa_dana` | Reksa Dana | asset |
-| 11 | `liabilitas` | Liabilitas | liability |
-| 12 | `piutang` | Piutang | asset |
+| 5 | `uang_tunai` | IDR Cash | asset |
+| 6 | `usd_cash` | USD Cash | asset |
+| 7 | `deposito` | Deposito | asset |
+| 8 | `us_etf` | US ETF / Stocks | asset |
+| 9 | `esop` | ESOP | asset |
+| 10 | `properti` | Properti | asset |
+| 11 | `crypto` | Crypto | asset |
+| 12 | `reksa_dana` | Reksa Dana | asset |
+| 13 | `liabilitas` | Liabilitas | liability |
+| 14 | `piutang` | Piutang | asset |
 
 ---
 
@@ -717,7 +719,7 @@ Unlike snapshots, an expense period (and everything inside it — envelopes, fix
 ### Value Derivation
 Price-linked categories never store a value the user typed directly:
 - **Gold** (`logam_mulia`): `gram × qty × goldPricePerGram(brand, latestRateEntry)`.
-- **USD Bonds/ETF/Stocks/Cash** (`bonds_usd`, `bonds_corp`, `us_etf`, `uang_tunai` with `currency=USD`): `usd_value × usd_idr`.
+- **USD Bonds/ETF/Stocks/Cash** (`bonds_usd`, `bonds_corp`, `us_etf`, `usd_cash`; also legacy `uang_tunai` rows with `currency=USD`, which migration 00031 moved to `usd_cash`): `usd_value × usd_idr`.
 - If no rate entry exists yet and a derived value is required, the API returns `422`.
 
 ### Bond Coupon Schedule

@@ -5,8 +5,8 @@ import { useCreateHolding, useUpdateHolding } from '../../hooks/useHoldings'
 import {
   GOLD_TYPES,
   buildDetail,
+  cashCurrency,
   computeHoldingValue,
-  isCashCategory,
   isGoldCategory,
   prefillFromHolding,
   showsComputedBox,
@@ -33,7 +33,6 @@ const EMPTY: AssetFormValues = {
   gram: '',
   qty: '',
   usd: '',
-  currency: 'IDR',
   brand: 'Antam',
 }
 
@@ -66,7 +65,6 @@ export function AssetModal({
           gram: editingHolding.gram,
           qty: editingHolding.qty,
           usd_value: editingHolding.usd_value,
-          currency: editingHolding.currency,
           brand: editingHolding.brand,
           name: editingHolding.name,
           value_idr: editingHolding.value_idr,
@@ -88,10 +86,9 @@ export function AssetModal({
   const isEdit = !!editingHolding
 
   const gold = isGoldCategory(categoryLabel)
-  const cash = isCashCategory(categoryLabel)
-  const showUsd = showsUsdInput(categoryLabel, form.currency)
-  const showIdr = showsIdrInput(categoryLabel, form.currency)
-  const showComputed = showsComputedBox(categoryLabel, form.currency)
+  const showUsd = showsUsdInput(categoryLabel)
+  const showIdr = showsIdrInput(categoryLabel)
+  const showComputed = showsComputedBox(categoryLabel)
 
   const computedNote = gold
     ? `Auto from ${form.brand} · ${goldFmt(
@@ -115,7 +112,7 @@ export function AssetModal({
       qty: gold ? parseNumeric(form.qty) || 1 : null,
       brand: gold ? form.brand : null,
       usd_value: showUsd ? parseNumeric(form.usd) : null,
-      currency: cash ? form.currency : null,
+      currency: cashCurrency(categoryLabel),
     }
     try {
       if (isEdit && editingHolding) {
@@ -208,20 +205,6 @@ export function AssetModal({
             />
           </label>
         </div>
-      )}
-
-      {cash && (
-        <label className="field">
-          Currency
-          <select
-            className="field-input"
-            value={form.currency}
-            onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value as 'IDR' | 'USD' }))}
-          >
-            <option value="IDR">IDR</option>
-            <option value="USD">USD</option>
-          </select>
-        </label>
       )}
 
       {showUsd && (
