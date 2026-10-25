@@ -8,7 +8,8 @@ export const GOLD_CATEGORY_LABEL = 'Logam Mulia'
 export const BONDS_GOV_CATEGORY_LABEL = 'Bonds Gov.'
 export const BONDS_CORP_CATEGORY_LABEL = 'Bonds Corp.'
 export const US_ETF_CATEGORY_LABEL = 'US ETF / Stocks'
-export const CASH_CATEGORY_LABEL = 'Uang Tunai'
+export const IDR_CASH_CATEGORY_LABEL = 'IDR Cash'
+export const USD_CASH_CATEGORY_LABEL = 'USD Cash'
 
 export const GOLD_TYPES = ['Antam', 'King Halim', 'UBS'] as const
 export type GoldType = (typeof GOLD_TYPES)[number]
@@ -27,7 +28,6 @@ export interface AssetFormValues {
   gram: string
   qty: string
   usd: string
-  currency: 'IDR' | 'USD'
   brand: string
 }
 
@@ -35,12 +35,13 @@ export interface AssetFormValues {
  * Live client-side preview of the IDR value (full/raw) for the asset
  * add/edit form, mirroring mdComputedVal() exactly.
  */
-/** Categories that are always USD-denominated, regardless of a currency toggle. */
+/** Categories entered in USD and valued at the latest USD/IDR rate. */
 function isFixedUsdCategory(categoryLabel: string): boolean {
   return (
     categoryLabel === BONDS_GOV_CATEGORY_LABEL ||
     categoryLabel === BONDS_CORP_CATEGORY_LABEL ||
-    categoryLabel === US_ETF_CATEGORY_LABEL
+    categoryLabel === US_ETF_CATEGORY_LABEL ||
+    categoryLabel === USD_CASH_CATEGORY_LABEL
   )
 }
 
@@ -49,7 +50,7 @@ export function computeHoldingValue(md: AssetFormValues, latestRate: RateEntry |
     const g = parseNumeric(md.gram)
     return g ? g * (parseNumeric(md.qty) || 1) * goldPrice(latestRate, md.brand) : parseNumeric(md.val)
   }
-  if (isFixedUsdCategory(md.categoryLabel) || (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD')) {
+  if (isFixedUsdCategory(md.categoryLabel)) {
     const u = parseNumeric(md.usd)
     return u && latestRate ? u * latestRate.usd_idr : parseNumeric(md.val)
   }
@@ -61,24 +62,27 @@ export function isGoldCategory(categoryLabel: string): boolean {
   return categoryLabel === GOLD_CATEGORY_LABEL
 }
 
-/** Whether the form should show the IDR/USD currency toggle (cash). */
-export function isCashCategory(categoryLabel: string): boolean {
-  return categoryLabel === CASH_CATEGORY_LABEL
+/** The currency a cash holding is stored with — each cash category holds
+ *  exactly one — or null for anything that isn't cash. */
+export function cashCurrency(categoryLabel: string): 'IDR' | 'USD' | null {
+  if (categoryLabel === IDR_CASH_CATEGORY_LABEL) return 'IDR'
+  if (categoryLabel === USD_CASH_CATEGORY_LABEL) return 'USD'
+  return null
 }
 
-/** Whether the form should show a USD input (bonds, US ETF / Stocks, or cash-in-USD). */
-export function showsUsdInput(categoryLabel: string, currency: string): boolean {
-  return isFixedUsdCategory(categoryLabel) || (categoryLabel === CASH_CATEGORY_LABEL && currency === 'USD')
+/** Whether the form should show a USD input (bonds, US ETF / Stocks, USD cash). */
+export function showsUsdInput(categoryLabel: string): boolean {
+  return isFixedUsdCategory(categoryLabel)
 }
 
 /** Whether the form should show a direct IDR input. */
-export function showsIdrInput(categoryLabel: string, currency: string): boolean {
-  return !isGoldCategory(categoryLabel) && !showsUsdInput(categoryLabel, currency)
+export function showsIdrInput(categoryLabel: string): boolean {
+  return !isGoldCategory(categoryLabel) && !showsUsdInput(categoryLabel)
 }
 
 /** Whether the form should show the read-only auto-computed IDR box. */
-export function showsComputedBox(categoryLabel: string, currency: string): boolean {
-  return isGoldCategory(categoryLabel) || showsUsdInput(categoryLabel, currency)
+export function showsComputedBox(categoryLabel: string): boolean {
+  return isGoldCategory(categoryLabel) || showsUsdInput(categoryLabel)
 }
 
 /** Builds the `detail` string exactly like the prototype's saveAsset(). */
@@ -88,7 +92,7 @@ export function buildDetail(md: AssetFormValues): string {
     const q = parseNumeric(md.qty) || 1
     return q > 1 ? `${q} × ${g} g` : `${g} g`
   }
-  if (isFixedUsdCategory(md.categoryLabel) || (md.categoryLabel === CASH_CATEGORY_LABEL && md.currency === 'USD')) {
+  if (isFixedUsdCategory(md.categoryLabel)) {
     return `${parseNumeric(md.usd)} USD`
   }
   return ''
@@ -105,7 +109,6 @@ export function prefillFromHolding(h: {
   gram: number | null
   qty: number | null
   usd_value: number | null
-  currency: string | null
   brand: string | null
   name: string
   value_idr: number
@@ -114,7 +117,6 @@ export function prefillFromHolding(h: {
   let gram = h.gram != null ? String(h.gram) : ''
   let qty = h.qty != null ? String(h.qty) : ''
   let usd = h.usd_value != null ? String(h.usd_value) : ''
-  let currency: 'IDR' | 'USD' = (h.currency as 'IDR' | 'USD') || 'IDR'
   const brand =
     h.brand || (/king/i.test(h.name) ? 'King Halim' : /ubs/i.test(h.name) ? 'UBS' : 'Antam')
 
@@ -125,15 +127,10 @@ export function prefillFromHolding(h: {
       gram = mm[2] || ''
     }
   }
-  if (
-    (isFixedUsdCategory(h.category_label) || h.category_label === CASH_CATEGORY_LABEL) &&
-    !usd &&
-    /usd/i.test(d)
-  ) {
+  if (isFixedUsdCategory(h.category_label) && !usd && /usd/i.test(d)) {
     const um = d.match(/([\d,.]+)\s*usd/i)
     if (um) {
       usd = um[1].replace(/,/g, '')
-      currency = 'USD'
     }
   }
 
@@ -143,7 +140,6 @@ export function prefillFromHolding(h: {
     gram,
     qty,
     usd,
-    currency,
     brand,
   }
 }

@@ -125,7 +125,7 @@ export function Assets() {
   const defaultCategoryId =
     assetGroup !== 'all'
       ? Number(assetGroup)
-      : categories.find((c) => c.label === 'Uang Tunai')?.id ?? categories[0]?.id ?? 0
+      : categories.find((c) => c.key === 'uang_tunai')?.id ?? categories[0]?.id ?? 0
 
   return (
     <div>
