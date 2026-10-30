@@ -43,7 +43,7 @@ func GoldPricePerGram(brand string, rate domain.RateEntry) float64 {
 // is the user's latest rate_entries row, or nil if the user has none yet.
 //
 // Returns ErrNoRateEntry if the category/input combination requires a rate
-// entry (gold priced by gram, or USD-denominated bonds/cash) and none is
+// entry (gold priced by gram, or USD-denominated bonds/cash/crypto) and none is
 // available, and no manual value_idr fallback was supplied.
 func ComputeHoldingValue(categoryKey string, input HoldingInput, rate *domain.RateEntry) (int64, string, error) {
 	switch {
@@ -68,7 +68,7 @@ func ComputeHoldingValue(categoryKey string, input HoldingInput, rate *domain.Ra
 		return input.ValueIdr, input.Detail, nil
 
 	case categoryKey == "bonds_usd" || categoryKey == "bonds_corp" || categoryKey == "us_etf" || categoryKey == "usd_cash" ||
-		(categoryKey == "uang_tunai" && input.Currency == "USD"):
+		((categoryKey == "uang_tunai" || categoryKey == "crypto") && input.Currency == "USD"):
 		if input.UsdValue > 0 {
 			if rate == nil {
 				return 0, "", ErrNoRateEntry
