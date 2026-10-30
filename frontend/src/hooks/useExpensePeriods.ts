@@ -32,6 +32,7 @@ export function useCreateExpensePeriod() {
       qc.invalidateQueries({ queryKey: ['expensePeriod'], refetchType: 'all' })
       qc.invalidateQueries({ queryKey: ['expensePeriods'] })
       qc.invalidateQueries({ queryKey: ['dashboard'] })
+      qc.invalidateQueries({ queryKey: ['progress', 'expense'] })
     },
   })
 }
@@ -47,6 +48,7 @@ export function useDeleteExpensePeriod() {
       // refetched too, not just left stale until something re-observes it.
       qc.invalidateQueries({ queryKey: ['expensePeriod'], refetchType: 'all' })
       qc.invalidateQueries({ queryKey: ['dashboard'] })
+      qc.invalidateQueries({ queryKey: ['progress', 'expense'] })
     },
   })
 }

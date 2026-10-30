@@ -2,8 +2,9 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { useProgress } from '../../hooks/useProgress'
 import { useDebtProgress } from '../../hooks/useDebtProgress'
+import { useExpenseProgress } from '../../hooks/useExpenseProgress'
 import { LineChart } from '../../components/charts/LineChart'
-import { ACCENT, RED, BLUE } from '../../lib/colors'
+import { ACCENT, RED, BLUE, GOLD } from '../../lib/colors'
 import type { ProgressGranularity } from '../../types'
 import './Progress.css'
 
@@ -55,6 +56,7 @@ export function Progress() {
   const [granularity, setGranularity] = useState<ProgressGranularity>('monthly')
   const { data, isLoading, isError } = useProgress(granularity)
   const { data: debtData, isLoading: debtLoading, isError: debtIsError } = useDebtProgress(granularity)
+  const { data: expenseData, isLoading: expenseLoading, isError: expenseIsError } = useExpenseProgress(granularity)
 
   return (
     <div>
@@ -125,6 +127,46 @@ export function Progress() {
               secondaryFormatValue={pctFmt}
             />
             <AxisLabels labels={debtData.series.map((p) => p.label)} dual />
+          </>
+        )}
+      </div>
+
+      {/* Only months/quarters/years that have expense periods — nothing
+          before expense tracking began. Labelled and Rupiah-formatted like
+          the charts above. */}
+      <div className="card progress-chart-card">
+        <div className="card-title">Expense trend</div>
+        {expenseLoading && <div className="empty-state">Loading…</div>}
+        {expenseIsError && <div className="empty-state">Couldn't load expense progress data.</div>}
+        {expenseData && expenseData.series.length === 0 && (
+          <div className="empty-state">No expense periods yet.</div>
+        )}
+        {expenseData && expenseData.series.length > 0 && (
+          <>
+            <div className="progress-chart-legend">
+              <span className="progress-chart-legend-item">
+                <span className="progress-chart-legend-swatch" style={{ borderTopColor: GOLD }} />
+                Spent
+              </span>
+              <span className="progress-chart-legend-item">
+                <span
+                  className="progress-chart-legend-swatch progress-chart-legend-swatch-dashed"
+                  style={{ borderTopColor: BLUE }}
+                />
+                Committed
+              </span>
+            </div>
+            <LineChart
+              series={expenseData.series.map((p) => ({ label: p.label, value: p.actual_idr }))}
+              color={GOLD}
+              formatValue={fmtExact}
+              axisFormatValue={fmt}
+              secondarySeries={expenseData.series.map((p) => ({ label: p.label, value: p.committed_idr }))}
+              secondaryColor={BLUE}
+              secondaryFormatValue={fmtExact}
+              sharedScale
+            />
+            <AxisLabels labels={expenseData.series.map((p) => p.label)} />
           </>
         )}
       </div>

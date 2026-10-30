@@ -16,6 +16,7 @@ import type {
   DebtEntry,
   DebtEntryInput,
   DebtProgress,
+  ExpenseProgress,
   DebtProgressGranularity,
   DebtSnapshot,
   DebtSnapshotSummary,
@@ -213,5 +214,9 @@ export const api = {
   debtProgress: {
     get: (granularity: DebtProgressGranularity) =>
       get<DebtProgress>(`/debt-progress?granularity=${granularity}`),
+  },
+  expenseProgress: {
+    get: (granularity: ProgressGranularity) =>
+      get<ExpenseProgress>(`/expense-progress?granularity=${granularity}`),
   },
 }
