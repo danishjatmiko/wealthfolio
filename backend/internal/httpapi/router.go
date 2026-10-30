@@ -147,6 +147,7 @@ func NewRouter(cfg config.Config, repos *db.Repos, svc *service.Services) http.H
 			r.Get("/dashboard/expense", h.getDashboardExpense)
 			r.Get("/progress", h.getProgress)
 			r.Get("/debt-progress", h.getDebtProgress)
+			r.Get("/expense-progress", h.getExpenseProgress)
 		})
 	})
 

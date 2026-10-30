@@ -6,6 +6,7 @@ function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: ['expensePeriod'], refetchType: 'all' })
   qc.invalidateQueries({ queryKey: ['expensePeriods'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })
+  qc.invalidateQueries({ queryKey: ['progress', 'expense'] })
 }
 
 export function useCreateFixedExpense() {

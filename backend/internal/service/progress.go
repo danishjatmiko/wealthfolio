@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/google/uuid"
@@ -239,6 +240,70 @@ func debtYearlySeries(aggs []db.DebtSnapshotAgg, netEquityAsOf func(domain.Date)
 		} else {
 			out = append(out, point)
 		}
+	}
+	return out
+}
+
+// ExpenseProgressPoint is one entry of expense-progress.series.
+type ExpenseProgressPoint struct {
+	Label        string      `json:"label"`
+	Date         domain.Date `json:"date"`
+	ActualIdr    int64       `json:"actual_idr"`
+	CommittedIdr int64       `json:"committed_idr"`
+}
+
+// ExpenseProgressDTO is the full GET /expense-progress response.
+type ExpenseProgressDTO struct {
+	Granularity string                 `json:"granularity"`
+	Series      []ExpenseProgressPoint `json:"series"`
+}
+
+// progressBucketLabel is the label a date gets at each granularity — the
+// same format the net-equity series uses, so the charts read alike.
+func progressBucketLabel(granularity string, t time.Time) string {
+	switch granularity {
+	case "quarterly":
+		return fmt.Sprintf("Q%d'%02d", quarterOf(t.Month()), t.Year()%100)
+	case "yearly":
+		return fmt.Sprintf("%d", t.Year())
+	default:
+		return t.Format("Jan '06")
+	}
+}
+
+// GetExpenseProgress computes spend and budget over time, one point per
+// month/quarter/year that has at least one expense period — nothing before
+// expense tracking began. Each point totals the periods named after it (a
+// period is named after the month it ends in, e.g. 25 Sep – 24 Oct is
+// October), labelled the same way as the net-equity series.
+func (s *ProgressService) GetExpenseProgress(ctx context.Context, userID uuid.UUID, granularity string) (ExpenseProgressDTO, error) {
+	if granularity != "quarterly" && granularity != "yearly" {
+		granularity = "monthly"
+	}
+	periods, err := s.repos.ExpensePeriods.ListWithAgg(ctx, userID)
+	if err != nil {
+		return ExpenseProgressDTO{}, err
+	}
+	return ExpenseProgressDTO{Granularity: granularity, Series: expenseSeries(periods, granularity)}, nil
+}
+
+// expenseSeries buckets periods (in any order) by label, oldest bucket
+// first; each point is dated by the latest period end it covers.
+func expenseSeries(periods []db.ExpensePeriodAgg, granularity string) []ExpenseProgressPoint {
+	sorted := make([]db.ExpensePeriodAgg, len(periods))
+	copy(sorted, periods)
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Period.EndDate.Time.Before(sorted[j].Period.EndDate.Time) })
+
+	out := make([]ExpenseProgressPoint, 0, len(sorted))
+	for _, p := range sorted {
+		label := progressBucketLabel(granularity, p.Period.EndDate.Time)
+		if len(out) == 0 || out[len(out)-1].Label != label {
+			out = append(out, ExpenseProgressPoint{Label: label})
+		}
+		last := &out[len(out)-1]
+		last.Date = p.Period.EndDate
+		last.ActualIdr += p.ActualTotalIdr
+		last.CommittedIdr += p.CommittedTotalIdr
 	}
 	return out
 }

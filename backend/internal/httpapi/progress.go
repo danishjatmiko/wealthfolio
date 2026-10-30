@@ -31,3 +31,20 @@ func (h *Handler) getDebtProgress(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, dto)
 }
+
+// getExpenseProgress returns spend and budget over time, one point per
+// month/quarter/year that has expense periods.
+func (h *Handler) getExpenseProgress(w http.ResponseWriter, r *http.Request) {
+	granularity := r.URL.Query().Get("granularity")
+	if granularity == "" {
+		granularity = "monthly"
+	}
+
+	userID := currentUserID(r.Context())
+	dto, err := h.svc.Progress.GetExpenseProgress(r.Context(), userID, granularity)
+	if err != nil {
+		handleServiceError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, dto)
+}

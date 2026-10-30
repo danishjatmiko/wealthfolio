@@ -156,6 +156,20 @@ export interface DebtProgress {
   delta_pct: number
 }
 
+/** One point of the expense chart: a month/quarter/year with at least one
+ *  expense period, labelled like the net-equity chart. */
+export interface ExpenseProgressPoint {
+  label: string
+  date: string
+  actual_idr: number
+  committed_idr: number
+}
+
+export interface ExpenseProgress {
+  granularity: ProgressGranularity
+  series: ExpenseProgressPoint[]
+}
+
 export interface ExpensePeriodSummary {
   id: string
   start_date: string
