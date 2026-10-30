@@ -104,6 +104,21 @@ func TestComputeHoldingValue(t *testing.T) {
 			wantDetail:  "759 USD",
 		},
 		{
+			name:        "crypto held in USD priced from usd_idr",
+			categoryKey: "crypto",
+			input:       HoldingInput{UsdValue: 250, Currency: "USD"},
+			rate:        rate,
+			wantValue:   round64(250 * 15800.0),
+			wantDetail:  "250 USD",
+		},
+		{
+			name:        "crypto held in IDR passes through",
+			categoryKey: "crypto",
+			input:       HoldingInput{ValueIdr: 54637000, Currency: "IDR"},
+			rate:        rate,
+			wantValue:   54637000,
+		},
+		{
 			name:        "bonds_usd manual value fallback when usd_value<=0",
 			categoryKey: "bonds_usd",
 			input:       HoldingInput{UsdValue: 0, ValueIdr: 20000, Detail: "manual bond"},
