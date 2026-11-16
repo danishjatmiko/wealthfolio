@@ -207,7 +207,7 @@ Module path `wealthfolio/backend`, Go 1.25. Key deps: `chi/v5` + `go-chi/cors`, 
 | `BigExpense` | `big_expenses` | `Name`, `AmountIdr`, `ExpenseDate`, `Category` — a manually-logged large one-off purchase, kept separate from the monthly envelope budget in `FixedExpense`; never copies forward, never locks |
 | `ExpensePeriod` | `expense_periods` | `StartDate`, `EndDate` |
 | `BudgetEnvelope` | `budget_envelopes` | `PeriodID`, `Name`, `CommittedAmountIdr` |
-| `FixedExpense` | `fixed_expenses` | `PeriodID`, `EnvelopeID`, `Name`, `AmountIdr`, `Source *string` (nil unless notification-created), `Notes *string` |
+| `FixedExpense` | `fixed_expenses` | `PeriodID`, `EnvelopeID`, `Name`, `AmountIdr`, `Source *string` (nil unless notification-created), `Notes *string`, `ExpenseDate Date` |
 | `ExpenseSourceMapping` | `expense_source_mappings` | `Source`, `EnvelopeName` |
 | `NotificationExpenseEvent` | `notification_expense_events` | `IdempotencyKey`, `Source`, `RawTitle/RawText/RawBigText *string`, `OccurredAt`, `ParseStatus`, `AmountIdr *int64`, `MerchantName *string`, `EnvelopeID/FixedExpenseID *uuid.UUID` |
 | `NotificationApp` | `notification_apps` (+ `notification_app_packages` join) | `Source`, `DisplayName`, `PackageNames []string`, `AmountThousandSep`/`AmountDecimalSep` (backend-only, `json:"-"`), `Enabled` |
@@ -509,6 +509,7 @@ fixed_expenses
   amount_idr bigint             -- full/raw IDR
   source text                     -- nullable; set once by notification ingestion, never touched by manual edits
   notes text                       -- nullable; manual-entry only
+  expense_date date               -- day it was spent; user-editable, defaults to today (WIB); captured payments use the notification's date
   created_at / updated_at timestamptz
 
 expense_source_mappings

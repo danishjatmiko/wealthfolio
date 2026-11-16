@@ -103,17 +103,20 @@ export function parseLocalDate(dateStr: string): Date {
   return new Date(y, m - 1, d)
 }
 
+/** Today's date as "YYYY-MM-DD" in the device's own timezone — unlike
+ * `new Date().toISOString().slice(0, 10)`, which is UTC and so reads as
+ * yesterday before 07:00 in Jakarta. */
+export function todayLocalISO(): string {
+  const d = new Date()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${mm}-${dd}`
+}
+
 /** Formats a "YYYY-MM-DD" date string as e.g. "20 Jul 2026". */
 export function formatShortDate(dateStr: string): string {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(
     parseLocalDate(dateStr),
-  )
-}
-
-/** Formats an ISO 8601 timestamp (e.g. created_at/updated_at) as e.g. "20 Jul 2026". */
-export function formatTimestamp(isoStr: string): string {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(
-    new Date(isoStr),
   )
 }
 

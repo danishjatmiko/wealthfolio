@@ -190,6 +190,9 @@ export interface FixedExpense {
    * changed by a later edit. */
   source: string | null
   notes: string | null
+  /** "YYYY-MM-DD" — the day the money was actually spent, which can be
+   * earlier than created_at when an expense is logged late. */
+  expense_date: string
   created_at: string
   updated_at: string
 }
@@ -231,6 +234,7 @@ export interface FixedExpenseInput {
   amount_idr: number
   envelope_id: string
   notes?: string | null
+  expense_date: string
 }
 
 export interface CreateExpensePeriodInput {

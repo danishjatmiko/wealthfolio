@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Modal, ModalCancelButton } from '../../components/Modal'
 import { errorMessage, useToast } from '../../context/ToastContext'
 import { useCreateFixedExpense, useDeleteFixedExpense, useUpdateFixedExpense } from '../../hooks/useFixedExpenses'
-import { parseNumeric } from '../../lib/format'
+import { parseNumeric, todayLocalISO } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 
 interface FixedExpenseModalProps {
@@ -31,6 +31,7 @@ export function FixedExpenseModal({
   const [amount, setAmount] = useState('')
   const [envelopeId, setEnvelopeId] = useState('')
   const [notes, setNotes] = useState('')
+  const [date, setDate] = useState('')
 
   useEffect(() => {
     if (!open) return
@@ -39,11 +40,13 @@ export function FixedExpenseModal({
       setAmount(String(editingExpense.amount_idr))
       setEnvelopeId(editingExpense.envelope_id)
       setNotes(editingExpense.notes ?? '')
+      setDate(editingExpense.expense_date)
     } else {
       setName('')
       setAmount('')
       setEnvelopeId(defaultEnvelopeId ?? envelopes[0]?.id ?? '')
       setNotes('')
+      setDate(todayLocalISO())
     }
   }, [open, editingExpense, defaultEnvelopeId, envelopes])
 
@@ -56,11 +59,16 @@ export function FixedExpenseModal({
       showError('Pick a budget envelope.')
       return
     }
+    if (!date) {
+      showError('Pick the date it was spent.')
+      return
+    }
     const input = {
       name: name.trim(),
       amount_idr: Math.round(parseNumeric(amount)),
       envelope_id: envelopeId,
       notes: notes.trim() || null,
+      expense_date: date,
     }
     try {
       if (editingExpense) {
@@ -143,6 +151,10 @@ export function FixedExpenseModal({
           onChange={(e) => setAmount(e.target.value)}
           placeholder="3000000"
         />
+      </label>
+      <label className="field">
+        Date
+        <input type="date" className="field-input" value={date} onChange={(e) => setDate(e.target.value)} />
       </label>
       <label className="field">
         Notes

@@ -12,7 +12,7 @@ import { NewPeriodModal } from './NewPeriodModal'
 import { BudgetEnvelopeModal } from './BudgetEnvelopeModal'
 import { FixedExpenseModal } from './FixedExpenseModal'
 import { periodProgress } from '../../lib/budget'
-import { formatShortDate, formatTimestamp, sourceLabel } from '../../lib/format'
+import { formatShortDate, sourceLabel } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
 
@@ -198,7 +198,6 @@ export function MonthlyExpenses() {
               {env.fixed_expenses.length > 0 && (
                 <div className="expense-rows">
                   {env.fixed_expenses.map((fe) => {
-                    const edited = fe.updated_at !== fe.created_at
                     return (
                       <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
                         <div className="expense-row-info">
@@ -206,10 +205,7 @@ export function MonthlyExpenses() {
                             {fe.name}
                             {fe.source && <span className="source-badge">{sourceLabel(fe.source)}</span>}
                           </div>
-                          <div className="expense-row-date">
-                            {edited ? 'Updated' : 'Added'}{' '}
-                            {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
-                          </div>
+                          <div className="expense-row-date">{formatShortDate(fe.expense_date)}</div>
                           {fe.notes && <div className="expense-row-notes">{fe.notes}</div>}
                         </div>
                         <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>

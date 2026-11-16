@@ -194,7 +194,7 @@ type ReceivableLoan struct {
 	RemainingDebtIdr int64     `json:"remaining_debt_idr"`
 	Note             string    `json:"note"`
 	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 // ExpensePeriod mirrors the expense_periods table: a custom pay-cycle
@@ -234,8 +234,11 @@ type FixedExpense struct {
 	AmountIdr  int64     `json:"amount_idr"`
 	Source     *string   `json:"source"`
 	Notes      *string   `json:"notes"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	// ExpenseDate is the day the money was actually spent — user-editable,
+	// unlike CreatedAt, which is just when the row was typed in.
+	ExpenseDate Date      `json:"expense_date"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // ExpenseSourceMapping mirrors the expense_source_mappings table: which

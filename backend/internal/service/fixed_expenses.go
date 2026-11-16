@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -29,7 +30,14 @@ type FixedExpenseRequest struct {
 	AmountIdr  int64
 	EnvelopeID uuid.UUID
 	Notes      *string
+	// ExpenseDate is optional: left zero, Create files the expense under
+	// today (Jakarta time) and Update keeps whatever date it already had.
+	ExpenseDate domain.Date
 }
+
+// jakarta is a fixed UTC+7 rather than time.LoadLocation so it doesn't
+// depend on tzdata being present in the container — Indonesia has no DST.
+var jakarta = time.FixedZone("WIB", 7*60*60)
 
 func (r FixedExpenseRequest) validate() error {
 	if r.Name == "" {
@@ -66,12 +74,16 @@ func (s *FixedExpensesService) Create(ctx context.Context, userID, periodID uuid
 	if err := s.checkEnvelopeBelongsToPeriod(ctx, userID, periodID, req.EnvelopeID); err != nil {
 		return domain.FixedExpense{}, err
 	}
+	if req.ExpenseDate.Time.IsZero() {
+		req.ExpenseDate = domain.NewDate(time.Now().In(jakarta))
+	}
 	return s.repos.FixedExpenses.Create(ctx, db.FixedExpenseWrite{
-		PeriodID:   periodID,
-		EnvelopeID: req.EnvelopeID,
-		Name:       req.Name,
-		AmountIdr:  req.AmountIdr,
-		Notes:      req.Notes,
+		PeriodID:    periodID,
+		EnvelopeID:  req.EnvelopeID,
+		Name:        req.Name,
+		AmountIdr:   req.AmountIdr,
+		Notes:       req.Notes,
+		ExpenseDate: req.ExpenseDate,
 	})
 }
 
@@ -88,7 +100,10 @@ func (s *FixedExpensesService) Update(ctx context.Context, userID, id uuid.UUID,
 	if err := s.checkEnvelopeBelongsToPeriod(ctx, userID, existing.PeriodID, req.EnvelopeID); err != nil {
 		return domain.FixedExpense{}, err
 	}
-	return s.repos.FixedExpenses.Update(ctx, userID, id, req.EnvelopeID, req.Name, req.AmountIdr, req.Notes)
+	if req.ExpenseDate.Time.IsZero() {
+		req.ExpenseDate = existing.ExpenseDate
+	}
+	return s.repos.FixedExpenses.Update(ctx, userID, id, req.EnvelopeID, req.Name, req.AmountIdr, req.Notes, req.ExpenseDate)
 }
 
 // Delete removes a fixed expense. Returns db.ErrNotFound if it doesn't

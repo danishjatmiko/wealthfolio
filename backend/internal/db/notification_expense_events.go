@@ -112,10 +112,14 @@ func (r *NotificationExpenseEventsRepo) CreateExpense(ctx context.Context, w Cre
 
 	var fixedExpenseID uuid.UUID
 	err = tx.QueryRow(ctx, `
-		INSERT INTO fixed_expenses (period_id, envelope_id, name, amount_idr, source)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO fixed_expenses (period_id, envelope_id, name, amount_idr, source, expense_date)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id`,
-		w.PeriodID, w.EnvelopeID, w.Merchant, w.AmountIdr, w.Source).Scan(&fixedExpenseID)
+		w.PeriodID, w.EnvelopeID, w.Merchant, w.AmountIdr, w.Source,
+		// The payment's own calendar day, in the offset the phone reported
+		// it with — the same reading periodMonthForDate uses to pick the
+		// period.
+		domain.NewDate(w.OccurredAt).Time).Scan(&fixedExpenseID)
 	if err != nil {
 		return domain.NotificationExpenseEvent{}, err
 	}

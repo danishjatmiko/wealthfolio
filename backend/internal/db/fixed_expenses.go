@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,23 +19,25 @@ func NewFixedExpensesRepo(pool *pgxpool.Pool) *FixedExpensesRepo {
 	return &FixedExpensesRepo{pool: pool}
 }
 
-const fixedExpenseSelectCols = `id, period_id, envelope_id, name, amount_idr, source, notes, created_at, updated_at`
+const fixedExpenseSelectCols = `id, period_id, envelope_id, name, amount_idr, source, notes, expense_date, created_at, updated_at`
 
 func scanFixedExpense(row interface{ Scan(dest ...any) error }) (domain.FixedExpense, error) {
 	var e domain.FixedExpense
-	err := row.Scan(&e.ID, &e.PeriodID, &e.EnvelopeID, &e.Name, &e.AmountIdr, &e.Source, &e.Notes, &e.CreatedAt, &e.UpdatedAt)
+	var date time.Time
+	err := row.Scan(&e.ID, &e.PeriodID, &e.EnvelopeID, &e.Name, &e.AmountIdr, &e.Source, &e.Notes, &date, &e.CreatedAt, &e.UpdatedAt)
 	if err != nil {
 		return domain.FixedExpense{}, err
 	}
+	e.ExpenseDate = domain.NewDate(date)
 	return e, nil
 }
 
 // ListByPeriod returns every fixed expense in a period (standalone and
-// envelope-linked alike), oldest-created first.
+// envelope-linked alike), oldest first by expense date.
 func (r *FixedExpensesRepo) ListByPeriod(ctx context.Context, periodID uuid.UUID) ([]domain.FixedExpense, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT `+fixedExpenseSelectCols+`
-		FROM fixed_expenses WHERE period_id = $1 ORDER BY created_at`, periodID)
+		FROM fixed_expenses WHERE period_id = $1 ORDER BY expense_date, created_at`, periodID)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +58,7 @@ func (r *FixedExpensesRepo) ListByPeriod(ctx context.Context, periodID uuid.UUID
 // period). ErrNotFound if missing or owned by someone else.
 func (r *FixedExpensesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (domain.FixedExpense, error) {
 	row := r.pool.QueryRow(ctx, `
-		SELECT e.id, e.period_id, e.envelope_id, e.name, e.amount_idr, e.source, e.notes, e.created_at, e.updated_at
+		SELECT e.id, e.period_id, e.envelope_id, e.name, e.amount_idr, e.source, e.notes, e.expense_date, e.created_at, e.updated_at
 		FROM fixed_expenses e
 		JOIN expense_periods p ON p.id = e.period_id
 		WHERE e.id = $1 AND p.user_id = $2`, id, userID)
@@ -72,34 +75,35 @@ func (r *FixedExpensesRepo) GetByID(ctx context.Context, userID, id uuid.UUID) (
 // rather than through this repo) — manual creates via this Create leave it
 // nil, and Update never touches the column at all.
 type FixedExpenseWrite struct {
-	PeriodID   uuid.UUID
-	EnvelopeID uuid.UUID
-	Name       string
-	AmountIdr  int64
-	Source     *string
-	Notes      *string
+	PeriodID    uuid.UUID
+	EnvelopeID  uuid.UUID
+	Name        string
+	AmountIdr   int64
+	Source      *string
+	Notes       *string
+	ExpenseDate domain.Date
 }
 
 // Create inserts a new fixed expense and returns the full row.
 func (r *FixedExpensesRepo) Create(ctx context.Context, w FixedExpenseWrite) (domain.FixedExpense, error) {
 	row := r.pool.QueryRow(ctx, `
-		INSERT INTO fixed_expenses (period_id, envelope_id, name, amount_idr, source, notes)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO fixed_expenses (period_id, envelope_id, name, amount_idr, source, notes, expense_date)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING `+fixedExpenseSelectCols,
-		w.PeriodID, w.EnvelopeID, w.Name, w.AmountIdr, w.Source, w.Notes)
+		w.PeriodID, w.EnvelopeID, w.Name, w.AmountIdr, w.Source, w.Notes, w.ExpenseDate.Time)
 	return scanFixedExpense(row)
 }
 
 // Update overwrites an existing fixed expense's mutable fields.
 // ErrNotFound if the id doesn't exist or isn't owned by userID (via its
 // period).
-func (r *FixedExpensesRepo) Update(ctx context.Context, userID, id uuid.UUID, envelopeID uuid.UUID, name string, amountIdr int64, notes *string) (domain.FixedExpense, error) {
+func (r *FixedExpensesRepo) Update(ctx context.Context, userID, id uuid.UUID, envelopeID uuid.UUID, name string, amountIdr int64, notes *string, expenseDate domain.Date) (domain.FixedExpense, error) {
 	row := r.pool.QueryRow(ctx, `
 		UPDATE fixed_expenses
-		SET envelope_id = $1, name = $2, amount_idr = $3, notes = $4, updated_at = now()
-		WHERE id = $5 AND period_id IN (SELECT id FROM expense_periods WHERE user_id = $6)
+		SET envelope_id = $1, name = $2, amount_idr = $3, notes = $4, expense_date = $5, updated_at = now()
+		WHERE id = $6 AND period_id IN (SELECT id FROM expense_periods WHERE user_id = $7)
 		RETURNING `+fixedExpenseSelectCols,
-		envelopeID, name, amountIdr, notes, id, userID)
+		envelopeID, name, amountIdr, notes, expenseDate.Time, id, userID)
 	e, err := scanFixedExpense(row)
 	if err != nil {
 		return domain.FixedExpense{}, wrapNotFound(err)
