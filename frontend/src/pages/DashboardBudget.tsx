@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useExpensePeriodById } from '../hooks/useExpensePeriods'
-import { formatTimestamp, sourceLabel } from '../lib/format'
+import { formatShortDate, sourceLabel } from '../lib/format'
 import { BudgetEnvelopeModal } from './expenses/BudgetEnvelopeModal'
 import { FixedExpenseModal } from './expenses/FixedExpenseModal'
 import {
@@ -58,7 +58,9 @@ function EnvelopeExpenses({
 }) {
   if (!envelope) return <div className="budget-detail empty-state">Loading…</div>
   const rows = [...envelope.fixed_expenses].sort((a, b) =>
-    sort === 'amount' ? b.amount_idr - a.amount_idr : b.created_at.localeCompare(a.created_at),
+    sort === 'amount'
+      ? b.amount_idr - a.amount_idr
+      : b.expense_date.localeCompare(a.expense_date) || b.created_at.localeCompare(a.created_at),
   )
   return (
     <div className="budget-detail">
@@ -66,7 +68,6 @@ function EnvelopeExpenses({
       {rows.length > 0 && (
         <div className="budget-detail-rows">
           {rows.map((fe) => {
-            const edited = fe.updated_at !== fe.created_at
             return (
               <button type="button" className="budget-detail-row" key={fe.id} onClick={() => onEditExpense(fe)}>
                 <span className="budget-detail-info">
@@ -75,7 +76,7 @@ function EnvelopeExpenses({
                     {fe.source && <span className="source-badge">{sourceLabel(fe.source)}</span>}
                   </span>
                   <span className="budget-detail-date">
-                    {edited ? 'Updated' : 'Added'} {formatTimestamp(edited ? fe.updated_at : fe.created_at)}
+                    {formatShortDate(fe.expense_date)}
                     {fe.notes && <> · {fe.notes}</>}
                   </span>
                 </span>

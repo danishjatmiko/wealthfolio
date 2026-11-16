@@ -6,17 +6,19 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
+	"wealthfolio/backend/internal/domain"
 	"wealthfolio/backend/internal/service"
 )
 
 type fixedExpenseRequest struct {
-	Name       *string    `json:"name"`
-	AmountIdr  *int64     `json:"amount_idr"`
-	EnvelopeID *uuid.UUID `json:"envelope_id"`
-	Notes      *string    `json:"notes"`
+	Name        *string    `json:"name"`
+	AmountIdr   *int64     `json:"amount_idr"`
+	EnvelopeID  *uuid.UUID `json:"envelope_id"`
+	Notes       *string    `json:"notes"`
+	ExpenseDate *string    `json:"expense_date"`
 }
 
-func (req fixedExpenseRequest) toServiceRequest() service.FixedExpenseRequest {
+func (req fixedExpenseRequest) toServiceRequest() (service.FixedExpenseRequest, error) {
 	var name string
 	if req.Name != nil {
 		name = *req.Name
@@ -29,7 +31,15 @@ func (req fixedExpenseRequest) toServiceRequest() service.FixedExpenseRequest {
 	if req.EnvelopeID != nil {
 		envelopeID = *req.EnvelopeID
 	}
-	return service.FixedExpenseRequest{Name: name, AmountIdr: amount, EnvelopeID: envelopeID, Notes: req.Notes}
+	out := service.FixedExpenseRequest{Name: name, AmountIdr: amount, EnvelopeID: envelopeID, Notes: req.Notes}
+	if req.ExpenseDate != nil && *req.ExpenseDate != "" {
+		d, err := domain.ParseDate(*req.ExpenseDate)
+		if err != nil {
+			return service.FixedExpenseRequest{}, err
+		}
+		out.ExpenseDate = d
+	}
+	return out, nil
 }
 
 func (h *Handler) createFixedExpense(w http.ResponseWriter, r *http.Request) {
@@ -45,8 +55,14 @@ func (h *Handler) createFixedExpense(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	svcReq, err := req.toServiceRequest()
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	userID := currentUserID(r.Context())
-	expense, err := h.svc.FixedExpenses.Create(r.Context(), userID, periodID, req.toServiceRequest())
+	expense, err := h.svc.FixedExpenses.Create(r.Context(), userID, periodID, svcReq)
 	if err != nil {
 		handleServiceError(w, err)
 		return
@@ -67,8 +83,14 @@ func (h *Handler) updateFixedExpense(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	svcReq, err := req.toServiceRequest()
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	userID := currentUserID(r.Context())
-	expense, err := h.svc.FixedExpenses.Update(r.Context(), userID, id, req.toServiceRequest())
+	expense, err := h.svc.FixedExpenses.Update(r.Context(), userID, id, svcReq)
 	if err != nil {
 		handleServiceError(w, err)
 		return
