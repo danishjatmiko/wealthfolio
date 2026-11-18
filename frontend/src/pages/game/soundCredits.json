@@ -1,0 +1,266 @@
+{
+  "dog": {
+    "kind": "real",
+    "title": "Barking of a dog 2.ogg",
+    "author": "Amada44",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Barking_of_a_dog_2.ogg"
+  },
+  "chicken": {
+    "kind": "real",
+    "title": "Medium rooster crowing.ogg",
+    "author": "alys",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Medium_rooster_crowing.ogg"
+  },
+  "cat": {
+    "kind": "real",
+    "title": "Felis silvestris catus meows.ogg",
+    "author": "Tobias Puderer",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Felis_silvestris_catus_meows.ogg"
+  },
+  "duck": {
+    "kind": "real",
+    "title": "Pekin duck & mallard.ogg",
+    "author": "WaderClub",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pekin_duck_%26_mallard.ogg"
+  },
+  "rhino": {
+    "kind": "real",
+    "title": "Rhinoceros sound effect.wav",
+    "author": "Zagzav12",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rhinoceros_sound_effect.wav"
+  },
+  "tiger": {
+    "kind": "real",
+    "title": "439280 schots angry-tiger.wav",
+    "author": "schots",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav"
+  },
+  "leopard": {
+    "kind": "real",
+    "title": "Jaguar saw.flac",
+    "author": "About Zoos",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jaguar_saw.flac"
+  },
+  "lion": {
+    "kind": "real",
+    "title": "Lion raring-sound1TamilNadu178.ogg",
+    "author": "த*உழவன்",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg"
+  },
+  "giraffe": {
+    "kind": "real",
+    "title": "Giraffe grunt.oga",
+    "author": "Anton Baotic, Florian Sicks and Angela S. Stoeger",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giraffe_grunt.oga"
+  },
+  "cow": {
+    "kind": "real",
+    "title": "Single Cow Moo.ogg",
+    "author": "MichaeltheFox8621",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg"
+  },
+  "goat": {
+    "kind": "real",
+    "title": "Herd of goats bleating.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg"
+  },
+  "sheep": {
+    "kind": "real",
+    "title": "Sheep bleating.ogg",
+    "author": "earthcalling",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg"
+  },
+  "buffalo": {
+    "kind": "real",
+    "title": "Stier SoundCloud Beeld en Geluid.wav",
+    "author": "Netherlands Institute for Sound and Vision",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stier_SoundCloud_Beeld_en_Geluid.wav"
+  },
+  "koi": {
+    "kind": "ambient",
+    "title": "Water bubbles chortling.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_bubbles_chortling.ogg"
+  },
+  "goldfish": {
+    "kind": "ambient",
+    "title": "Water bubbles chortling.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_bubbles_chortling.ogg"
+  },
+  "whale": {
+    "kind": "real",
+    "title": "Humpbackwhale2.ogg",
+    "author": "Spyrogumas",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Humpbackwhale2.ogg"
+  },
+  "shark": {
+    "kind": "ambient",
+    "title": "Water bubbles chortling.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_bubbles_chortling.ogg"
+  },
+  "ray": {
+    "kind": "ambient",
+    "title": "Water bubbles chortling.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_bubbles_chortling.ogg"
+  },
+  "cockatoo": {
+    "kind": "real",
+    "title": "Sonus naturalis - Soundscape XC442756.mp3",
+    "author": "James Ray",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sonus_naturalis_-_Soundscape_XC442756.mp3"
+  },
+  "eagle": {
+    "kind": "real",
+    "title": "Yellowstone sound library - Bald Eagle - 003.mp3",
+    "author": "NPS & MSU Acoustic Atlas/Jennifer Jerrett",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yellowstone_sound_library_-_Bald_Eagle_-_003.mp3"
+  },
+  "snail": {
+    "kind": "ambient",
+    "title": "Rustling leaves (Gravity Sound).wav",
+    "author": "Gravity Sound",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rustling_leaves_(Gravity_Sound).wav"
+  },
+  "worm": {
+    "kind": "ambient",
+    "title": "Rustling leaves (Gravity Sound).wav",
+    "author": "Gravity Sound",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rustling_leaves_(Gravity_Sound).wav"
+  },
+  "snake": {
+    "kind": "real",
+    "title": "Rattlesnake.ogg",
+    "author": "U.S. Fish and Wildlife Service",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rattlesnake.ogg"
+  },
+  "rabbit": {
+    "kind": "real",
+    "title": "Rabbit oinks and squeaks.wav",
+    "author": "kessir",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rabbit_oinks_and_squeaks.wav"
+  },
+  "gecko": {
+    "kind": "real",
+    "title": "HouseGeckoChirp.ogg",
+    "author": "Glueball",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:HouseGeckoChirp.ogg"
+  },
+  "crocodile": {
+    "kind": "real",
+    "title": "Alligatorbellowedit.ogg",
+    "author": "Borisblue",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alligatorbellowedit.ogg"
+  },
+  "seahorse": {
+    "kind": "ambient",
+    "title": "Water bubbles chortling.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_bubbles_chortling.ogg"
+  },
+  "seal": {
+    "kind": "real",
+    "title": "Arctocephalus forsteri - sound.ogg",
+    "author": "Department of Conservation",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arctocephalus_forsteri_-_sound.ogg"
+  },
+  "pig": {
+    "kind": "real",
+    "title": "Boar.Grwls(1).ogg",
+    "author": "GrWolf1129",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boar.Grwls(1).ogg"
+  },
+  "mosquito": {
+    "kind": "real",
+    "title": "Komar.flac",
+    "author": "Muczek123",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Komar.flac"
+  },
+  "fly": {
+    "kind": "real",
+    "title": "Mysterycreature.wav",
+    "author": "Digrpat",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mysterycreature.wav"
+  },
+  "ant": {
+    "kind": "ambient",
+    "title": "Rustling leaves (Gravity Sound).wav",
+    "author": "Gravity Sound",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rustling_leaves_(Gravity_Sound).wav"
+  },
+  "bee": {
+    "kind": "real",
+    "title": "Honeybee-hive.ogg",
+    "author": "Skinkie",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Honeybee-hive.ogg"
+  }
+}

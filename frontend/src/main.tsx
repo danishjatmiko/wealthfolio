@@ -32,16 +32,35 @@ const queryClient = new QueryClient({
 })
 setQueryClient(queryClient)
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ToastProvider>
-          <MoneyVisibilityProvider>
-            <App />
-          </MoneyVisibilityProvider>
-        </ToastProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </StrictMode>,
-)
+const root = createRoot(document.getElementById('root')!)
+
+// The kids' game at /interactive-game is public: it skips AuthProvider
+// (so no /auth/me call and no login screen) and is code-split so the
+// finance app's bundle doesn't carry it.
+if (window.location.pathname.startsWith('/interactive-game')) {
+  import('./pages/game/GameApp').then(({ GameApp }) =>
+    root.render(
+      <StrictMode>
+        <GameApp />
+      </StrictMode>,
+    ),
+  )
+} else {
+  renderApp()
+}
+
+function renderApp() {
+  root.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ToastProvider>
+            <MoneyVisibilityProvider>
+              <App />
+            </MoneyVisibilityProvider>
+          </ToastProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </StrictMode>,
+  )
+}
