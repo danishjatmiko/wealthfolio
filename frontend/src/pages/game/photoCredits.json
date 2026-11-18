@@ -1,233 +1,1682 @@
 {
-  "ant": {
-    "title": "File:Red Ant - March 2025.jpg",
-    "author": "Samantha Henneke from Seagrove, North Carolina, USA",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Ant_-_March_2025.jpg"
-  },
-  "bee": {
-    "title": "File:Apis mellifera Western honey bee.jpg",
-    "author": "Andreas Trepte",
-    "license": "CC BY-SA 2.5",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apis_mellifera_Western_honey_bee.jpg"
-  },
-  "buffalo": {
-    "title": "File:Water buffalo at Rinca.jpg",
-    "author": "Alexander Vasenin",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_buffalo_at_Rinca.jpg"
-  },
-  "cat": {
-    "title": "File:Siam lilacpoint.jpg",
-    "author": "Karin Langner-Bahmann, upload von Martin Bahmann",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Siam_lilacpoint.jpg"
-  },
-  "chicken": {
-    "title": "File:Male and female chicken sitting together.jpg",
-    "author": "Andrei Niemimäki from Turku, Finland",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Male_and_female_chicken_sitting_together.jpg"
-  },
-  "cockatoo": {
-    "title": "File:Cacatua galerita Tas 2.jpg",
-    "author": "JJ Harrison (https://www.jjharrison.com.au/)",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cacatua_galerita_Tas_2.jpg"
-  },
-  "cow": {
-    "title": "File:Cow (Fleckvieh breed) Oeschinensee Slaunger 2009-07-07.jpg",
-    "author": "Kim Hansen",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cow_(Fleckvieh_breed)_Oeschinensee_Slaunger_2009-07-07.jpg"
-  },
-  "crocodile": {
-    "title": "File:SaltwaterCrocodile('Maximo').jpg",
-    "author": "Molly Ebersold, St. Augustine Alligator Farm",
-    "license": "Public domain",
-    "licenseUrl": "",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:SaltwaterCrocodile(%27Maximo%27).jpg"
-  },
-  "dog": {
-    "title": "File:Golden Retriever Dukedestiny01 drvd.jpg",
-    "author": "Janneke Vreugdenhil; derivative work: Anka Friedrich",
-    "license": "Public domain",
-    "licenseUrl": "",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Golden_Retriever_Dukedestiny01_drvd.jpg"
-  },
-  "duck": {
-    "title": "File:Anas platyrhynchos male female quadrat.jpg",
-    "author": "Richard Bartz",
-    "license": "CC BY-SA 2.5",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_male_female_quadrat.jpg"
-  },
-  "eagle": {
-    "title": "File:Bald eagle about to fly in Alaska (2016).jpg",
-    "author": "Andy Morffew from Itchen Abbas, Hampshire, UK",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bald_eagle_about_to_fly_in_Alaska_(2016).jpg"
-  },
-  "fly": {
-    "title": "File:Common house fly, Musca domestica.jpg",
-    "author": "USDAgov",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_house_fly,_Musca_domestica.jpg"
-  },
-  "gecko": {
-    "title": "File:Common House Gecko with open mouth, in Laos.jpg",
-    "author": "Basile Morin",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_House_Gecko_with_open_mouth,_in_Laos.jpg"
-  },
-  "giraffe": {
-    "title": "File:Giraffe Mikumi National Park.jpg",
-    "author": "Muhammad Mahdi Karim",
-    "license": "GFDL 1.2",
-    "licenseUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giraffe_Mikumi_National_Park.jpg"
-  },
-  "goat": {
-    "title": "File:Hausziege 04.jpg",
-    "author": "Kuebi = Armin Kübelbeck",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hausziege_04.jpg"
-  },
-  "goldfish": {
-    "title": "File:Gold fish1.jpg",
-    "author": "לינה אבוגוש",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gold_fish1.jpg"
-  },
-  "koi": {
-    "title": "File:Ojiya Nishikigoi no Sato ac (3).jpg",
-    "author": "Asturio Cantabrio",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ojiya_Nishikigoi_no_Sato_ac_(3).jpg"
-  },
-  "leopard": {
-    "title": "File:African leopard male (cropped).jpg",
-    "author": "Sumeet Moghe",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:African_leopard_male_(cropped).jpg"
-  },
-  "lion": {
-    "title": "File:020 The lion king Snyggve in the Serengeti National Park Photo by Giles Laurent.jpg",
-    "author": "Giles Laurent",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:020_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg"
-  },
-  "mosquito": {
-    "title": "File:Aedes aegypti.jpg",
-    "author": "Muhammad Mahdi Karim",
-    "license": "GFDL 1.2",
-    "licenseUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aedes_aegypti.jpg"
-  },
-  "pig": {
-    "title": "File:Pig farm Vampula 1.jpg",
-    "author": "kallerna",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pig_farm_Vampula_1.jpg"
-  },
-  "rabbit": {
-    "title": "File:Heimtier 004 2023 08 26.jpg",
-    "author": "Friedrich Haag",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Heimtier_004_2023_08_26.jpg"
-  },
-  "ray": {
-    "title": "File:Dharavandhoo Thila - Manata Black Pearl.JPG",
-    "author": "Shiyam ElkCloner",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dharavandhoo_Thila_-_Manata_Black_Pearl.JPG"
-  },
-  "rhino": {
-    "title": "File:109 Male White rhinoceros walking in the Kalahari Desert of Namibia Photo by Giles Laurent.jpg",
-    "author": "Giles Laurent",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:109_Male_White_rhinoceros_walking_in_the_Kalahari_Desert_of_Namibia_Photo_by_Giles_Laurent.jpg"
-  },
-  "seahorse": {
-    "title": "File:Hippocampus hippocampus (on Ascophyllum nodosum).jpg",
-    "author": "Hans Hillewaert",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippocampus_hippocampus_(on_Ascophyllum_nodosum).jpg"
-  },
-  "seal": {
-    "title": "File:Common seal (Phoca vitulina) 2.jpg",
-    "author": "Charles J. Sharp",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_seal_(Phoca_vitulina)_2.jpg"
-  },
-  "shark": {
-    "title": "File:White shark.jpg",
-    "author": "Pterantula (Terry Goss) at en.wikipedia",
-    "license": "CC BY 2.5",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:White_shark.jpg"
-  },
-  "sheep": {
-    "title": "File:Flock of sheep.jpg",
-    "author": "Keith Weller",
-    "license": "Public domain",
-    "licenseUrl": "",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flock_of_sheep.jpg"
-  },
-  "snail": {
-    "title": "File:Snail1web.jpg",
-    "author": "Unknown author (public domain)",
-    "license": "Public domain",
-    "licenseUrl": "",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snail1web.jpg"
-  },
-  "snake": {
-    "title": "File:M. viridis.jpg",
-    "author": "TarnishedPath",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:M._viridis.jpg"
-  },
-  "tiger": {
-    "title": "File:Bengal tiger (Panthera tigris tigris) female 3 crop.jpg",
-    "author": "Charles J. Sharp",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bengal_tiger_(Panthera_tigris_tigris)_female_3_crop.jpg"
-  },
-  "whale": {
-    "title": "File:Humpback whale breaching off Cabo San Lucas.jpg",
-    "author": "Juan Cruzado Cortés",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Humpback_whale_breaching_off_Cabo_San_Lucas.jpg"
-  },
-  "worm": {
-    "title": "File:Eisenia foetida R.H. (8).JPG",
-    "author": "Rob Hille",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eisenia_foetida_R.H._(8).JPG"
-  }
+  "ant": [
+    {
+      "title": "File:Red Ant - March 2025.jpg",
+      "author": "Samantha Henneke from Seagrove, North Carolina, USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Ant_-_March_2025.jpg"
+    },
+    {
+      "title": "File:Camponotus herculeanus queen high res.jpg",
+      "author": "Richard Bartz, Munich Makro Freak",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camponotus_herculeanus_queen_high_res.jpg"
+    },
+    {
+      "title": "File:Formica cf lugubris 4.jpg",
+      "author": "Richard Bartz, Munich aka Makro Freak",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Formica_cf_lugubris_4.jpg"
+    },
+    {
+      "title": "File:A Formica rufa sideview.jpg",
+      "author": "Richard Bartz, Munich Makro Freak",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:A_Formica_rufa_sideview.jpg"
+    }
+  ],
+  "bee": [
+    {
+      "title": "File:Apis mellifera Western honey bee.jpg",
+      "author": "Andreas Trepte",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apis_mellifera_Western_honey_bee.jpg"
+    },
+    {
+      "title": "File:Mimetismo letale.jpg",
+      "author": "Maurizio Carlini",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mimetismo_letale.jpg"
+    },
+    {
+      "title": "File:Apis mellifera in Sundarbans National Park May 2025 by Tisha Mukherjee 01.jpg",
+      "author": "Tisha Mukherjee",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apis_mellifera_in_Sundarbans_National_Park_May_2025_by_Tisha_Mukherjee_01.jpg"
+    },
+    {
+      "title": "File:Honigbiene (Apis mellifera) Sonnenbraut-20250809-RM-151909.jpg",
+      "author": "Reinhold Möller Ermell",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Honigbiene_(Apis_mellifera)_Sonnenbraut-20250809-RM-151909.jpg"
+    }
+  ],
+  "buffalo": [
+    {
+      "title": "File:Water buffalo at Rinca.jpg",
+      "author": "Alexander Vasenin",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_buffalo_at_Rinca.jpg"
+    },
+    {
+      "title": "File:Bubalus bubalis (water buffalo) calf, looking at the viewer, the feet in a pond, in Laos.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bubalus_bubalis_(water_buffalo)_calf,_looking_at_the_viewer,_the_feet_in_a_pond,_in_Laos.jpg"
+    },
+    {
+      "title": "File:Mirror reflection of a water buffalo bathing in a pond in Laos.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mirror_reflection_of_a_water_buffalo_bathing_in_a_pond_in_Laos.jpg"
+    },
+    {
+      "title": "File:Two water buffaloes bathing at sunset.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Two_water_buffaloes_bathing_at_sunset.jpg"
+    }
+  ],
+  "cat": [
+    {
+      "title": "File:Siam lilacpoint.jpg",
+      "author": "Karin Langner-Bahmann, upload von Martin Bahmann",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Siam_lilacpoint.jpg"
+    },
+    {
+      "title": "File:Felis catus-cat on snow.jpg",
+      "author": "Von.grzanka",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Felis_catus-cat_on_snow.jpg"
+    },
+    {
+      "title": "File:20231125 housecat south meadows PD100306.jpg",
+      "author": "Paul Danese",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:20231125_housecat_south_meadows_PD100306.jpg"
+    },
+    {
+      "title": "File:Kot domowy w trawie, Podole, województwo świętokrzyskie, 20260419 0933 5218.jpg",
+      "author": "Jakub Hałun",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kot_domowy_w_trawie,_Podole,_wojew%C3%B3dztwo_%C5%9Bwi%C4%99tokrzyskie,_20260419_0933_5218.jpg"
+    }
+  ],
+  "chicken": [
+    {
+      "title": "File:Male and female chicken sitting together.jpg",
+      "author": "Andrei Niemimäki from Turku, Finland",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Male_and_female_chicken_sitting_together.jpg"
+    },
+    {
+      "title": "File:Gallus gallus domesticus (Parque Quevedo).006 - Leon.jpg",
+      "author": "Fernando Losada Rodríguez",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gallus_gallus_domesticus_(Parque_Quevedo).006_-_Leon.jpg"
+    },
+    {
+      "title": "File:Chicken on the grounds of Melville Castle.jpg",
+      "author": "Grendelkhan",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chicken_on_the_grounds_of_Melville_Castle.jpg"
+    },
+    {
+      "title": "File:Feder 004 2023 04 24.jpg",
+      "author": "Friedrich Haag",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Feder_004_2023_04_24.jpg"
+    }
+  ],
+  "cockatoo": [
+    {
+      "title": "File:Cacatua galerita Tas 2.jpg",
+      "author": "JJ Harrison (https://www.jjharrison.com.au/)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cacatua_galerita_Tas_2.jpg"
+    },
+    {
+      "title": "File:Sulphur-crested cockatoo in Indonesia.jpg",
+      "author": "Philip Nalangan",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sulphur-crested_cockatoo_in_Indonesia.jpg"
+    },
+    {
+      "title": "File:Sulphur Crested Cockatoo.jpg",
+      "author": "Ffyfejam",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sulphur_Crested_Cockatoo.jpg"
+    },
+    {
+      "title": "File:Sulphur-crested cockatoo, Australia ( Ank Kumar ) 05.jpg",
+      "author": "Ank Kumar",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sulphur-crested_cockatoo,_Australia_(_Ank_Kumar_)_05.jpg"
+    }
+  ],
+  "cow": [
+    {
+      "title": "File:Cow (Fleckvieh breed) Oeschinensee Slaunger 2009-07-07.jpg",
+      "author": "Kim Hansen",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cow_(Fleckvieh_breed)_Oeschinensee_Slaunger_2009-07-07.jpg"
+    },
+    {
+      "title": "File:Water reflection of a boy feeding hay to a cow in a paddy field at golden hour in Laos.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_reflection_of_a_boy_feeding_hay_to_a_cow_in_a_paddy_field_at_golden_hour_in_Laos.jpg"
+    },
+    {
+      "title": "File:Dülmen, Kirchspiel, Weide -- 2015 -- 6528.jpg",
+      "author": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:D%C3%BClmen,_Kirchspiel,_Weide_--_2015_--_6528.jpg"
+    },
+    {
+      "title": "File:Veau et vaches.jpg",
+      "author": "Pierre-Jacques DESPA",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Veau_et_vaches.jpg"
+    }
+  ],
+  "crocodile": [
+    {
+      "title": "File:SaltwaterCrocodile('Maximo').jpg",
+      "author": "Molly Ebersold, St. Augustine Alligator Farm",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:SaltwaterCrocodile(%27Maximo%27).jpg"
+    },
+    {
+      "title": "File:Crocodylus niloticus im Kölner Zoo -20110912-RM-141253.jpg",
+      "author": "Ermell",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crocodylus_niloticus_im_K%C3%B6lner_Zoo_-20110912-RM-141253.jpg"
+    },
+    {
+      "title": "File:Crocodylus niloticus - Rancho Texas Park - Tías - Lanzarote -PC15.jpg",
+      "author": "Luis Miguel Bugallo Sánchez (Lmbuga)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crocodylus_niloticus_-_Rancho_Texas_Park_-_T%C3%ADas_-_Lanzarote_-PC15.jpg"
+    },
+    {
+      "title": "File:Crokodille sunderban.jpg",
+      "author": "Md shahanshah bappy",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crokodille_sunderban.jpg"
+    }
+  ],
+  "dog": [
+    {
+      "title": "File:Golden Retriever Dukedestiny01 drvd.jpg",
+      "author": "Janneke Vreugdenhil; derivative work: Anka Friedrich",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Golden_Retriever_Dukedestiny01_drvd.jpg"
+    },
+    {
+      "title": "File:Alaskan Malamute R Bartz.jpg",
+      "author": "Richard Bartz",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alaskan_Malamute_R_Bartz.jpg"
+    },
+    {
+      "title": "File:Sara - Perro Pastor 01.jpg",
+      "author": "Basotxerri",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sara_-_Perro_Pastor_01.jpg"
+    },
+    {
+      "title": "File:DSC09611a Search and Rescue Dog, Austrian Red Cross Perchtoldsdorf, 2024-10.jpg",
+      "author": "Aciarium",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:DSC09611a_Search_and_Rescue_Dog,_Austrian_Red_Cross_Perchtoldsdorf,_2024-10.jpg"
+    }
+  ],
+  "duck": [
+    {
+      "title": "File:Anas platyrhynchos male female quadrat.jpg",
+      "author": "Richard Bartz",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_male_female_quadrat.jpg"
+    },
+    {
+      "title": "File:Male mallard duck 2.jpg",
+      "author": "Acarpentier",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Male_mallard_duck_2.jpg"
+    },
+    {
+      "title": "File:2015 Kaczka krzyżowka w wodzie (samiec).jpg",
+      "author": "Jacek Halicki",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2015_Kaczka_krzy%C5%BCowka_w_wodzie_(samiec).jpg"
+    },
+    {
+      "title": "File:Stockente im Feldsee (NSG Feldberg).jpg",
+      "author": "Stephan Sprinz",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stockente_im_Feldsee_(NSG_Feldberg).jpg"
+    }
+  ],
+  "eagle": [
+    {
+      "title": "File:Bald eagle about to fly in Alaska (2016).jpg",
+      "author": "Andy Morffew from Itchen Abbas, Hampshire, UK",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bald_eagle_about_to_fly_in_Alaska_(2016).jpg"
+    },
+    {
+      "title": "File:Weisskopf Seeadler haliaeetus leucocephalus 8 amk.jpg",
+      "author": "AngMoKio",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Weisskopf_Seeadler_haliaeetus_leucocephalus_8_amk.jpg"
+    },
+    {
+      "title": "File:015 Wild Golden Eagle in flight at Pfyn-Finges (Switzerland) Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:015_Wild_Golden_Eagle_in_flight_at_Pfyn-Finges_(Switzerland)_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Steinadler Aquila chrysaetos closeup2 Richard Bartz.jpg",
+      "author": "Richard Bartz, Munich aka Makro Freak",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Steinadler_Aquila_chrysaetos_closeup2_Richard_Bartz.jpg"
+    }
+  ],
+  "fly": [
+    {
+      "title": "File:Common house fly, Musca domestica.jpg",
+      "author": "USDAgov",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_house_fly,_Musca_domestica.jpg"
+    },
+    {
+      "title": "File:Green bottle fly2.jpg",
+      "author": "Calibas",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Green_bottle_fly2.jpg"
+    },
+    {
+      "title": "File:Goldfliege (Lucilia sericata) auf Bischofskraut (Ammi majus)-20250727-RM-155840.jpg",
+      "author": "Reinhold Möller Ermell",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Goldfliege_(Lucilia_sericata)_auf_Bischofskraut_(Ammi_majus)-20250727-RM-155840.jpg"
+    },
+    {
+      "title": "File:Musca domestica September 2007-1.jpg",
+      "author": "Alvesgaspar",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Musca_domestica_September_2007-1.jpg"
+    }
+  ],
+  "gecko": [
+    {
+      "title": "File:Common House Gecko with open mouth, in Laos.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_House_Gecko_with_open_mouth,_in_Laos.jpg"
+    },
+    {
+      "title": "File:Hemidactylus platyurus (Flat-tailed House Gecko) on white background, focus stacking.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hemidactylus_platyurus_(Flat-tailed_House_Gecko)_on_white_background,_focus_stacking.jpg"
+    },
+    {
+      "title": "File:Hemidactylus frenatus Ventral View.jpg",
+      "author": "Symoum Syfullah Priyo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hemidactylus_frenatus_Ventral_View.jpg"
+    },
+    {
+      "title": "File:Hemidactylus frenatus (10.3897-zookeys.1022.51422) Figure 8.jpg",
+      "author": "González-Sánchez VH, Johnson JD, González-Solís D, Fucsko LA, Wilson LD",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hemidactylus_frenatus_(10.3897-zookeys.1022.51422)_Figure_8.jpg"
+    }
+  ],
+  "giraffe": [
+    {
+      "title": "File:Giraffe Mikumi National Park.jpg",
+      "author": "Muhammad Mahdi Karim",
+      "license": "GFDL 1.2",
+      "licenseUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giraffe_Mikumi_National_Park.jpg"
+    },
+    {
+      "title": "File:Giraffa camelopardalis angolensis.jpg",
+      "author": "Hans Hillewaert",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giraffa_camelopardalis_angolensis.jpg"
+    },
+    {
+      "title": "File:Giraffe 2019-07-28.jpg",
+      "author": "Axel Tschentscher",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giraffe_2019-07-28.jpg"
+    },
+    {
+      "title": "File:Jirafa (Giraffa camelopardalis), parque nacional del Lago Mburo, Uganda, 2024-02-01, DD 73.jpg",
+      "author": "Diego Delso",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jirafa_(Giraffa_camelopardalis),_parque_nacional_del_Lago_Mburo,_Uganda,_2024-02-01,_DD_73.jpg"
+    }
+  ],
+  "goat": [
+    {
+      "title": "File:Hausziege 04.jpg",
+      "author": "Kuebi = Armin Kübelbeck",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hausziege_04.jpg"
+    },
+    {
+      "title": "File:Boer goat444.jpg",
+      "author": "Benjamint444",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boer_goat444.jpg"
+    },
+    {
+      "title": "File:Tauernsheck, Tierpark Hellabrunn, Múnich, Alemania, 2012-06-17, DD 03.JPG",
+      "author": "Diego Delso",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tauernsheck,_Tierpark_Hellabrunn,_M%C3%BAnich,_Alemania,_2012-06-17,_DD_03.JPG"
+    },
+    {
+      "title": "File:Chèvre (10).jpg",
+      "author": "Gzen92",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ch%C3%A8vre_(10).jpg"
+    }
+  ],
+  "goldfish": [
+    {
+      "title": "File:Gold fish1.jpg",
+      "author": "לינה אבוגוש",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gold_fish1.jpg"
+    },
+    {
+      "title": "File:Fantail Goldfish Carrot.jpg",
+      "author": "Ry362",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fantail_Goldfish_Carrot.jpg"
+    },
+    {
+      "title": "File:Carassius auratus auratus (goldfish) 2.jpg",
+      "author": "James St. John",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carassius_auratus_auratus_(goldfish)_2.jpg"
+    },
+    {
+      "title": "File:Carassius auratus auratus (goldfish) 1.jpg",
+      "author": "James St. John",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carassius_auratus_auratus_(goldfish)_1.jpg"
+    }
+  ],
+  "koi": [
+    {
+      "title": "File:Ojiya Nishikigoi no Sato ac (3).jpg",
+      "author": "Asturio Cantabrio",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ojiya_Nishikigoi_no_Sato_ac_(3).jpg"
+    },
+    {
+      "title": "File:Fish pond in Sun World Halong Park. Ha Long Town, Vietnam, 20240129 1534 4200.jpg",
+      "author": "Jakub Hałun",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fish_pond_in_Sun_World_Halong_Park._Ha_Long_Town,_Vietnam,_20240129_1534_4200.jpg"
+    },
+    {
+      "title": "File:Koi in Seattle Japanese Garden 021.jpg",
+      "author": "Joe Mabel",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Koi_in_Seattle_Japanese_Garden_021.jpg"
+    },
+    {
+      "title": "File:Koi in Seattle Japanese Garden 015-2.jpg",
+      "author": "Joe Mabel",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Koi_in_Seattle_Japanese_Garden_015-2.jpg"
+    }
+  ],
+  "leopard": [
+    {
+      "title": "File:African leopard male (cropped).jpg",
+      "author": "Sumeet Moghe",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:African_leopard_male_(cropped).jpg"
+    },
+    {
+      "title": "File:001 Juvenile leopard in the Serengeti National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:001_Juvenile_leopard_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:African Leopard Near Okevi Waterhole Etosha Namibia.jpg",
+      "author": "Axel Tschentscher",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:African_Leopard_Near_Okevi_Waterhole_Etosha_Namibia.jpg"
+    },
+    {
+      "title": "File:Female Indian Leopard Head Nagarhole Karnataka Apr22 D72 24071.jpg",
+      "author": "Timothy A. Gonsalves",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Female_Indian_Leopard_Head_Nagarhole_Karnataka_Apr22_D72_24071.jpg"
+    }
+  ],
+  "lion": [
+    {
+      "title": "File:020 The lion king Snyggve in the Serengeti National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:020_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Lion (Panthera leo) male 6y.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lion_(Panthera_leo)_male_6y.jpg"
+    },
+    {
+      "title": "File:002 The lion king Snyggve in the Serengeti National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:002_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Lion d'Afrique.jpg",
+      "author": "Clément Bardot",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lion_d%27Afrique.jpg"
+    }
+  ],
+  "mosquito": [
+    {
+      "title": "File:Aedes aegypti.jpg",
+      "author": "Muhammad Mahdi Karim",
+      "license": "GFDL 1.2",
+      "licenseUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aedes_aegypti.jpg"
+    },
+    {
+      "title": "File:CDC-Gathany-Aedes-albopictus-2.jpg",
+      "author": "James Gathany, CDC",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:CDC-Gathany-Aedes-albopictus-2.jpg"
+    },
+    {
+      "title": "File:DipteraCloseup.jpg",
+      "author": "Anton Zelenov",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:DipteraCloseup.jpg"
+    },
+    {
+      "title": "File:Culex pipiens, Harlech, North Wales, Aug 2016 - Flickr - janetgraham84.jpg",
+      "author": "Janet Graham",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Culex_pipiens,_Harlech,_North_Wales,_Aug_2016_-_Flickr_-_janetgraham84.jpg"
+    }
+  ],
+  "pig": [
+    {
+      "title": "File:Pig farm Vampula 1.jpg",
+      "author": "kallerna",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pig_farm_Vampula_1.jpg"
+    },
+    {
+      "title": "File:Pigs in the Altai Mountains. Village Ortolyk.jpg",
+      "author": "Alexandr frolov",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pigs_in_the_Altai_Mountains._Village_Ortolyk.jpg"
+    },
+    {
+      "title": "File:Nabburg Freilandmuseum Schweinestall-20190823-RM-135959.jpg",
+      "author": "Ermell",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nabburg_Freilandmuseum_Schweinestall-20190823-RM-135959.jpg"
+    },
+    {
+      "title": "File:Pig farm Vampula 9.jpg",
+      "author": "kallerna",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pig_farm_Vampula_9.jpg"
+    }
+  ],
+  "rabbit": [
+    {
+      "title": "File:Heimtier 004 2023 08 26.jpg",
+      "author": "Friedrich Haag",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Heimtier_004_2023_08_26.jpg"
+    },
+    {
+      "title": "File:European Rabbit 09 05 2025 02.jpg",
+      "author": "Alexis Lours",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:European_Rabbit_09_05_2025_02.jpg"
+    },
+    {
+      "title": "File:Oryctolagus cuniculus Rcdo.jpg",
+      "author": "JM Ligero Loarte",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Oryctolagus_cuniculus_Rcdo.jpg"
+    },
+    {
+      "title": "File:Oryctolagus cuniculus Tasmania 2.jpg",
+      "author": "JJ Harrison (https://www.jjharrison.com.au/)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Oryctolagus_cuniculus_Tasmania_2.jpg"
+    }
+  ],
+  "ray": [
+    {
+      "title": "File:Dharavandhoo Thila - Manata Black Pearl.JPG",
+      "author": "Shiyam ElkCloner",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dharavandhoo_Thila_-_Manata_Black_Pearl.JPG"
+    },
+    {
+      "title": "File:Manta Ray Maui Hawaii.jpg",
+      "author": "Oceanearthling",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Manta_Ray_Maui_Hawaii.jpg"
+    },
+    {
+      "title": "File:Orleń cętkowany.jpg",
+      "author": "Aneta Pawska",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Orle%C5%84_c%C4%99tkowany.jpg"
+    },
+    {
+      "title": "File:Aetobatus ocellatus - schooling.jpg",
+      "author": "Steve Dunleavy",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aetobatus_ocellatus_-_schooling.jpg"
+    }
+  ],
+  "rhino": [
+    {
+      "title": "File:109 Male White rhinoceros walking in the Kalahari Desert of Namibia Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:109_Male_White_rhinoceros_walking_in_the_Kalahari_Desert_of_Namibia_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:081 White rhinoceros (male) in the Kalahari Desert of Namibia Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:081_White_rhinoceros_(male)_in_the_Kalahari_Desert_of_Namibia_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Indian rhinoceros in Kaziranga National Park March 2025 by Tisha Mukherjee 06.jpg",
+      "author": "Tisha Mukherjee",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Indian_rhinoceros_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_06.jpg"
+    },
+    {
+      "title": "File:Indian rhinoceros (Rhinoceros unicornis) 6.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Indian_rhinoceros_(Rhinoceros_unicornis)_6.jpg"
+    }
+  ],
+  "seahorse": [
+    {
+      "title": "File:Hippocampus hippocampus (on Ascophyllum nodosum).jpg",
+      "author": "Hans Hillewaert",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippocampus_hippocampus_(on_Ascophyllum_nodosum).jpg"
+    },
+    {
+      "title": "File:Hippocampus guttulatus 2.jpg",
+      "author": "Mare Per Sempre",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippocampus_guttulatus_2.jpg"
+    },
+    {
+      "title": "File:Black Sea fauna Seahorse.JPG",
+      "author": "Florin DUMITRESCU",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Black_Sea_fauna_Seahorse.JPG"
+    },
+    {
+      "title": "File:LongSnoutedSeahorse1600ppx.jpg",
+      "author": "FASTILY (TALK)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:LongSnoutedSeahorse1600ppx.jpg"
+    }
+  ],
+  "seal": [
+    {
+      "title": "File:Common seal (Phoca vitulina) 2.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_seal_(Phoca_vitulina)_2.jpg"
+    },
+    {
+      "title": "File:Harbor seal (Phoca vitulina) at Magdalen fjord, Svalbard (1).jpg",
+      "author": "AWeith",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harbor_seal_(Phoca_vitulina)_at_Magdalen_fjord,_Svalbard_(1).jpg"
+    },
+    {
+      "title": "File:Common seal (Phoca vitulina).jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Common_seal_(Phoca_vitulina).jpg"
+    },
+    {
+      "title": "File:Seehund auf Norderney 04 Nationalpark Niedersächsisches Wattenmeer.jpg",
+      "author": "Jürgen Hamann",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seehund_auf_Norderney_04_Nationalpark_Nieders%C3%A4chsisches_Wattenmeer.jpg"
+    }
+  ],
+  "shark": [
+    {
+      "title": "File:White shark.jpg",
+      "author": "Pterantula (Terry Goss) at en.wikipedia",
+      "license": "CC BY 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:White_shark.jpg"
+    },
+    {
+      "title": "File:Carcharhinus melanopterus Luc Viatour.jpg",
+      "author": "Luc Viatour",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carcharhinus_melanopterus_Luc_Viatour.jpg"
+    },
+    {
+      "title": "File:Ybbsk 1b (7690634096).jpg",
+      "author": "Greg Goebel from Loveland CO, USA",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ybbsk_1b_(7690634096).jpg"
+    },
+    {
+      "title": "File:Rhincodon typus 328869965.jpg",
+      "author": "Rachel Crane",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rhincodon_typus_328869965.jpg"
+    }
+  ],
+  "sheep": [
+    {
+      "title": "File:Flock of sheep.jpg",
+      "author": "Keith Weller",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flock_of_sheep.jpg"
+    },
+    {
+      "title": "File:Swaledale Sheep, Lake District, England - June 2009.jpg",
+      "author": "User:Diliff",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Swaledale_Sheep,_Lake_District,_England_-_June_2009.jpg"
+    },
+    {
+      "title": "File:20240704 Regentenwiese 01.jpg",
+      "author": "Flocci Nivis",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:20240704_Regentenwiese_01.jpg"
+    },
+    {
+      "title": "File:20200502 Owce pod Lasem Wolskim w Krakowie 1516 1647.jpg",
+      "author": "Jakub Hałun",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:20200502_Owce_pod_Lasem_Wolskim_w_Krakowie_1516_1647.jpg"
+    }
+  ],
+  "snail": [
+    {
+      "title": "File:Snail1web.jpg",
+      "author": "Unknown author (public domain)",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snail1web.jpg"
+    },
+    {
+      "title": "File:Helix pomatia 2026 G1.jpg",
+      "author": "George Chernilevsky",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Helix_pomatia_2026_G1.jpg"
+    },
+    {
+      "title": "File:Helix pomatia Piazzo 01.jpg",
+      "author": "Syrio",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Helix_pomatia_Piazzo_01.jpg"
+    },
+    {
+      "title": "File:Grapevinesnail 01.jpg",
+      "author": "Jürgen Schoner",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grapevinesnail_01.jpg"
+    }
+  ],
+  "snake": [
+    {
+      "title": "File:M. viridis.jpg",
+      "author": "TarnishedPath",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:M._viridis.jpg"
+    },
+    {
+      "title": "File:20130526 Morelia viridis 4900.jpg",
+      "author": "Jakub Hałun",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:20130526_Morelia_viridis_4900.jpg"
+    },
+    {
+      "title": "File:2017.07.17.-21-Tiefer See oder Grubensee-Storkow (Mark)--Ringelnatter.jpg",
+      "author": "Andreas Eichler",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2017.07.17.-21-Tiefer_See_oder_Grubensee-Storkow_(Mark)--Ringelnatter.jpg"
+    },
+    {
+      "title": "File:Malayopython reticulatus, Reticulated python - Kaeng Krachan District, Phetchaburi Province (47924282891).jpg",
+      "author": "Rushenb",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Malayopython_reticulatus,_Reticulated_python_-_Kaeng_Krachan_District,_Phetchaburi_Province_(47924282891).jpg"
+    }
+  ],
+  "tiger": [
+    {
+      "title": "File:Bengal tiger (Panthera tigris tigris) female 3 crop.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bengal_tiger_(Panthera_tigris_tigris)_female_3_crop.jpg"
+    },
+    {
+      "title": "File:Bengal tiger (Panthera tigris tigris) female 3.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bengal_tiger_(Panthera_tigris_tigris)_female_3.jpg"
+    },
+    {
+      "title": "File:Bengal tiger in Sanjay Dubri Tiger Reserve December 2024 by Tisha Mukherjee 11.jpg",
+      "author": "Tisha Mukherjee",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bengal_tiger_in_Sanjay_Dubri_Tiger_Reserve_December_2024_by_Tisha_Mukherjee_11.jpg"
+    },
+    {
+      "title": "File:Tiger Drinking Pond Mudumalai Mar21 DSC01310.jpg",
+      "author": "Timothy A. Gonsalves",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tiger_Drinking_Pond_Mudumalai_Mar21_DSC01310.jpg"
+    }
+  ],
+  "whale": [
+    {
+      "title": "File:Humpback whale breaching off Cabo San Lucas.jpg",
+      "author": "Juan Cruzado Cortés",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Humpback_whale_breaching_off_Cabo_San_Lucas.jpg"
+    },
+    {
+      "title": "File:Baleine à bosse et son baleineau 2.jpg",
+      "author": "Jérémie Silvestro",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baleine_%C3%A0_bosse_et_son_baleineau_2.jpg"
+    },
+    {
+      "title": "File:001 Humpback whale breaching in Ballena Marine National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:001_Humpback_whale_breaching_in_Ballena_Marine_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:031 Humpback whale lobtailing Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:031_Humpback_whale_lobtailing_Photo_by_Giles_Laurent.jpg"
+    }
+  ],
+  "worm": [
+    {
+      "title": "File:Eisenia foetida R.H. (8).JPG",
+      "author": "Rob Hille",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eisenia_foetida_R.H._(8).JPG"
+    },
+    {
+      "title": "File:Aporrectodea rosea (Gelderland, Netherlands).jpg",
+      "author": "Jochem Kühnen",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aporrectodea_rosea_(Gelderland,_Netherlands).jpg"
+    },
+    {
+      "title": "File:Aporrectodea rosea 258682963.jpg",
+      "author": "Поляков Александр",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aporrectodea_rosea_258682963.jpg"
+    },
+    {
+      "title": "File:Earthworm on the ground floor.jpg",
+      "author": "Johnnybam",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Earthworm_on_the_ground_floor.jpg"
+    }
+  ],
+  "apel": [
+    {
+      "title": "File:Jabłko - owoc.JPG",
+      "author": "Lestat (Jan Mehlich)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jab%C5%82ko_-_owoc.JPG"
+    },
+    {
+      "title": "File:Melbourne (AU), Queen Victoria Market -- 2019 -- 1542.jpg",
+      "author": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Melbourne_(AU),_Queen_Victoria_Market_--_2019_--_1542.jpg"
+    },
+    {
+      "title": "File:Apple Malus domestica Zoete Peppel. (actm).jpg",
+      "author": "Agnes Monkelbaan",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apple_Malus_domestica_Zoete_Peppel._(actm).jpg"
+    },
+    {
+      "title": "File:Apples in basket 2018 G2.jpg",
+      "author": "George Chernilevsky",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apples_in_basket_2018_G2.jpg"
+    }
+  ],
+  "pisang": [
+    {
+      "title": "File:Funchal (Madeira, Portugal), Praça do Povo -- 2025 -- 1148.jpg",
+      "author": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Funchal_(Madeira,_Portugal),_Pra%C3%A7a_do_Povo_--_2025_--_1148.jpg"
+    },
+    {
+      "title": "File:Bunch of bananas on sale.jpg",
+      "author": "Wilfredor",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bunch_of_bananas_on_sale.jpg"
+    },
+    {
+      "title": "File:Cavendish banana from Maracaibo.jpg",
+      "author": "Wilfredor",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cavendish_banana_from_Maracaibo.jpg"
+    },
+    {
+      "title": "File:DFC 4184 Bunches of ripe bananas neatly arranged at a bustling market stall ready for shoppers.jpg",
+      "author": "PattayaPatrol",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:DFC_4184_Bunches_of_ripe_bananas_neatly_arranged_at_a_bustling_market_stall_ready_for_shoppers.jpg"
+    }
+  ],
+  "jeruk": [
+    {
+      "title": "File:Mandarin Oranges (Citrus Reticulata).jpg",
+      "author": "Joe Ravi",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mandarin_Oranges_(Citrus_Reticulata).jpg"
+    },
+    {
+      "title": "File:Orange-Sitia-Crete.jpg",
+      "author": "Petro Stelte",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Orange-Sitia-Crete.jpg"
+    },
+    {
+      "title": "File:Navelina oranges.jpg",
+      "author": "ArildV",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Navelina_oranges.jpg"
+    },
+    {
+      "title": "File:001 2014 03 19 Obst.jpg",
+      "author": "Friedrich Haag",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:001_2014_03_19_Obst.jpg"
+    }
+  ],
+  "mangga": [
+    {
+      "title": "File:Mango fruits.JPG",
+      "author": "Bhaskaranaidu",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mango_fruits.JPG"
+    },
+    {
+      "title": "File:An unripe mango in jaffna.JPG",
+      "author": "Aathavan jaffna",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:An_unripe_mango_in_jaffna.JPG"
+    },
+    {
+      "title": "File:Mango on white.jpg",
+      "author": "Rhododendrites",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mango_on_white.jpg"
+    },
+    {
+      "title": "File:Chopped Amrapali mango on a tree, Kurigram, Bangladesh.jpg",
+      "author": "Tanvir Rahat",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chopped_Amrapali_mango_on_a_tree,_Kurigram,_Bangladesh.jpg"
+    }
+  ],
+  "semangka": [
+    {
+      "title": "File:Watermelon sold in a tractor in Kadapa, Andhra Pradesh.jpg",
+      "author": "PJeganathan",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Watermelon_sold_in_a_tractor_in_Kadapa,_Andhra_Pradesh.jpg"
+    },
+    {
+      "title": "File:Melon crops.jpg",
+      "author": "Adamu mc",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Melon_crops.jpg"
+    },
+    {
+      "title": "File:Slice of Watermelon from Wilson Farm, Lexington MA.jpg",
+      "author": "John Phelan",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Slice_of_Watermelon_from_Wilson_Farm,_Lexington_MA.jpg"
+    },
+    {
+      "title": "File:Watermelon.jpg",
+      "author": "USDA photo by Scott Bauer",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Watermelon.jpg"
+    }
+  ],
+  "anggur": [
+    {
+      "title": "File:Pinot Grigio-20201027-RM-114053.jpg",
+      "author": "Ermell",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pinot_Grigio-20201027-RM-114053.jpg"
+    },
+    {
+      "title": "File:De Kruidhof Buitenpost. Druif boskoops glorie. 16-10-2021 (actm.) 01.jpg",
+      "author": "Agnes Monkelbaan",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:De_Kruidhof_Buitenpost._Druif_boskoops_glorie._16-10-2021_(actm.)_01.jpg"
+    },
+    {
+      "title": "File:Uva nera da vino - grappoli 1.jpg",
+      "author": "Anna.Massini",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Uva_nera_da_vino_-_grappoli_1.jpg"
+    },
+    {
+      "title": "File:Green Grape 2.jpg",
+      "author": "Martin Kozák",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Green_Grape_2.jpg"
+    }
+  ],
+  "nanas": [
+    {
+      "title": "File:AnanasComosusOnPlant.jpg",
+      "author": "Markus Leupold-Löwenthal",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:AnanasComosusOnPlant.jpg"
+    },
+    {
+      "title": "File:Pineapple fruit 2.jpg",
+      "author": "Wilfredor",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pineapple_fruit_2.jpg"
+    },
+    {
+      "title": "File:Pineapple-fruit.jpg",
+      "author": "UneksAbdullahi",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pineapple-fruit.jpg"
+    },
+    {
+      "title": "File:Pineapple victoria dsc07770.jpg",
+      "author": "David Monniaux",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pineapple_victoria_dsc07770.jpg"
+    }
+  ],
+  "pepaya": [
+    {
+      "title": "File:Carica papaya 14 7 2012.jpg",
+      "author": "Joydeep",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carica_papaya_14_7_2012.jpg"
+    },
+    {
+      "title": "File:2016 Singapur, Ogrody botaniczne (167).jpg",
+      "author": "Marcin Konsek",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016_Singapur,_Ogrody_botaniczne_(167).jpg"
+    },
+    {
+      "title": "File:Papaya - longitudinal section.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Papaya_-_longitudinal_section.jpg"
+    },
+    {
+      "title": "File:Papaya half.jpg",
+      "author": "OKJaguar",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Papaya_half.jpg"
+    }
+  ],
+  "stroberi": [
+    {
+      "title": "File:Garden strawberry (Fragaria × ananassa) single2.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Garden_strawberry_(Fragaria_%C3%97_ananassa)_single2.jpg"
+    },
+    {
+      "title": "File:Garden strawberry (Fragaria × ananassa) halved.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Garden_strawberry_(Fragaria_%C3%97_ananassa)_halved.jpg"
+    },
+    {
+      "title": "File:Fraise papillon (butterfly strawberry) 02.jpg",
+      "author": "4MAPS",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fraise_papillon_(butterfly_strawberry)_02.jpg"
+    },
+    {
+      "title": "File:Fraises du champ Dfraises 05.jpg",
+      "author": "4MAPS",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fraises_du_champ_Dfraises_05.jpg"
+    }
+  ],
+  "melon": [
+    {
+      "title": "File:2023-08-25 - Halved melon - mould encroaching from one end - DSN5354-1.jpg",
+      "author": "Franz van Duns",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023-08-25_-_Halved_melon_-_mould_encroaching_from_one_end_-_DSN5354-1.jpg"
+    },
+    {
+      "title": "File:Moscow, end of melon season, Oct 2025 10.jpg",
+      "author": "Retired electrician",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_end_of_melon_season,_Oct_2025_10.jpg"
+    },
+    {
+      "title": "File:Meló Matisse.jpg",
+      "author": "Francesc Fort",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mel%C3%B3_Matisse.jpg"
+    },
+    {
+      "title": "File:Cucumis melo var. reticulatus (photo by Scott Bauer).jpg",
+      "author": "USDA photo by Scott Bauer. Image Number K7355-11.",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cucumis_melo_var._reticulatus_(photo_by_Scott_Bauer).jpg"
+    }
+  ],
+  "durian": [
+    {
+      "title": "File:Durio zibethinus 62924793.jpg",
+      "author": "Jacek Pietruszewski",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Durio_zibethinus_62924793.jpg"
+    },
+    {
+      "title": "File:2147Carriedo Plaza Miranda Quiapo Church Manila 01.jpg",
+      "author": "Judgefloro",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2147Carriedo_Plaza_Miranda_Quiapo_Church_Manila_01.jpg"
+    },
+    {
+      "title": "File:Durian x.jpg",
+      "author": "Dudva",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Durian_x.jpg"
+    },
+    {
+      "title": "File:Durio zibethinus 29303503.jpg",
+      "author": "Ong Jyh Seng",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Durio_zibethinus_29303503.jpg"
+    }
+  ],
+  "rambutan": [
+    {
+      "title": "File:Rambutão.jpg",
+      "author": "ArionStar",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rambut%C3%A3o.jpg"
+    },
+    {
+      "title": "File:Rambutan fruit.jpg",
+      "author": "Challiyan",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rambutan_fruit.jpg"
+    },
+    {
+      "title": "File:Rambutan fruits (Nephelium lappaceum) in a market in Thiruvananthapuram, Kerala (90582).jpg",
+      "author": "Shagil Muzhappilangad",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rambutan_fruits_(Nephelium_lappaceum)_in_a_market_in_Thiruvananthapuram,_Kerala_(90582).jpg"
+    },
+    {
+      "title": "File:Rambutan-from-kottayam-kerala.jpg",
+      "author": "Deepugn",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rambutan-from-kottayam-kerala.jpg"
+    }
+  ],
+  "manggis": [
+    {
+      "title": "File:Mangosteen1.jpg",
+      "author": "مانفی",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mangosteen1.jpg"
+    },
+    {
+      "title": "File:Mangosteens - whole and opened.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mangosteens_-_whole_and_opened.jpg"
+    },
+    {
+      "title": "File:Sweet mangosteen.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sweet_mangosteen.jpg"
+    },
+    {
+      "title": "File:Monggis (Mangosteen).jpg",
+      "author": "Elaine Mae Yon Jimin",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Monggis_(Mangosteen).jpg"
+    }
+  ],
+  "salak": [
+    {
+      "title": "File:Salak (Salacca zalacca), 2015-05-17.jpg",
+      "author": "Crisco 1492",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Salak_(Salacca_zalacca),_2015-05-17.jpg"
+    },
+    {
+      "title": "File:Kundasang Sabah Vegetable-Market-10.jpg",
+      "author": "CEphoto, Uwe Aranas",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kundasang_Sabah_Vegetable-Market-10.jpg"
+    },
+    {
+      "title": "File:Salacca Indica Sala Indo 2.JPG",
+      "author": "Tris_T7",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Salacca_Indica_Sala_Indo_2.JPG"
+    },
+    {
+      "title": "File:Salak 01.jpg",
+      "author": "Giramo at German Wikipedia",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Salak_01.jpg"
+    }
+  ],
+  "alpukat": [
+    {
+      "title": "File:Persea americana fruit 2.JPG",
+      "author": "B.navez",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Persea_americana_fruit_2.JPG"
+    },
+    {
+      "title": "File:Avocado fruit.jpg",
+      "author": "Denis kasozi",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Avocado_fruit.jpg"
+    },
+    {
+      "title": "File:Liat Portal for Foodie Disorder - Avocado Halves.jpg",
+      "author": "HaJunkiyada",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Avocado_Halves.jpg"
+    },
+    {
+      "title": "File:Branch and fruit of the Maluma avocado cultivar.jpg",
+      "author": "Edrean",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Branch_and_fruit_of_the_Maluma_avocado_cultivar.jpg"
+    }
+  ],
+  "jambu": [
+    {
+      "title": "File:Deux gavo.jpg",
+      "author": "Ambalavola",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Deux_gavo.jpg"
+    },
+    {
+      "title": "File:Guava (1).JPG",
+      "author": "Aruna at Malayalam Wikipedia",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Guava_(1).JPG"
+    },
+    {
+      "title": "File:DFC 3945 A pile of glossy green guavas with one sliced open to reveal its bright pink seed-speckled interior.jpg",
+      "author": "PattayaPatrol",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:DFC_3945_A_pile_of_glossy_green_guavas_with_one_sliced_open_to_reveal_its_bright_pink_seed-speckled_interior.jpg"
+    },
+    {
+      "title": "File:Psidium guajava (fruit).jpg",
+      "author": "Hans Hillewaert",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Psidium_guajava_(fruit).jpg"
+    }
+  ],
+  "naga": [
+    {
+      "title": "File:Webysther 20150409032418 - Pitaya.jpg",
+      "author": "Webysther Nunes",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Webysther_20150409032418_-_Pitaya.jpg"
+    },
+    {
+      "title": "File:Pitaya on black background.jpg",
+      "author": "Rodrigo.Argenton",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pitaya_on_black_background.jpg"
+    },
+    {
+      "title": "File:Pitaya cross section ed2.jpg",
+      "author": "SMasters",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pitaya_cross_section_ed2.jpg"
+    },
+    {
+      "title": "File:Boucheries André (Rillieux-la-Pape) - pitayas rouges.jpg",
+      "author": "Benoît Prieur",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boucheries_Andr%C3%A9_(Rillieux-la-Pape)_-_pitayas_rouges.jpg"
+    }
+  ],
+  "kelengkeng": [
+    {
+      "title": "File:Dimocarpus longan (3).jpg",
+      "author": "Dinkun Chen",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dimocarpus_longan_(3).jpg"
+    },
+    {
+      "title": "File:Dimocarpus longan (2).jpg",
+      "author": "Dinkun Chen",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dimocarpus_longan_(2).jpg"
+    },
+    {
+      "title": "File:Dimocarpus longan fruits.jpg",
+      "author": "",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dimocarpus_longan_fruits.jpg"
+    },
+    {
+      "title": "File:Thai fruit 220215 Longan ลำไย 002.jpg",
+      "author": "Mattis",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Thai_fruit_220215_Longan_%E0%B8%A5%E0%B8%B3%E0%B9%84%E0%B8%A2_002.jpg"
+    }
+  ],
+  "belimbing": [
+    {
+      "title": "File:Greencarambola cut.jpg",
+      "author": "Deepugn at Malayalam Wikipedia",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Greencarambola_cut.jpg"
+    },
+    {
+      "title": "File:Carambolas765pt.jpg",
+      "author": "K-MUS",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carambolas765pt.jpg"
+    },
+    {
+      "title": "File:Star fruit.jpg",
+      "author": "rex pe",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Star_fruit.jpg"
+    },
+    {
+      "title": "File:Poh-San-Teng-star-fruit-tree-2287.jpg",
+      "author": "User:Vmenkov",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Poh-San-Teng-star-fruit-tree-2287.jpg"
+    }
+  ],
+  "kiwi": [
+    {
+      "title": "File:Kiwi (Actinidia chinensis) 1 Luc Viatour.jpg",
+      "author": "Luc Viatour",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiwi_(Actinidia_chinensis)_1_Luc_Viatour.jpg"
+    },
+    {
+      "title": "File:Kiwifruit cross section.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiwifruit_cross_section.jpg"
+    },
+    {
+      "title": "File:Kiwifruit varieties 20250621 205321.jpg",
+      "author": "Prosperosity",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiwifruit_varieties_20250621_205321.jpg"
+    },
+    {
+      "title": "File:HK TKO 將軍澳 Tseung Kwan O 尚德邨 Sheung Tak Estate 商場 TKO SPOT mall shop ParknShop Supermarket Kiwifruit 奇異果 September 2023 Px3 02.jpg",
+      "author": "LOUSM Liu Sumhamz",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:HK_TKO_%E5%B0%87%E8%BB%8D%E6%BE%B3_Tseung_Kwan_O_%E5%B0%9A%E5%BE%B7%E9%82%A8_Sheung_Tak_Estate_%E5%95%86%E5%A0%B4_TKO_SPOT_mall_shop_ParknShop_Supermarket_Kiwifruit_%E5%A5%87%E7%95%B0%E6%9E%9C_September_2023_Px3_02.jpg"
+    }
+  ],
+  "monkey": [
+    {
+      "title": "File:Rhesus macaque (Macaca mulatta) Gokarna 3.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rhesus_macaque_(Macaca_mulatta)_Gokarna_3.jpg"
+    },
+    {
+      "title": "File:Macaca fascicularis looking up to the sky - side view and contre-jour portrait with smooth bokeh.jpg",
+      "author": "Basile Morin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Macaca_fascicularis_looking_up_to_the_sky_-_side_view_and_contre-jour_portrait_with_smooth_bokeh.jpg"
+    },
+    {
+      "title": "File:112 Baby rhesus macaque in Jim Corbett National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:112_Baby_rhesus_macaque_in_Jim_Corbett_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Rhesus macaque (Macaca mulatta mulatta) female.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rhesus_macaque_(Macaca_mulatta_mulatta)_female.jpg"
+    }
+  ],
+  "gorilla": [
+    {
+      "title": "File:068 Mountain gorilla close-up at Bwindi Impenetrable Forest National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:068_Mountain_gorilla_close-up_at_Bwindi_Impenetrable_Forest_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Mountain gorilla (Gorilla beringei beringei) eating.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mountain_gorilla_(Gorilla_beringei_beringei)_eating.jpg"
+    },
+    {
+      "title": "File:Gorila de montaña (Gorilla beringei beringei), parque nacional de la Selva Impenetrable de Bwindi, Uganda, 2024-02-02, DD 80.jpg",
+      "author": "Diego Delso",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gorila_de_monta%C3%B1a_(Gorilla_beringei_beringei),_parque_nacional_de_la_Selva_Impenetrable_de_Bwindi,_Uganda,_2024-02-02,_DD_80.jpg"
+    },
+    {
+      "title": "File:Gorila de montaña (Gorilla beringei beringei), parque nacional de la Selva Impenetrable de Bwindi, Uganda, 2024-02-02, DD 36.jpg",
+      "author": "Diego Delso",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gorila_de_monta%C3%B1a_(Gorilla_beringei_beringei),_parque_nacional_de_la_Selva_Impenetrable_de_Bwindi,_Uganda,_2024-02-02,_DD_36.jpg"
+    }
+  ],
+  "hippo": [
+    {
+      "title": "File:Hipopótamo (Hippopotamus amphibius), parque nacional de Chobe, Botsuana, 2018-07-28, DD 82.jpg",
+      "author": "Diego Delso",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hipop%C3%B3tamo_(Hippopotamus_amphibius),_parque_nacional_de_Chobe,_Botsuana,_2018-07-28,_DD_82.jpg"
+    },
+    {
+      "title": "File:Hippo (Hippopotamus amphibius) head in water.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippo_(Hippopotamus_amphibius)_head_in_water.jpg"
+    },
+    {
+      "title": "File:Hippopotamus in Chobe National Park 01.jpg",
+      "author": "Bernard Gagnon",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippopotamus_in_Chobe_National_Park_01.jpg"
+    },
+    {
+      "title": "File:Hippopotamus in Chobe National Park 03.jpg",
+      "author": "Bernard Gagnon",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippopotamus_in_Chobe_National_Park_03.jpg"
+    }
+  ]
 }

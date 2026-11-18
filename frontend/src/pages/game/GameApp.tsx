@@ -5,18 +5,29 @@ import {
   ANIMALS,
   BASE,
   COLORS,
+  FRUITS,
   PHOTO_CREDITS,
   SOUND_CREDITS,
   ambientNote,
   letterUrl,
+  photoCount,
   photoUrl,
+  randomPhoto,
   shuffle,
   soundUrl,
   voiceUrl,
 } from './data'
-import type { Animal, Credit, GameColor } from './data'
+import type { Credit, GameColor, Item, PhotoKind } from './data'
 import { playClip, playSequence, stopAudio } from './audio'
 import './game.css'
+
+type Kind = 'animal' | 'fruit' | 'color'
+
+const SECTIONS: Record<Kind, { path: string; title: string; items: Item[]; question: string }> = {
+  animal: { path: 'hewan', title: 'Tebak Hewan', items: ANIMALS, question: 'Ini hewan apa?' },
+  fruit: { path: 'buah', title: 'Tebak Buah', items: FRUITS, question: 'Ini buah apa?' },
+  color: { path: 'warna', title: 'Tebak Warna', items: COLORS, question: 'Ini warna apa?' },
+}
 
 /** Public, login-free kids' game served at /interactive-game. Rendered
  *  by main.tsx instead of the finance app, outside AuthProvider. */
@@ -30,10 +41,10 @@ export function GameApp() {
     <BrowserRouter basename={BASE}>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/hewan" element={<AnimalCards />} />
-        <Route path="/hewan/kuis" element={<Quiz kind="animal" />} />
-        <Route path="/warna" element={<ColorCards />} />
-        <Route path="/warna/kuis" element={<Quiz kind="color" />} />
+        {(Object.keys(SECTIONS) as Kind[]).flatMap((k) => [
+          <Route key={k} path={`/${SECTIONS[k].path}`} element={<Cards key={k} kind={k} />} />,
+          <Route key={`${k}-quiz`} path={`/${SECTIONS[k].path}/kuis`} element={<Quiz key={k} kind={k} />} />,
+        ])}
         <Route path="/sumber" element={<Credits />} />
         <Route path="*" element={<Home />} />
       </Routes>
@@ -43,29 +54,28 @@ export function GameApp() {
 
 // ─── Shared bits ────────────────────────────────────────────────────────
 
-function Screen({ children, tone }: { children: ReactNode; tone: 'home' | 'animal' | 'color' }) {
+function Screen({ children, tone }: { children: ReactNode; tone: 'home' | Kind }) {
   useEffect(() => stopAudio, [])
   return <div className={`kg kg-${tone}`}>{children}</div>
 }
 
-function TopBar({ title, section, mode }: { title: string; section?: 'hewan' | 'warna'; mode?: 'kartu' | 'kuis' }) {
+function TopBar({ kind, mode }: { kind: Kind; mode: 'kartu' | 'kuis' }) {
   const navigate = useNavigate()
+  const { path, title } = SECTIONS[kind]
   return (
     <header className="kg-top">
       <button className="kg-back" onClick={() => navigate('/')} aria-label="Kembali ke menu">
         ←
       </button>
       <h1>{title}</h1>
-      {section && (
-        <nav className="kg-modes" aria-label="Mode">
-          <Link className={mode === 'kartu' ? 'on' : ''} to={`/${section}`} replace>
-            Kartu
-          </Link>
-          <Link className={mode === 'kuis' ? 'on' : ''} to={`/${section}/kuis`} replace>
-            Kuis
-          </Link>
-        </nav>
-      )}
+      <nav className="kg-modes" aria-label="Mode">
+        <Link className={mode === 'kartu' ? 'on' : ''} to={`/${path}`} replace>
+          Kartu
+        </Link>
+        <Link className={mode === 'kuis' ? 'on' : ''} to={`/${path}/kuis`} replace>
+          Kuis
+        </Link>
+      </nav>
     </header>
   )
 }
@@ -131,6 +141,70 @@ function usePlayer() {
   return { playing, run, reset }
 }
 
+function useDeck(items: Item[]) {
+  const [order, setOrder] = useState(items)
+  const [idx, setIdx] = useState(0)
+  const go = useCallback((d: number) => setIdx((i) => (i + d + order.length) % order.length), [order.length])
+  const reshuffle = useCallback(() => {
+    setOrder(shuffle(items))
+    setIdx(0)
+  }, [items])
+  const jumpTo = useCallback((id: string) => setIdx(Math.max(0, order.findIndex((x) => x.id === id))), [order])
+  return { order, idx, item: order[idx], go, reshuffle, jumpTo }
+}
+
+/** The whole photo, never cropped (heads and tails matter when guessing),
+ *  over a blurred copy of itself so the frame isn't left with bars. */
+function Photo({ kind, id, n }: { kind: PhotoKind; id: string; n: number }) {
+  const src = photoUrl(kind, id, n)
+  return (
+    <span className="kg-photo-fit" key={src}>
+      <img className="kg-photo-bg" src={src} alt="" aria-hidden draggable={false} />
+      <img className="kg-photo-fg" src={src} alt="Foto" draggable={false} />
+    </span>
+  )
+}
+
+function Swatch({ color, big }: { color: GameColor; big?: boolean }) {
+  return (
+    <span
+      className={`kg-swatch${big ? ' big' : ''}${color.id === 'putih' ? ' light' : ''}`}
+      style={{ background: color.fill }}
+    />
+  )
+}
+
+const asColor = (item: Item) => item as GameColor
+
+/** Letter tiles plus a speller that lights each one up as it's read
+ *  ("ka, u, en, i, en, ge"), then the whole word. Spaces and hyphens
+ *  ("Biru Muda", "Abu-abu") become a short pause. */
+function useSpelling() {
+  const [lit, setLit] = useState<number | null>(null)
+  const spell = useCallback(async (item: Item) => {
+    const letters = item.name.toUpperCase().split('')
+    const urls = [...letters.map((ch) => (/[A-Z]/.test(ch) ? letterUrl(ch) : null)), voiceUrl(`name-${item.id}`)]
+    const ok = await playSequence(urls, (i) => setLit(i < letters.length ? i : -1), 120)
+    setLit(null)
+    return ok
+  }, [])
+  const clear = useCallback(() => setLit(null), [])
+  return { lit, spell, clear }
+}
+
+function LetterTiles({ name, lit }: { name: string; lit: number | null }) {
+  const letters = name.toUpperCase().split('')
+  return (
+    <div className={`kg-letters${lit === -1 ? ' whole' : ''}${letters.length > 7 ? ' long' : ''}`} aria-label={name}>
+      {letters.map((ch, i) => (
+        <span key={i} className={/[A-Z]/.test(ch) ? (lit === i ? 'lit' : '') : 'dash'}>
+          {ch === ' ' ? '' : ch}
+        </span>
+      ))}
+    </div>
+  )
+}
+
 function CardNav({
   idx,
   total,
@@ -167,253 +241,6 @@ function CardNav({
   )
 }
 
-function useDeck<T extends { id: string }>(items: T[]) {
-  const [order, setOrder] = useState(items)
-  const [idx, setIdx] = useState(0)
-  const go = useCallback((d: number) => setIdx((i) => (i + d + order.length) % order.length), [order.length])
-  const reshuffle = useCallback(() => {
-    setOrder(shuffle(items))
-    setIdx(0)
-  }, [items])
-  const jumpTo = useCallback((id: string) => setIdx(Math.max(0, order.findIndex((x) => x.id === id))), [order])
-  return { order, idx, item: order[idx], go, reshuffle, jumpTo }
-}
-
-// ─── Home ───────────────────────────────────────────────────────────────
-
-function Home() {
-  return (
-    <Screen tone="home">
-      <div className="kg-home">
-        <div className="kg-hello">
-          <span className="kg-wave" aria-hidden>
-            👋
-          </span>
-          <h1>
-            Ayo main <span className="kg-nowrap">tebak-tebakan!</span>
-          </h1>
-        </div>
-        <Link to="/hewan" className="kg-tile kg-tile-animal">
-          <img src={photoUrl('cat')} alt="" />
-          <span>Tebak Hewan</span>
-        </Link>
-        <Link to="/warna" className="kg-tile kg-tile-color">
-          <span className="kg-dots" aria-hidden>
-            {COLORS.map((c) => (
-              <i key={c.id} style={{ background: c.hex }} />
-            ))}
-          </span>
-          <span>Tebak Warna</span>
-        </Link>
-        <Link to="/sumber" className="kg-credits-link">
-          Sumber foto & suara
-        </Link>
-      </div>
-    </Screen>
-  )
-}
-
-// ─── Flash cards ────────────────────────────────────────────────────────
-
-function AnimalCards() {
-  const deck = useDeck(ANIMALS)
-  const { playing, run, reset } = usePlayer()
-  const [revealed, setRevealed] = useState(false)
-  const [grid, setGrid] = useState(false)
-  const a = deck.item
-
-  useEffect(() => {
-    reset()
-    setRevealed(false)
-    // Warm the next photo so swiping feels instant.
-    const next = deck.order[(deck.idx + 1) % deck.order.length]
-    new Image().src = photoUrl(next.id)
-  }, [a.id, deck.idx, deck.order, reset])
-
-  const swipe = useSwipe(() => deck.go(-1), () => deck.go(1))
-  const note = ambientNote(a.id)
-
-  return (
-    <Screen tone="animal">
-      <TopBar title="Tebak Hewan" section="hewan" mode="kartu" />
-      <main className="kg-card-wrap" {...swipe}>
-        <figure className="kg-photo" onClick={() => setRevealed(true)}>
-          <Photo key={a.id} id={a.id} />
-        </figure>
-        <div className="kg-answer">
-          {revealed ? (
-            <div className="kg-name pop">{a.name}</div>
-          ) : (
-            <button className="kg-reveal" onClick={() => setRevealed(true)}>
-              Ini hewan apa? <b>Lihat jawaban 👀</b>
-            </button>
-          )}
-          {playing === 'sound' && note && <div className="kg-note">{note}</div>}
-        </div>
-        <div className="kg-actions">
-          <BigButton
-            icon="🔊"
-            label="Suara"
-            color="orange"
-            active={playing === 'sound'}
-            onClick={() => run('sound', () => playClip(soundUrl(a.id)))}
-          />
-          <BigButton
-            icon="🗣️"
-            label="Baca nama"
-            color="blue"
-            active={playing === 'name'}
-            onClick={() => {
-              setRevealed(true)
-              run('name', () => playClip(voiceUrl(`name-${a.id}`)))
-            }}
-          />
-        </div>
-        <CardNav
-          idx={deck.idx}
-          total={deck.order.length}
-          onPrev={() => deck.go(-1)}
-          onNext={() => deck.go(1)}
-          onShuffle={deck.reshuffle}
-          onGrid={() => setGrid(true)}
-        />
-      </main>
-      {grid && (
-        <Picker onClose={() => setGrid(false)}>
-          {deck.order.map((x) => (
-            <button
-              key={x.id}
-              className="kg-pick-photo"
-              onClick={() => {
-                deck.jumpTo(x.id)
-                setGrid(false)
-              }}
-            >
-              <img src={photoUrl(x.id)} alt="" loading="lazy" />
-              <span>{x.name}</span>
-            </button>
-          ))}
-        </Picker>
-      )}
-    </Screen>
-  )
-}
-
-function ColorCards() {
-  const deck = useDeck(COLORS)
-  const { playing, run, reset } = usePlayer()
-  const [revealed, setRevealed] = useState(false)
-  const [lit, setLit] = useState<number | null>(null)
-  const [grid, setGrid] = useState(false)
-  const c = deck.item
-
-  useEffect(() => {
-    reset()
-    setRevealed(false)
-    setLit(null)
-  }, [c.id, reset])
-
-  const swipe = useSwipe(() => deck.go(-1), () => deck.go(1))
-  const letters = c.name.toUpperCase().split('')
-
-  const spell = () => {
-    setRevealed(true)
-    // Letter by letter ("ka, u, en, i, en, ge") then the whole word; the
-    // hyphen in Abu-abu becomes a short pause.
-    const urls = [...letters.map((ch) => (ch === '-' ? null : letterUrl(ch))), voiceUrl(`name-${c.id}`)]
-    run('spell', async () => {
-      const ok = await playSequence(urls, (i) => setLit(i < letters.length ? i : -1), 120)
-      setLit(null)
-      return ok
-    })
-  }
-
-  return (
-    <Screen tone="color">
-      <TopBar title="Tebak Warna" section="warna" mode="kartu" />
-      <main className="kg-card-wrap" {...swipe}>
-        <figure className="kg-swatch-card" onClick={() => setRevealed(true)}>
-          <Swatch color={c} big />
-        </figure>
-        <div className="kg-answer">
-          {revealed ? (
-            <div className={`kg-letters${lit === -1 ? ' whole' : ''}`} aria-label={c.name}>
-              {letters.map((ch, i) => (
-                <span key={i} className={ch === '-' ? 'dash' : lit === i ? 'lit' : ''}>
-                  {ch}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <button className="kg-reveal" onClick={() => setRevealed(true)}>
-              Ini warna apa? <b>Lihat jawaban 👀</b>
-            </button>
-          )}
-        </div>
-        <div className="kg-actions">
-          <BigButton
-            icon="🗣️"
-            label="Baca nama"
-            color="blue"
-            active={playing === 'name'}
-            onClick={() => {
-              setRevealed(true)
-              run('name', () => playClip(voiceUrl(`name-${c.id}`)))
-            }}
-          />
-          <BigButton icon="🔤" label="Eja" color="green" active={playing === 'spell'} onClick={spell} />
-        </div>
-        <CardNav
-          idx={deck.idx}
-          total={deck.order.length}
-          onPrev={() => deck.go(-1)}
-          onNext={() => deck.go(1)}
-          onShuffle={deck.reshuffle}
-          onGrid={() => setGrid(true)}
-        />
-      </main>
-      {grid && (
-        <Picker onClose={() => setGrid(false)}>
-          {deck.order.map((x) => (
-            <button
-              key={x.id}
-              className="kg-pick-color"
-              onClick={() => {
-                deck.jumpTo(x.id)
-                setGrid(false)
-              }}
-            >
-              <Swatch color={x} />
-              <span>{x.name}</span>
-            </button>
-          ))}
-        </Picker>
-      )}
-    </Screen>
-  )
-}
-
-/** The whole photo, never cropped (heads and tails matter when guessing),
- *  over a blurred copy of itself so the frame isn't left with bars. */
-function Photo({ id }: { id: string }) {
-  const src = photoUrl(id)
-  return (
-    <span className="kg-photo-fit">
-      <img className="kg-photo-bg" src={src} alt="" aria-hidden draggable={false} />
-      <img className="kg-photo-fg" src={src} alt="Foto hewan" draggable={false} />
-    </span>
-  )
-}
-
-function Swatch({ color, big }: { color: GameColor; big?: boolean }) {
-  return (
-    <span
-      className={`kg-swatch${big ? ' big' : ''}${color.id === 'putih' ? ' light' : ''}`}
-      style={{ background: color.hex }}
-    />
-  )
-}
-
 function Picker({ children, onClose }: { children: ReactNode; onClose: () => void }) {
   return (
     <div className="kg-sheet" role="dialog" aria-modal onClick={onClose}>
@@ -430,17 +257,178 @@ function Picker({ children, onClose }: { children: ReactNode; onClose: () => voi
   )
 }
 
-// ─── Quiz ───────────────────────────────────────────────────────────────
+// ─── Home ───────────────────────────────────────────────────────────────
 
-type QuizItem = (Animal | GameColor) & { id: string; name: string }
+function Home() {
+  return (
+    <Screen tone="home">
+      <div className="kg-home">
+        <div className="kg-hello">
+          <span className="kg-wave" aria-hidden>
+            👋
+          </span>
+          <h1>
+            Ayo main <span className="kg-nowrap">tebak-tebakan!</span>
+          </h1>
+        </div>
+        <Link to="/hewan" className="kg-tile kg-tile-photo kg-tile-animal">
+          <img src={photoUrl('animal', 'cat', 1)} alt="" />
+          <span>Tebak Hewan</span>
+        </Link>
+        <Link to="/buah" className="kg-tile kg-tile-photo kg-tile-fruit">
+          <img src={photoUrl('fruit', 'stroberi', 1)} alt="" />
+          <span>Tebak Buah</span>
+        </Link>
+        <Link to="/warna" className="kg-tile kg-tile-color">
+          <span className="kg-dots" aria-hidden>
+            {COLORS.map((c) => (
+              <i key={c.id} style={{ background: c.fill }} />
+            ))}
+          </span>
+          <span>Tebak Warna</span>
+        </Link>
+        <Link to="/sumber" className="kg-credits-link">
+          Sumber foto & suara
+        </Link>
+      </div>
+    </Screen>
+  )
+}
+
+// ─── Flash cards ────────────────────────────────────────────────────────
+
+function Cards({ kind }: { kind: Kind }) {
+  const section = SECTIONS[kind]
+  const deck = useDeck(section.items)
+  const { playing, run, reset } = usePlayer()
+  const { lit, spell, clear } = useSpelling()
+  const [revealed, setRevealed] = useState(false)
+  const [grid, setGrid] = useState(false)
+  const [photoN, setPhotoN] = useState(1)
+  const item = deck.item
+  const photoKind = kind === 'color' ? null : kind
+
+  useEffect(() => {
+    reset()
+    clear()
+    setRevealed(false)
+    if (!photoKind) return
+    // A different photo of the same animal/fruit each visit, so it isn't
+    // always the same picture; warm the next card's photo too.
+    setPhotoN(randomPhoto(item.id))
+    const next = deck.order[(deck.idx + 1) % deck.order.length]
+    new Image().src = photoUrl(photoKind, next.id, 1)
+  }, [item.id, deck.idx, deck.order, photoKind, reset, clear])
+
+  const swipe = useSwipe(() => deck.go(-1), () => deck.go(1))
+  const note = kind === 'animal' ? ambientNote(item.id) : null
+  const showLetters = kind !== 'animal'
+
+  const readName = () => {
+    setRevealed(true)
+    run('name', () => playClip(voiceUrl(`name-${item.id}`)))
+  }
+  const doSpell = () => {
+    setRevealed(true)
+    run('spell', () => spell(item))
+  }
+
+  return (
+    <Screen tone={kind}>
+      <TopBar kind={kind} mode="kartu" />
+      <main className="kg-card-wrap" {...swipe}>
+        {photoKind ? (
+          <figure className="kg-photo" onClick={() => setRevealed(true)}>
+            <Photo kind={photoKind} id={item.id} n={photoN} />
+            {photoCount(item.id) > 1 && (
+              <button
+                className="kg-round kg-other-photo"
+                aria-label="Foto lain"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setPhotoN((n) => (n % photoCount(item.id)) + 1)
+                }}
+              >
+                🔄
+              </button>
+            )}
+          </figure>
+        ) : (
+          <figure className="kg-swatch-card" onClick={() => setRevealed(true)}>
+            <Swatch key={item.id} color={asColor(item)} big />
+          </figure>
+        )}
+        <div className="kg-answer">
+          {!revealed ? (
+            <button className="kg-reveal" onClick={() => setRevealed(true)}>
+              {section.question} <b>Lihat jawaban 👀</b>
+            </button>
+          ) : showLetters ? (
+            <LetterTiles name={item.name} lit={lit} />
+          ) : (
+            <div className="kg-name pop">{item.name}</div>
+          )}
+          {playing === 'sound' && note && <div className="kg-note">{note}</div>}
+        </div>
+        <div className="kg-actions">
+          {kind === 'animal' && (
+            <BigButton
+              icon="🔊"
+              label="Suara"
+              color="orange"
+              active={playing === 'sound'}
+              onClick={() => run('sound', () => playClip(soundUrl(item.id)))}
+            />
+          )}
+          <BigButton icon="🗣️" label="Baca nama" color="blue" active={playing === 'name'} onClick={readName} />
+          {kind !== 'animal' && (
+            <BigButton icon="🔤" label="Eja" color="green" active={playing === 'spell'} onClick={doSpell} />
+          )}
+        </div>
+        <CardNav
+          idx={deck.idx}
+          total={deck.order.length}
+          onPrev={() => deck.go(-1)}
+          onNext={() => deck.go(1)}
+          onShuffle={deck.reshuffle}
+          onGrid={() => setGrid(true)}
+        />
+      </main>
+      {grid && (
+        <Picker onClose={() => setGrid(false)}>
+          {deck.order.map((x) => (
+            <button
+              key={x.id}
+              className={photoKind ? 'kg-pick-photo' : 'kg-pick-color'}
+              onClick={() => {
+                deck.jumpTo(x.id)
+                setGrid(false)
+              }}
+            >
+              {photoKind ? (
+                <img src={photoUrl(photoKind, x.id, 1)} alt="" loading="lazy" />
+              ) : (
+                <Swatch color={asColor(x)} />
+              )}
+              <span>{x.name}</span>
+            </button>
+          ))}
+        </Picker>
+      )}
+    </Screen>
+  )
+}
+
+// ─── Quiz ───────────────────────────────────────────────────────────────
 
 const OPTIONS = 4
 
-function Quiz({ kind }: { kind: 'animal' | 'color' }) {
-  const items: QuizItem[] = kind === 'animal' ? ANIMALS : COLORS
+function Quiz({ kind }: { kind: Kind }) {
+  const items = SECTIONS[kind].items
+  const photoKind = kind === 'color' ? null : kind
   // Targets come from a shuffled deck so every item gets asked before any
   // repeats.
-  const deckRef = useRef<QuizItem[]>([])
+  const deckRef = useRef<Item[]>([])
   const nextTarget = useCallback(() => {
     if (deckRef.current.length === 0) deckRef.current = shuffle(items)
     return deckRef.current.pop()!
@@ -449,7 +437,8 @@ function Quiz({ kind }: { kind: 'animal' | 'color' }) {
   const makeRound = useCallback(() => {
     const target = nextTarget()
     const others = shuffle(items.filter((x) => x.id !== target.id)).slice(0, OPTIONS - 1)
-    return { target, options: shuffle([target, ...others]), key: Math.random() }
+    const options = shuffle([target, ...others]).map((item) => ({ item, n: randomPhoto(item.id) }))
+    return { target, options, key: Math.random() }
   }, [items, nextTarget])
 
   const [round, setRound] = useState(makeRound)
@@ -464,11 +453,18 @@ function Quiz({ kind }: { kind: 'animal' | 'color' }) {
   // "Mulai", since phones refuse to play sound before the first tap.
   useEffect(() => {
     if (!started) return
-    for (const o of round.options) if (kind === 'animal') new Image().src = photoUrl(o.id)
+    if (photoKind) for (const o of round.options) new Image().src = photoUrl(photoKind, o.item.id, o.n)
     ask()
   }, [round.key, started]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pick = async (o: QuizItem) => {
+  const nextRound = () => {
+    stopAudio()
+    setWrong(new Set())
+    setSolved(false)
+    setRound(makeRound())
+  }
+
+  const pick = async (o: Item) => {
     if (solved) return
     if (o.id !== round.target.id) {
       setWrong((w) => new Set(w).add(o.id))
@@ -487,20 +483,11 @@ function Quiz({ kind }: { kind: 'animal' | 'color' }) {
     }
   }
 
-  const nextRound = () => {
-    stopAudio()
-    setWrong(new Set())
-    setSolved(false)
-    setRound(makeRound())
-  }
-
-  const title = kind === 'animal' ? 'Tebak Hewan' : 'Tebak Warna'
-  const section = kind === 'animal' ? 'hewan' : 'warna'
   const promptName = round.target.name.toLowerCase()
 
   return (
     <Screen tone={kind}>
-      <TopBar title={title} section={section} mode="kuis" />
+      <TopBar kind={kind} mode="kuis" />
       <main className="kg-quiz">
         {!started ? (
           <div className="kg-start">
@@ -526,8 +513,8 @@ function Quiz({ kind }: { kind: 'animal' | 'color' }) {
                 ⭐ {stars}
               </span>
             </div>
-            <div className={`kg-options kg-options-${kind}`} key={round.key}>
-              {round.options.map((o) => {
+            <div className={`kg-options kg-options-${photoKind ? 'photo' : 'color'}`} key={round.key}>
+              {round.options.map(({ item: o, n }) => {
                 const isWrong = wrong.has(o.id)
                 const isRight = solved && o.id === round.target.id
                 return (
@@ -535,13 +522,9 @@ function Quiz({ kind }: { kind: 'animal' | 'color' }) {
                     key={o.id}
                     className={`kg-option${isWrong ? ' wrong' : ''}${isRight ? ' right' : ''}${solved && !isRight ? ' faded' : ''}`}
                     onClick={() => pick(o)}
-                    aria-label={kind === 'color' ? `Pilihan warna` : 'Pilihan hewan'}
+                    aria-label="Pilihan"
                   >
-                    {kind === 'animal' ? (
-                      <Photo id={o.id} />
-                    ) : (
-                      <Swatch color={o as GameColor} />
-                    )}
+                    {photoKind ? <Photo kind={photoKind} id={o.id} n={n} /> : <Swatch color={asColor(o)} />}
                     {isRight && <span className="kg-check">✓</span>}
                   </button>
                 )
@@ -581,8 +564,37 @@ function CreditLine({ label, c }: { label: string; c?: Credit }) {
   )
 }
 
+function CreditList({ kind, items }: { kind: PhotoKind; items: Item[] }) {
+  return (
+    <ul>
+      {items.map((it) => {
+        const photos = PHOTO_CREDITS[it.id] ?? []
+        const sound = kind === 'animal' ? SOUND_CREDITS[it.id] : undefined
+        return (
+          <li key={it.id}>
+            <img src={photoUrl(kind, it.id, 1)} alt="" loading="lazy" />
+            <div>
+              <b>{it.name}</b>
+              {photos.map((c, i) => (
+                <CreditLine key={i} label={photos.length > 1 ? `Foto ${i + 1}` : 'Foto'} c={c} />
+              ))}
+              <CreditLine label={sound?.kind === 'ambient' ? 'Suara (suasana)' : 'Suara'} c={sound} />
+            </div>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 function Credits() {
-  const rows = useMemo(() => ANIMALS.map((a) => ({ a, photo: PHOTO_CREDITS[a.id], sound: SOUND_CREDITS[a.id] })), [])
+  const sections = useMemo(
+    () => [
+      { title: 'Hewan', kind: 'animal' as const, items: ANIMALS },
+      { title: 'Buah', kind: 'fruit' as const, items: FRUITS },
+    ],
+    [],
+  )
   return (
     <Screen tone="home">
       <header className="kg-top">
@@ -596,18 +608,12 @@ function Credits() {
           Semua foto dan suara hewan berasal dari Wikimedia Commons, dipakai sesuai lisensinya. Suara pembaca nama
           dibuat dengan suara komputer berbahasa Indonesia.
         </p>
-        <ul>
-          {rows.map(({ a, photo, sound }) => (
-            <li key={a.id}>
-              <img src={photoUrl(a.id)} alt="" loading="lazy" />
-              <div>
-                <b>{a.name}</b>
-                <CreditLine label="Foto" c={photo} />
-                <CreditLine label={sound?.kind === 'ambient' ? 'Suara (suasana)' : 'Suara'} c={sound} />
-              </div>
-            </li>
-          ))}
-        </ul>
+        {sections.map((s) => (
+          <section key={s.kind}>
+            <h2>{s.title}</h2>
+            <CreditList kind={s.kind} items={s.items} />
+          </section>
+        ))}
       </main>
     </Screen>
   )
