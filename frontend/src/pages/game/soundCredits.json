@@ -262,5 +262,29 @@
     "license": "CC0",
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Honeybee-hive.ogg"
+  },
+  "monkey": {
+    "kind": "real",
+    "title": "Sound-of-stump-tailed-macaque-(macaca-arctoides).ogg",
+    "author": "Rushenb",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sound-of-stump-tailed-macaque-(macaca-arctoides).ogg"
+  },
+  "hippo": {
+    "kind": "real",
+    "title": "Hippopotamuses vocalising in South Africa.webm",
+    "author": "Kent Wang",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippopotamuses_vocalising_in_South_Africa.webm"
+  },
+  "gorilla": {
+    "kind": "real",
+    "title": "Silverback Gorilla Adores His Son So Much - The Shabani Group.webm",
+    "author": "Something About Gorillas ゴリラっぱTV",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silverback_Gorilla_Adores_His_Son_So_Much_-_The_Shabani_Group.webm"
   }
 }
