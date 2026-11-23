@@ -20,6 +20,7 @@ type Services struct {
 	BigExpenses     *BigExpensesService
 	ReceivableLoans *ReceivableLoansService
 	PassiveIncome   *PassiveIncomeService
+	Cashflow        *CashflowService
 	Dashboard       *DashboardService
 	Progress        *ProgressService
 	Targets         *TargetsService
@@ -37,6 +38,7 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 	notificationCatalog := NewNotificationCatalogService(repos)
 	bonds := NewBondPurchasesService(repos, snapshots)
 	receivables := NewReceivableLoansService(repos)
+	passive := NewPassiveIncomeService(repos, bonds, receivables)
 	return &Services{
 		Auth:            NewAuthService(repos, cfg),
 		Holdings:        holdings,
@@ -49,7 +51,8 @@ func NewServices(repos *db.Repos, cfg config.Config) *Services {
 		BondPurchases:   bonds,
 		BigExpenses:     NewBigExpensesService(repos),
 		ReceivableLoans: receivables,
-		PassiveIncome:   NewPassiveIncomeService(repos, bonds, receivables),
+		PassiveIncome:   passive,
+		Cashflow:        NewCashflowService(repos, passive),
 		Dashboard:       NewDashboardService(repos, bonds, receivables),
 		Progress:        NewProgressService(repos),
 		Targets:         NewTargetsService(repos, bonds, receivables),

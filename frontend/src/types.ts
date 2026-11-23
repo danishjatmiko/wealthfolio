@@ -170,6 +170,35 @@ export interface ExpenseProgress {
   series: ExpenseProgressPoint[]
 }
 
+export interface ActiveIncomeInput {
+  amount_idr: number
+  note: string
+}
+
+export interface MonthlyActiveIncome extends ActiveIncomeInput {
+  month: string
+  updated_at: string
+}
+
+export interface CashflowMonth {
+  month: number
+  label: string
+  active_income: MonthlyActiveIncome | null
+  passive_income_idr: number
+  projected_passive_income_idr: number
+  expenses_idr: number
+  has_expense_period: boolean
+  big_expenses_idr: number
+  total_income_idr: number
+  total_expenses_idr: number
+  net_idr: number
+}
+
+export interface CashflowSummary {
+  reference_year: number
+  months: CashflowMonth[]
+}
+
 export interface ExpensePeriodSummary {
   id: string
   start_date: string

@@ -7,6 +7,7 @@ import { Assets } from './pages/assets/Assets'
 import { Debts } from './pages/debts/Debts'
 import { MonthlyExpenses } from './pages/expenses/MonthlyExpenses'
 import { BigExpenses } from './pages/bigexpenses/BigExpenses'
+import { Cashflow } from './pages/cashflow/Cashflow'
 import { PassiveIncome } from './pages/passive/PassiveIncome'
 import { Targets } from './pages/targets/Targets'
 import { Progress } from './pages/progress/Progress'
@@ -38,6 +39,7 @@ function App() {
           <Route path="/debts" element={<Debts />} />
           <Route path="/expenses" element={<MonthlyExpenses />} />
           <Route path="/big-expenses" element={<BigExpenses />} />
+          <Route path="/cashflow" element={<Cashflow />} />
           <Route path="/passive-income" element={<PassiveIncome />} />
           <Route path="/targets" element={<Targets />} />
           <Route path="/progress" element={<Progress />} />

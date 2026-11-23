@@ -17,6 +17,7 @@ export function useIncomeCalendar(year: number) {
 }
 
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['cashflow'] })
   qc.invalidateQueries({ queryKey: ['passiveIncome'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })
   qc.invalidateQueries({ queryKey: ['targets'] })

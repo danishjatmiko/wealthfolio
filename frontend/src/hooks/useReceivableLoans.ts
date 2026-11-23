@@ -7,6 +7,7 @@ import type { ReceivableLoanInput } from '../types'
 // block and any passive-income target, so all of them get invalidated —
 // same fan-out useBondPurchases uses for coupons.
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['cashflow'] })
   qc.invalidateQueries({ queryKey: ['receivableLoans'] })
   qc.invalidateQueries({ queryKey: ['incomeCalendar'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })

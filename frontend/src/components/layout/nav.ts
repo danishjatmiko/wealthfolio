@@ -28,10 +28,11 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: '◫', bottomPrimary: true },
   { to: '/assets', label: 'Assets', icon: '▤', bottomPrimary: true },
   { to: '/debts', label: 'Debt', icon: '⇄', bottomPrimary: true },
-  { to: '/expenses', label: 'Expenses', icon: '▦', bottomPrimary: true },
+  { to: '/expenses', label: 'Monthly Expenses', icon: '▦', bottomPrimary: true },
   // Not desktopOnly — logging a big purchase is exactly the kind of thing
   // that happens on a phone, in the moment, not at a desk.
   { to: '/big-expenses', label: 'Big Exp', icon: '▣' },
+  { to: '/cashflow', label: 'Cashflow', icon: '⇅' },
   { to: '/passive-income', label: 'Passive Income', icon: '⊛' },
   { to: '/progress', label: 'Progress', icon: '∿' },
   { to: '/rates', label: 'Rates', icon: '¤' },
@@ -45,6 +46,7 @@ export const PAGE_TITLES: Record<string, string> = {
   '/debts': 'Debt & Loans',
   '/expenses': 'Monthly Expenses',
   '/big-expenses': 'Big Expense',
+  '/cashflow': 'Monthly Cashflow',
   '/passive-income': 'Passive Income',
   '/targets': 'Targets',
   '/progress': 'Progress',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { errorMessage, useToast } from '../../context/ToastContext'
 import {
@@ -16,8 +16,16 @@ import { formatShortDate, sourceLabel } from '../../lib/format'
 import type { BudgetEnvelopeDetail, FixedExpense } from '../../types'
 import './MonthlyExpenses.css'
 
+function amountBound(input: string): number | null {
+  const value = input.trim()
+  if (!value) return null
+  if (!/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(value)) return NaN
+  const amount = Number(value.replace(/,/g, ''))
+  return Number.isSafeInteger(amount) ? amount : NaN
+}
+
 export function MonthlyExpenses() {
-  const { fmt } = useMoney()
+  const { fmt, fmtExact } = useMoney()
   const { showError, showSuccess } = useToast()
   const { data: periods = [] } = useExpensePeriods()
   const { data: latestPeriod } = useLatestExpensePeriod()
@@ -37,6 +45,10 @@ export function MonthlyExpenses() {
   const [editingExpense, setEditingExpense] = useState<FixedExpense | null>(null)
   const [expenseModalEnvelopeId, setExpenseModalEnvelopeId] = useState<string | null>(null)
   const [showExpenseModal, setShowExpenseModal] = useState(false)
+  const [minAmount, setMinAmount] = useState('')
+  const [maxAmount, setMaxAmount] = useState('')
+  const [showAmountFilter, setShowAmountFilter] = useState(false)
+  const filterToggleRef = useRef<HTMLButtonElement>(null)
 
   function openAddEnvelope() {
     setEditingEnvelope(null)
@@ -92,6 +104,38 @@ export function MonthlyExpenses() {
   }
 
   const dayProgress = periodProgress(period.start_date, period.end_date)
+  const minimum = amountBound(minAmount)
+  const maximum = amountBound(maxAmount)
+  const filtering = minimum !== null || maximum !== null
+  const filterError = Number.isNaN(minimum) || Number.isNaN(maximum)
+    ? 'Enter non-negative whole Rupiah amounts.'
+    : minimum !== null && maximum !== null && minimum > maximum
+      ? 'Minimum amount must be less than or equal to maximum amount.'
+      : ''
+  const amountRangeLabel = filterError ? 'Invalid amount range'
+    : minimum !== null && maximum !== null ? `${fmtExact(minimum)} – ${fmtExact(maximum)}`
+      : minimum !== null ? `From ${fmtExact(minimum)}`
+        : maximum !== null ? `Up to ${fmtExact(maximum)}` : ''
+  const visibleEnvelopes = period.envelopes.map((env) => ({
+    env,
+    expenses: env.fixed_expenses.filter((expense) => !filterError
+      && (minimum === null || expense.amount_idr >= minimum)
+      && (maximum === null || expense.amount_idr <= maximum)),
+  })).filter(({ expenses }) => !filtering || expenses.length > 0)
+  const totalCount = period.envelopes.reduce((sum, env) => sum + env.fixed_expenses.length, 0)
+  const matchingCount = visibleEnvelopes.reduce((sum, { expenses }) => sum + expenses.length, 0)
+  const matchingTotal = visibleEnvelopes.reduce((sum, { expenses }) =>
+    sum + expenses.reduce((subtotal, expense) => subtotal + expense.amount_idr, 0), 0)
+
+  function clearAmountFilter() {
+    setMinAmount('')
+    setMaxAmount('')
+  }
+
+  function closeAmountFilter() {
+    setShowAmountFilter(false)
+    filterToggleRef.current?.focus()
+  }
 
   return (
     <div>
@@ -120,6 +164,18 @@ export function MonthlyExpenses() {
           </div>
         </div>
         <div className="btn-group">
+          <button type="button"
+            ref={filterToggleRef}
+            className={`btn expense-filter-toggle ${filtering ? 'expense-filter-toggle-active' : 'btn-secondary'}`}
+            aria-expanded={showAmountFilter} aria-controls="expense-amount-panel"
+            onClick={() => setShowAmountFilter((shown) => !shown)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M3 4h18l-7 8v7l-4 2v-9L3 4Z" strokeLinejoin="round" />
+            </svg>
+            Filter amount
+            {filtering && <span className="expense-filter-count">1</span>}
+            <span aria-hidden="true">{showAmountFilter ? '▴' : '▾'}</span>
+          </button>
           <button type="button" className="btn btn-secondary" onClick={openAddEnvelope}>
             + Add envelope
           </button>
@@ -137,8 +193,54 @@ export function MonthlyExpenses() {
         </div>
       </div>
 
+      {!showAmountFilter && filtering && (
+        <div className="expense-active-filter" aria-live="polite">
+          <div className={`expense-filter-chip${filterError ? ' expense-filter-chip-error' : ''}`}>
+            <button type="button" className="expense-filter-chip-label" onClick={() => setShowAmountFilter(true)}
+              aria-label={`Edit amount filter: ${amountRangeLabel}`}>
+              Amount: {amountRangeLabel}
+            </button>
+            <button type="button" className="expense-filter-chip-clear" onClick={clearAmountFilter} aria-label="Clear amount filter">×</button>
+          </div>
+          {!filterError && <span className="expense-filter-status">{matchingCount} of {totalCount} expenses</span>}
+        </div>
+      )}
+
+      {showAmountFilter && <div id="expense-amount-panel" className="card expense-amount-filter" role="search" aria-label="Filter expenses by amount"
+        onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); closeAmountFilter() } }}>
+        <div className="expense-filter-head">
+          <div>
+            <div className="expense-filter-title">Amount range</div>
+            <div className="expense-filter-hint" id="expense-amount-hint">
+              Applies to every envelope in this period. Both limits are inclusive; leave either blank for no limit.
+            </div>
+          </div>
+          <div className="expense-filter-panel-actions">
+            {filtering && <button type="button" className="btn btn-secondary" onClick={clearAmountFilter}>Clear filter</button>}
+            <button type="button" className="expense-filter-close" onClick={closeAmountFilter} aria-label="Close amount filter">×</button>
+          </div>
+        </div>
+        <div className="expense-filter-fields">
+          <label className="field">Minimum amount (Rp)
+            <input autoFocus className="field-input mono" inputMode="numeric" value={minAmount}
+              onChange={(e) => setMinAmount(e.target.value)} placeholder="No minimum"
+              aria-invalid={!!filterError} aria-describedby="expense-amount-hint expense-filter-status" />
+          </label>
+          <label className="field">Maximum amount (Rp)
+            <input className="field-input mono" inputMode="numeric" value={maxAmount}
+              onChange={(e) => setMaxAmount(e.target.value)} placeholder="No maximum"
+              aria-invalid={!!filterError} aria-describedby="expense-amount-hint expense-filter-status" />
+          </label>
+        </div>
+        <div id="expense-filter-status" aria-live="polite" className={filterError ? 'error-text' : 'expense-filter-status'}>
+          {filterError || (filtering
+            ? `${matchingCount} of ${totalCount} expenses · Matching total ${fmtExact(matchingTotal)}`
+            : `Showing all ${totalCount} expenses`)}
+        </div>
+      </div>}
+
       <div className="expense-grid">
-        {period.envelopes.map((env) => {
+        {visibleEnvelopes.map(({ env, expenses }) => {
           const overBudget = env.actual_total_idr > env.committed_amount_idr
           const pct =
             env.committed_amount_idr > 0 ? (env.actual_total_idr / env.committed_amount_idr) * 100 : 0
@@ -158,8 +260,13 @@ export function MonthlyExpenses() {
                 <div>
                   <div className="expense-card-title">{env.name}</div>
                 </div>
-                <div className="mono expense-card-total">{fmt(env.actual_total_idr)}</div>
+                <div className="mono expense-card-total">{filtering
+                  ? fmtExact(expenses.reduce((sum, expense) => sum + expense.amount_idr, 0))
+                  : fmt(env.actual_total_idr)}</div>
               </div>
+              {filtering ? <div className="expense-envelope-meta">
+                {expenses.length} of {env.fixed_expenses.length} expenses · Matching total
+              </div> : <>
               <div className="expense-envelope-meta">
                 <span>of {fmt(env.committed_amount_idr)} committed</span>
                 <span className={overBudget ? 'expense-over' : 'expense-under'}>
@@ -189,15 +296,16 @@ export function MonthlyExpenses() {
                   {aheadOfPace ? 'ahead of pace' : 'on track'}
                 </span>
               </div>
+              </>}
 
-              {env.fixed_expenses.length === 0 && <div className="empty-state">No expenses logged yet.</div>}
+              {expenses.length === 0 && <div className="empty-state">No expenses logged yet.</div>}
               {/* A busy envelope can run to dozens of rows, which would leave
                   every card in the row stretched to match it. Scrolling the
                   list keeps the cards a readable height, with the total and
                   the add button staying put outside it. */}
-              {env.fixed_expenses.length > 0 && (
+              {expenses.length > 0 && (
                 <div className="expense-rows">
-                  {env.fixed_expenses.map((fe) => {
+                  {expenses.map((fe) => {
                     return (
                       <div className="expense-row" key={fe.id} onClick={() => openEditExpense(fe)}>
                         <div className="expense-row-info">
@@ -208,7 +316,7 @@ export function MonthlyExpenses() {
                           <div className="expense-row-date">{formatShortDate(fe.expense_date)}</div>
                           {fe.notes && <div className="expense-row-notes">{fe.notes}</div>}
                         </div>
-                        <span className="mono expense-row-val">{fmt(fe.amount_idr)}</span>
+                        <span className="mono expense-row-val">{fmtExact(fe.amount_idr)}</span>
                       </div>
                     )
                   })}
@@ -221,7 +329,14 @@ export function MonthlyExpenses() {
           )
         })}
 
-        {period.envelopes.length === 0 && (
+        {filtering && visibleEnvelopes.length === 0 && (
+          <div className="card">
+            <div className="empty-state">{filterError ? 'Adjust the amount range to see expenses.' : 'No expenses match this amount range.'}</div>
+            <button type="button" className="btn btn-secondary" onClick={clearAmountFilter}>Clear filter</button>
+          </div>
+        )}
+
+        {!filtering && period.envelopes.length === 0 && (
           <div className="card">
             <div className="empty-state">No budget envelopes yet — add one to start logging expenses.</div>
             <button type="button" className="btn-dashed" onClick={openAddEnvelope}>
@@ -231,15 +346,17 @@ export function MonthlyExpenses() {
         )}
       </div>
 
-      <div className="expense-total-banner">
+      {!filterError && <div className="expense-total-banner">
         <div>
-          <div className="expense-total-label">{period.label} total spend</div>
-          <div className="mono expense-total-value">{fmt(period.actual_total_idr)}</div>
+          <div className="expense-total-label">{period.label} {filtering ? 'matching spend' : 'total spend'}</div>
+          <div className="mono expense-total-value">{filtering ? fmtExact(matchingTotal) : fmt(period.actual_total_idr)}</div>
           <div className="expense-total-note">
-            of {fmt(period.committed_total_idr)} committed across envelopes
+            {filtering
+              ? `${matchingCount} of ${totalCount} expenses · ${fmtExact(period.actual_total_idr)} total period spend`
+              : `of ${fmt(period.committed_total_idr)} committed across envelopes`}
           </div>
         </div>
-      </div>
+      </div>}
 
       <NewPeriodModal
         open={showNewPeriod}

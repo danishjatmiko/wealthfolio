@@ -8,6 +8,7 @@ import type { BondPurchaseInput } from '../types'
 // re-syncs the latest snapshot's bond rows (Bonds Gov./Corp.) on every
 // write, so Assets and its derived views refetch too.
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['cashflow'] })
   qc.invalidateQueries({ queryKey: ['bondPurchases'] })
   qc.invalidateQueries({ queryKey: ['bondSummary'] })
   qc.invalidateQueries({ queryKey: ['incomeCalendar'] })

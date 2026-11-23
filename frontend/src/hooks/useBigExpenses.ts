@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import type { BigExpenseInput } from '../types'
 
 function invalidate(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['cashflow'] })
   qc.invalidateQueries({ queryKey: ['bigExpenses'] })
   qc.invalidateQueries({ queryKey: ['bigExpenseSummary'] })
 }

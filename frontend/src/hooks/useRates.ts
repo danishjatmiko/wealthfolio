@@ -21,6 +21,7 @@ export function useCreateRate() {
   return useMutation({
     mutationFn: (input: RateEntryInput) => api.rates.create(input),
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['cashflow'] })
       qc.invalidateQueries({ queryKey: ['rates'] })
       qc.invalidateQueries({ queryKey: ['dashboard'] })
     },

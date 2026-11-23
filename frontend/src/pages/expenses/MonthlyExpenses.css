@@ -1,3 +1,111 @@
+.expense-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.expense-filter-toggle-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.expense-filter-count {
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+}
+.expense-active-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.expense-active-filter .expense-filter-status { margin: 0; }
+.expense-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-chip);
+  max-width: 100%;
+}
+.expense-filter-chip-error { color: var(--red); }
+.expense-filter-chip-label,
+.expense-filter-chip-clear,
+.expense-filter-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.expense-filter-chip-label {
+  padding: 7px 8px 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.expense-filter-chip-clear,
+.expense-filter-close {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 20px;
+}
+.expense-filter-chip-clear:hover,
+.expense-filter-close:hover { background: var(--accent-soft); }
+.expense-filter-close { color: var(--text-body-secondary); }
+.expense-filter-panel-actions { display: flex; align-items: center; gap: 8px; }
+.expense-amount-filter {
+  margin-bottom: 14px;
+}
+.expense-filter-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.expense-filter-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.expense-filter-hint,
+.expense-filter-status {
+  font-size: 12px;
+  color: var(--text-body-secondary);
+  line-height: 1.5;
+  margin-top: 5px;
+}
+.expense-filter-head .btn {
+  flex-shrink: 0;
+}
+.expense-filter-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+@container (max-width: 400px) {
+  .expense-filter-head {
+    flex-direction: column;
+  }
+  .expense-filter-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .expense-period-range {
   font-size: 11.5px;
   color: var(--text-muted-2);

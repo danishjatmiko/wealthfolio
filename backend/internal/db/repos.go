@@ -35,6 +35,7 @@ type Repos struct {
 	BudgetEnvelopes *BudgetEnvelopesRepo
 	FixedExpenses   *FixedExpensesRepo
 	PassiveIncome   *PassiveIncomeRepo
+	Cashflow        *CashflowRepo
 	BondPurchases   *BondPurchasesRepo
 	BigExpenses     *BigExpensesRepo
 	ReceivableLoans *ReceivableLoansRepo
@@ -63,6 +64,7 @@ func NewRepos(pool *pgxpool.Pool) *Repos {
 		BudgetEnvelopes: NewBudgetEnvelopesRepo(pool),
 		FixedExpenses:   NewFixedExpensesRepo(pool),
 		PassiveIncome:   NewPassiveIncomeRepo(pool),
+		Cashflow:        NewCashflowRepo(pool),
 		BondPurchases:   NewBondPurchasesRepo(pool),
 		BigExpenses:     NewBigExpensesRepo(pool),
 		ReceivableLoans: NewReceivableLoansRepo(pool),

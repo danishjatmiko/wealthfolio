@@ -48,6 +48,21 @@ go test ./...
 go vet ./...
 ```
 
+Cashflow also has an integration test covering real migrations, authentication,
+monthly aggregation, updates/deletion, validation, and isolation between users.
+Run it against a disposable database (migrations include seed data):
+
+```bash
+createdb wealthfolio_cashflow_test
+CASHFLOW_TEST_DATABASE_URL="postgres:///wealthfolio_cashflow_test?sslmode=disable" go test ./internal/httpapi -run TestCashflowIntegration -v
+dropdb wealthfolio_cashflow_test
+```
+
+Cashflow endpoints (session authentication required): `GET /api/v1/cashflow?year=2026`,
+`PUT /api/v1/cashflow/active-income/{YYYY-MM}` with `{"amount_idr":25000000,"note":"Salary"}`,
+and `DELETE /api/v1/cashflow/active-income/{YYYY-MM}`. A saved zero income is
+distinct from an unrecorded month; PUT replaces the total for that month.
+
 ## Migrations
 
 Plain SQL files in `migrations/`, run automatically in order on every API startup — nothing to run by hand. To add one, drop a new `NNNNN_description.sql` file with `-- +goose Up` / `-- +goose Down` blocks; see any existing file for the style.

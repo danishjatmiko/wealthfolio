@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import type { BudgetEnvelopeInput } from '../types'
 
 function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['cashflow'] })
   qc.invalidateQueries({ queryKey: ['expensePeriod'], refetchType: 'all' })
   qc.invalidateQueries({ queryKey: ['expensePeriods'] })
   qc.invalidateQueries({ queryKey: ['dashboard'] })

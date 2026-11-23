@@ -29,6 +29,7 @@ export function useCreateExpensePeriod() {
   return useMutation({
     mutationFn: (input: CreateExpensePeriodInput) => api.expensePeriods.create(input),
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['cashflow'] })
       qc.invalidateQueries({ queryKey: ['expensePeriod'], refetchType: 'all' })
       qc.invalidateQueries({ queryKey: ['expensePeriods'] })
       qc.invalidateQueries({ queryKey: ['dashboard'] })
@@ -42,6 +43,7 @@ export function useDeleteExpensePeriod() {
   return useMutation({
     mutationFn: (id: string) => api.expensePeriods.remove(id),
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['cashflow'] })
       qc.invalidateQueries({ queryKey: ['expensePeriods'] })
       // refetchType: 'all' so the cache entry for whichever period the UI
       // falls back to (not necessarily the currently-mounted one) is

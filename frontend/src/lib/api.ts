@@ -1,5 +1,8 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type {
+  ActiveIncomeInput,
+  MonthlyActiveIncome,
+  CashflowSummary,
   BigExpense,
   BigExpenseInput,
   BigExpenseSummary,
@@ -101,6 +104,12 @@ const put = <T>(path: string, body: unknown) =>
 const del = <T>(path: string) => request<T>(path, { method: 'DELETE' })
 
 export const api = {
+  cashflow: {
+    summary: (year: number) => get<CashflowSummary>(`/cashflow?year=${year}`),
+    saveActiveIncome: (month: string, input: ActiveIncomeInput) =>
+      put<MonthlyActiveIncome>(`/cashflow/active-income/${month}`, input),
+    deleteActiveIncome: (month: string) => del<void>(`/cashflow/active-income/${month}`),
+  },
   auth: {
     me: () => get<User>('/auth/me'),
     googleLoginUrl: `${BASE}/auth/google/login`,
