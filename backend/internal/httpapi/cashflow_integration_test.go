@@ -131,6 +131,9 @@ func TestCashflowIntegration(t *testing.T) {
 
 	got := summary(token)
 	aug := got.Months[0]
+	if aug.PeriodStartDate.String() != "2026-07-25" || aug.PeriodEndDate.String() != "2026-08-24" {
+		t.Fatalf("cashflow must expose the same stored dates as Monthly Expenses: %+v", aug)
+	}
 	if aug.ActiveIncome == nil || aug.ActiveIncome.AmountIdr != 25_000_001 || aug.ActiveIncome.Note != "Updated salary" || aug.PassiveIncomeIdr != 2_000_000 || aug.ExpensesIdr != 10_000_000 || aug.BigExpensesIdr != 2_000_000 || aug.NetIdr != 15_000_001 {
 		t.Fatalf("wrong totals or leaked other user's records: %+v", aug)
 	}

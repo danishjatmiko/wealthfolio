@@ -183,6 +183,8 @@ export interface MonthlyActiveIncome extends ActiveIncomeInput {
 export interface CashflowMonth {
   month: number
   label: string
+  period_start_date: string
+  period_end_date: string
   active_income: MonthlyActiveIncome | null
   passive_income_idr: number
   projected_passive_income_idr: number

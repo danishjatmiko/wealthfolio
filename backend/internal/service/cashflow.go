@@ -23,6 +23,8 @@ func NewCashflowService(repos *db.Repos, passive *PassiveIncomeService) *Cashflo
 type CashflowMonthDTO struct {
 	Month                     int                     `json:"month"`
 	Label                     string                  `json:"label"`
+	PeriodStartDate           domain.Date             `json:"period_start_date"`
+	PeriodEndDate             domain.Date             `json:"period_end_date"`
 	ActiveIncome              *db.MonthlyActiveIncome `json:"active_income"`
 	PassiveIncomeIdr          int64                   `json:"passive_income_idr"`
 	ProjectedPassiveIncomeIdr int64                   `json:"projected_passive_income_idr"`
@@ -120,7 +122,11 @@ func aggregateCashflow(year int, active []db.MonthlyActiveIncome, passive []Inco
 	out := CashflowDTO{ReferenceYear: year, Months: make([]CashflowMonthDTO, 13-firstMonth)}
 	for i := range out.Months {
 		month := firstMonth + i
-		out.Months[i] = CashflowMonthDTO{Month: month, Label: time.Month(month).String()}
+		start, end := boundsForPeriodMonth(year, time.Month(month))
+		out.Months[i] = CashflowMonthDTO{
+			Month: month, Label: time.Month(month).String(),
+			PeriodStartDate: start, PeriodEndDate: end,
+		}
 	}
 	byMonth := func(month int) *CashflowMonthDTO {
 		if month < firstMonth || month > 12 {
@@ -152,6 +158,17 @@ func aggregateCashflow(year int, active []db.MonthlyActiveIncome, passive []Inco
 			continue
 		}
 		if m := byMonth(int(p.Period.EndDate.Month())); m != nil {
+			if !m.HasExpensePeriod {
+				m.PeriodStartDate = p.Period.StartDate
+				m.PeriodEndDate = p.Period.EndDate
+			} else {
+				if p.Period.StartDate.Before(m.PeriodStartDate.Time) {
+					m.PeriodStartDate = p.Period.StartDate
+				}
+				if p.Period.EndDate.After(m.PeriodEndDate.Time) {
+					m.PeriodEndDate = p.Period.EndDate
+				}
+			}
 			m.HasExpensePeriod = true
 			m.ExpensesIdr += p.ActualTotalIdr
 		}

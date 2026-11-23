@@ -3,12 +3,18 @@ import { Link } from 'react-router-dom'
 import { useMoney } from '../../context/MoneyVisibilityContext'
 import { errorMessage } from '../../context/ToastContext'
 import { useCashflow } from '../../hooks/useCashflow'
+import { formatShortDate } from '../../lib/format'
 import type { CashflowMonth } from '../../types'
 import { ActiveIncomeModal } from './ActiveIncomeModal'
 import './Cashflow.css'
 
 function balanceClass(value: number) {
   return value > 0 ? 'cashflow-positive' : value < 0 ? 'cashflow-negative' : ''
+}
+
+function expensePeriodRange(month: CashflowMonth) {
+  if (!month.period_start_date || !month.period_end_date) return ''
+  return `${formatShortDate(month.period_start_date)} – ${formatShortDate(month.period_end_date)}`
 }
 
 interface CashflowSegment {
@@ -71,7 +77,7 @@ export function Cashflow() {
   const periodLabel = elapsed.length ? `${elapsed[0].label}–${elapsed[elapsed.length - 1].label} ${year}` : 'No elapsed months in this year'
 
   function showChartTooltip(month: number, element: HTMLElement) {
-    setChartTooltip({ month, below: element.getBoundingClientRect().top < 250 })
+    setChartTooltip({ month, below: element.getBoundingClientRect().top < 290 })
   }
 
   return (
@@ -126,8 +132,11 @@ export function Cashflow() {
               onKeyDown={(e) => { if (e.key === 'Escape') setChartTooltip(null) }}
               onClick={() => { setChartTooltip(null); setEditingMonth(m) }}
               aria-describedby={chartTooltip?.month === m.month && !editingMonth ? `cashflow-tooltip-${m.month}` : undefined}
-              aria-label={`${m.label} ${year}: active income ${fmtExact(m.active_income?.amount_idr ?? 0)}, passive income ${fmtExact(m.passive_income_idr)}, monthly expenses ${fmtExact(m.expenses_idr)}, big expense ${fmtExact(m.big_expenses_idr)}, net ${fmtExact(m.net_idr)}. Edit active income.`}>
-              <span className="cashflow-chart-label">{m.label.slice(0, 3)}{isFuture(m) && <small>Upcoming</small>}</span>
+              aria-label={`${m.label} ${year}, monthly expenses period ${expensePeriodRange(m)}: active income ${fmtExact(m.active_income?.amount_idr ?? 0)}, passive income ${fmtExact(m.passive_income_idr)}, monthly expenses ${fmtExact(m.expenses_idr)}, big expense ${fmtExact(m.big_expenses_idr)}, net ${fmtExact(m.net_idr)}. Edit active income.`}>
+              <span className="cashflow-chart-label">{m.label.slice(0, 3)}
+                <small className="cashflow-period-range">{expensePeriodRange(m)}</small>
+                {isFuture(m) && <small>Upcoming</small>}
+              </span>
               <span className="cashflow-bars" aria-hidden="true">
                 <CashflowBar positiveScale={positiveScale} negativeScale={negativeScale} segments={[
                   { label: 'Active income', amount: m.active_income?.amount_idr ?? 0, className: 'cashflow-active-color' },
@@ -143,6 +152,7 @@ export function Cashflow() {
                 <span id={`cashflow-tooltip-${m.month}`} role="tooltip"
                   className={`cashflow-chart-tooltip${chartTooltip.below ? ' cashflow-chart-tooltip-below' : ''}`}>
                   <span className="cashflow-tooltip-title">{m.label} {year}</span>
+                  <span className="cashflow-tooltip-period">Monthly expenses: {expensePeriodRange(m)}</span>
                   <span className="cashflow-tooltip-item"><span><i className="cashflow-active-color" />Active income</span><span className="mono">{fmtExact(m.active_income?.amount_idr ?? 0)}</span></span>
                   <span className="cashflow-tooltip-item"><span><i className="cashflow-passive-color" />Passive income</span><span className="mono">{fmtExact(m.passive_income_idr)}</span></span>
                   <span className="cashflow-tooltip-item cashflow-tooltip-total"><span>Total income</span><span className="mono">{fmtExact(m.total_income_idr)}</span></span>
@@ -162,7 +172,11 @@ export function Cashflow() {
           <table className="cashflow-table">
             <thead><tr><th>Month</th><th>Active income</th><th>Passive income</th><th>Monthly expenses</th><th>Big expense</th><th>Net cashflow</th><th><span className="cashflow-action-heading">Active income</span></th></tr></thead>
             <tbody>{months.map((m) => <tr key={m.month}>
-              <th scope="row">{m.label}<div className="cashflow-caption">{isFuture(m) ? 'Upcoming' : year === currentYear && m.month === now.getMonth() + 1 ? 'In progress' : year}</div></th>
+              <th scope="row">{m.label}
+                <span className="cashflow-period-range">{expensePeriodRange(m)}</span>
+                {(isFuture(m) || (year === currentYear && m.month === now.getMonth() + 1)) &&
+                  <div className="cashflow-caption">{isFuture(m) ? 'Upcoming' : 'In progress'}</div>}
+              </th>
               <td data-label="Active income"><span className="mono">{m.active_income ? fmtExact(m.active_income.amount_idr) : '—'}</span>
                 {!m.active_income && <div className="cashflow-caption cashflow-missing">Not entered</div>}
               </td>

@@ -101,4 +101,38 @@ func TestCashflowJanuaryUsesEndMonthAcrossYears(t *testing.T) {
 	if len(out.Months) != 12 || out.Months[0].Month != 1 || out.Months[0].NetIdr != -123 || !out.Months[0].HasExpensePeriod {
 		t.Fatalf("January period misclassified: %+v", out)
 	}
+	if out.Months[0].PeriodStartDate.String() != "2026-12-25" || out.Months[0].PeriodEndDate.String() != "2027-01-24" {
+		t.Fatalf("January must show the expense period across years: %+v", out.Months[0])
+	}
+}
+
+func TestCashflowExpensePeriodRanges(t *testing.T) {
+	date := func(raw string) domain.Date {
+		d, err := domain.ParseDate(raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return d
+	}
+	// Use the stored bounds when present, including a historical period
+	// imported with different dates. Missing/future periods use the same
+	// pay-cycle bounds as the Monthly Expenses creation flow.
+	periods := []db.ExpensePeriodAgg{{Period: domain.ExpensePeriod{
+		StartDate: date("2026-10-26"), EndDate: date("2026-11-23"),
+	}}}
+	months := aggregateCashflow(2026, nil, nil, periods, nil).Months
+	for _, tt := range []struct {
+		month      int
+		start, end string
+		exists     bool
+	}{
+		{8, "2026-07-25", "2026-08-24", false},
+		{11, "2026-10-26", "2026-11-23", true},
+		{12, "2026-11-25", "2026-12-24", false},
+	} {
+		month := months[tt.month-8]
+		if month.PeriodStartDate.String() != tt.start || month.PeriodEndDate.String() != tt.end || month.HasExpensePeriod != tt.exists {
+			t.Errorf("month %d: expected %s–%s (exists %v), got %+v", tt.month, tt.start, tt.end, tt.exists, month)
+		}
+	}
 }
