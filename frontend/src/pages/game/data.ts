@@ -5,7 +5,7 @@ import soundCredits from './soundCredits.json'
 // page works without the API and without a login.
 export const BASE = '/interactive-game'
 
-export type PhotoKind = 'animal' | 'fruit'
+export type PhotoKind = 'animal' | 'fruit' | 'emotion'
 
 export interface Item {
   id: string
@@ -66,6 +66,26 @@ export const ANIMALS: Item[] = [
   { id: 'fly', name: 'Lalat' },
   { id: 'ant', name: 'Semut' },
   { id: 'bee', name: 'Lebah' },
+  { id: 'elephant', name: 'Gajah' },
+  { id: 'horse', name: 'Kuda' },
+  { id: 'zebra', name: 'Zebra' },
+  { id: 'panda', name: 'Panda' },
+  { id: 'koala', name: 'Koala' },
+  { id: 'kangaroo', name: 'Kanguru' },
+  { id: 'capybara', name: 'Kapibara' },
+  { id: 'polar-bear', name: 'Beruang Kutub' },
+  { id: 'deer', name: 'Rusa' },
+  { id: 'squirrel', name: 'Bajing' },
+  { id: 'penguin', name: 'Penguin' },
+  { id: 'owl', name: 'Burung Hantu' },
+  { id: 'peacock', name: 'Burung Merak' },
+  { id: 'flamingo', name: 'Flamingo' },
+  { id: 'ostrich', name: 'Burung Unta' },
+  { id: 'sea-turtle', name: 'Penyu' },
+  { id: 'frog', name: 'Katak' },
+  { id: 'octopus', name: 'Gurita' },
+  { id: 'butterfly', name: 'Kupu-kupu' },
+  { id: 'crab', name: 'Kepiting' },
 ]
 
 export const FRUITS: Item[] = [
@@ -89,6 +109,18 @@ export const FRUITS: Item[] = [
   { id: 'kelengkeng', name: 'Kelengkeng' },
   { id: 'belimbing', name: 'Belimbing' },
   { id: 'kiwi', name: 'Kiwi' },
+]
+
+export const EMOTIONS: Item[] = [
+  { id: 'senang', name: 'Senang' },
+  { id: 'sedih', name: 'Sedih' },
+  { id: 'malu', name: 'Malu' },
+  { id: 'marah', name: 'Marah' },
+  { id: 'takut', name: 'Takut' },
+  { id: 'kaget', name: 'Kaget' },
+  { id: 'bingung', name: 'Bingung' },
+  { id: 'jijik', name: 'Jijik' },
+  { id: 'bangga', name: 'Bangga' },
 ]
 
 export const COLORS: GameColor[] = [
@@ -125,17 +157,17 @@ const AQUATIC = new Set(['koi', 'goldfish', 'shark', 'ray', 'seahorse'])
 export const PHOTO_CREDITS = photoCredits as Record<string, Credit[]>
 export const SOUND_CREDITS = soundCredits as Record<string, SoundCredit>
 
-const PHOTO_DIR: Record<PhotoKind, string> = { animal: 'animals', fruit: 'fruits' }
+const PHOTO_DIR: Record<PhotoKind, string> = { animal: 'animals', fruit: 'fruits', emotion: 'emotions' }
 
-export const photoCount = (id: string) => PHOTO_CREDITS[id]?.length ?? 1
+export const photoCount = (kind: PhotoKind, id: string) => kind === 'emotion' ? 2 : (PHOTO_CREDITS[id]?.length ?? 1)
 export const photoUrl = (kind: PhotoKind, id: string, n: number) => `${BASE}/${PHOTO_DIR[kind]}/${id}-${n}.jpg`
 export const soundUrl = (id: string) => `${BASE}/sounds/${id}.m4a`
 export const voiceUrl = (key: string) => `${BASE}/voice/${key}.m4a`
 export const letterUrl = (ch: string) => `${BASE}/voice/letters/${ch.toLowerCase()}.m4a`
 
 /** A random photo number for an item, avoiding `not` when there's a choice. */
-export function randomPhoto(id: string, not?: number): number {
-  const count = photoCount(id)
+export function randomPhoto(kind: PhotoKind, id: string, not?: number): number {
+  const count = photoCount(kind, id)
   if (count <= 1) return 1
   let n = not
   while (n === not) n = 1 + Math.floor(Math.random() * count)

@@ -5,6 +5,7 @@ import {
   ANIMALS,
   BASE,
   COLORS,
+  EMOTIONS,
   FRUITS,
   PHOTO_CREDITS,
   SOUND_CREDITS,
@@ -21,12 +22,19 @@ import type { Credit, GameColor, Item, PhotoKind } from './data'
 import { playClip, playSequence, stopAudio } from './audio'
 import './game.css'
 
-type Kind = 'animal' | 'fruit' | 'color'
+type Kind = PhotoKind | 'color'
 
-const SECTIONS: Record<Kind, { path: string; title: string; items: Item[]; question: string }> = {
-  animal: { path: 'hewan', title: 'Tebak Hewan', items: ANIMALS, question: 'Ini hewan apa?' },
-  fruit: { path: 'buah', title: 'Tebak Buah', items: FRUITS, question: 'Ini buah apa?' },
-  color: { path: 'warna', title: 'Tebak Warna', items: COLORS, question: 'Ini warna apa?' },
+const SECTIONS: Record<Kind, { path: string; title: string; items: Item[]; question: string; quizPrompt: string }> = {
+  animal: { path: 'hewan', title: 'Tebak Hewan', items: ANIMALS, question: 'Ini hewan apa?', quizPrompt: 'Mana' },
+  fruit: { path: 'buah', title: 'Tebak Buah', items: FRUITS, question: 'Ini buah apa?', quizPrompt: 'Mana' },
+  color: { path: 'warna', title: 'Tebak Warna', items: COLORS, question: 'Ini warna apa?', quizPrompt: 'Mana warna' },
+  emotion: {
+    path: 'emosi',
+    title: 'Tebak Emosi',
+    items: EMOTIONS,
+    question: 'Dia sedang merasa apa?',
+    quizPrompt: 'Mana yang sedang',
+  },
 }
 
 /** Public, login-free kids' game served at /interactive-game. Rendered
@@ -160,7 +168,7 @@ function Photo({ kind, id, n }: { kind: PhotoKind; id: string; n: number }) {
   return (
     <span className="kg-photo-fit" key={src}>
       <img className="kg-photo-bg" src={src} alt="" aria-hidden draggable={false} />
-      <img className="kg-photo-fg" src={src} alt="Foto" draggable={false} />
+      <img className="kg-photo-fg" src={src} alt={kind === 'emotion' ? 'Ilustrasi ekspresi' : 'Foto'} draggable={false} />
     </span>
   )
 }
@@ -287,6 +295,10 @@ function Home() {
           </span>
           <span>Tebak Warna</span>
         </Link>
+        <Link to="/emosi" className="kg-tile kg-tile-photo kg-tile-emotion">
+          <img src={photoUrl('emotion', 'senang', 1)} alt="" />
+          <span>Tebak Emosi</span>
+        </Link>
         <Link to="/sumber" className="kg-credits-link">
           Sumber foto & suara
         </Link>
@@ -307,15 +319,15 @@ function Cards({ kind }: { kind: Kind }) {
   const [photoN, setPhotoN] = useState(1)
   const item = deck.item
   const photoKind = kind === 'color' ? null : kind
+  const imageCount = photoKind ? photoCount(photoKind, item.id) : 0
 
   useEffect(() => {
     reset()
     clear()
     setRevealed(false)
     if (!photoKind) return
-    // A different photo of the same animal/fruit each visit, so it isn't
-    // always the same picture; warm the next card's photo too.
-    setPhotoN(randomPhoto(item.id))
+    // Pick an image for this visit and warm the first image of the next card.
+    setPhotoN(randomPhoto(photoKind, item.id))
     const next = deck.order[(deck.idx + 1) % deck.order.length]
     new Image().src = photoUrl(photoKind, next.id, 1)
   }, [item.id, deck.idx, deck.order, photoKind, reset, clear])
@@ -340,13 +352,13 @@ function Cards({ kind }: { kind: Kind }) {
         {photoKind ? (
           <figure className="kg-photo" onClick={() => setRevealed(true)}>
             <Photo kind={photoKind} id={item.id} n={photoN} />
-            {photoCount(item.id) > 1 && (
+            {imageCount > 1 && (
               <button
                 className="kg-round kg-other-photo"
-                aria-label="Foto lain"
+                aria-label={kind === 'emotion' ? 'Ilustrasi lain' : 'Foto lain'}
                 onClick={(e) => {
                   e.stopPropagation()
-                  setPhotoN((n) => (n % photoCount(item.id)) + 1)
+                  setPhotoN((n) => (n % imageCount) + 1)
                 }}
               >
                 🔄
@@ -371,7 +383,7 @@ function Cards({ kind }: { kind: Kind }) {
           {playing === 'sound' && note && <div className="kg-note">{note}</div>}
         </div>
         <div className="kg-actions">
-          {kind === 'animal' && (
+          {kind === 'animal' && SOUND_CREDITS[item.id] && (
             <BigButton
               icon="🔊"
               label="Suara"
@@ -424,8 +436,9 @@ function Cards({ kind }: { kind: Kind }) {
 const OPTIONS = 4
 
 function Quiz({ kind }: { kind: Kind }) {
-  const items = SECTIONS[kind].items
+  const { items, quizPrompt } = SECTIONS[kind]
   const photoKind = kind === 'color' ? null : kind
+  const optionLayout = kind === 'animal' || kind === 'fruit' ? 'photo' : kind
   // Targets come from a shuffled deck so every item gets asked before any
   // repeats.
   const deckRef = useRef<Item[]>([])
@@ -437,9 +450,12 @@ function Quiz({ kind }: { kind: Kind }) {
   const makeRound = useCallback(() => {
     const target = nextTarget()
     const others = shuffle(items.filter((x) => x.id !== target.id)).slice(0, OPTIONS - 1)
-    const options = shuffle([target, ...others]).map((item) => ({ item, n: randomPhoto(item.id) }))
+    const options = shuffle([target, ...others]).map((item) => ({
+      item,
+      n: photoKind ? randomPhoto(photoKind, item.id) : 1,
+    }))
     return { target, options, key: Math.random() }
-  }, [items, nextTarget])
+  }, [items, nextTarget, photoKind])
 
   const [round, setRound] = useState(makeRound)
   const [wrong, setWrong] = useState<Set<string>>(new Set())
@@ -475,7 +491,7 @@ function Quiz({ kind }: { kind: Kind }) {
     setStars((s) => s + 1)
     const praise = voiceUrl(`ok-${1 + Math.floor(Math.random() * 3)}`)
     const seq = [praise, voiceUrl(`name-${o.id}`)]
-    if (kind === 'animal' && !ambientNote(o.id)) seq.push(soundUrl(o.id))
+    if (kind === 'animal' && SOUND_CREDITS[o.id]?.kind === 'real') seq.push(soundUrl(o.id))
     const finished = await playSequence(seq, undefined, 150)
     if (finished) {
       await new Promise((r) => setTimeout(r, 500))
@@ -506,14 +522,14 @@ function Quiz({ kind }: { kind: Kind }) {
                 🔊
               </button>
               <h2>
-                Mana {kind === 'color' ? 'warna ' : ''}
+                {quizPrompt}{' '}
                 <b>{promptName}</b>?
               </h2>
               <span className="kg-stars" aria-label={`${stars} bintang`}>
                 ⭐ {stars}
               </span>
             </div>
-            <div className={`kg-options kg-options-${photoKind ? 'photo' : 'color'}`} key={round.key}>
+            <div className={`kg-options kg-options-${optionLayout}`} key={round.key}>
               {round.options.map(({ item: o, n }) => {
                 const isWrong = wrong.has(o.id)
                 const isRight = solved && o.id === round.target.id
@@ -605,8 +621,8 @@ function Credits() {
       </header>
       <main className="kg-credits">
         <p>
-          Semua foto dan suara hewan berasal dari Wikimedia Commons, dipakai sesuai lisensinya. Suara pembaca nama
-          dibuat dengan suara komputer berbahasa Indonesia.
+          Foto hewan dan buah serta suara hewan berasal dari Wikimedia Commons dan dipakai sesuai lisensinya.
+          Ilustrasi emosi dibuat untuk permainan ini. Suara pembaca nama dibuat dengan suara komputer berbahasa Indonesia.
         </p>
         {sections.map((s) => (
           <section key={s.kind}>

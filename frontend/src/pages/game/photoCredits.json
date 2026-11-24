@@ -1678,5 +1678,605 @@
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hippopotamus_in_Chobe_National_Park_03.jpg"
     }
+  ],
+  "elephant": [
+    {
+      "title": "File:African elephant (Loxodonta africana) 2.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:African_elephant_(Loxodonta_africana)_2.jpg"
+    },
+    {
+      "title": "File:178 Male African bush elephant in Etosha National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:178_Male_African_bush_elephant_in_Etosha_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:African bush elephants (Loxodonta africana) female with six-week-old baby.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:African_bush_elephants_(Loxodonta_africana)_female_with_six-week-old_baby.jpg"
+    },
+    {
+      "title": "File:Red elephant in dirt.jpg",
+      "author": "Byrdyak",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_elephant_in_dirt.jpg"
+    }
+  ],
+  "horse": [
+    {
+      "title": "File:Biandintz eta zaldiak - modified2.jpg",
+      "author": "Mikel Ortega, edited by Richard Bartz",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Biandintz_eta_zaldiak_-_modified2.jpg"
+    },
+    {
+      "title": "File:Horse-and-pony.jpg",
+      "author": "arjecahn",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Horse-and-pony.jpg"
+    },
+    {
+      "title": "File:Mare foal poland.jpg",
+      "author": "Peter.shaman",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mare_foal_poland.jpg"
+    },
+    {
+      "title": "File:Garranos fight.jpg",
+      "author": "Norberto Esteves",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Garranos_fight.jpg"
+    }
+  ],
+  "zebra": [
+    {
+      "title": "File:Adult Zebra Side Luangwa Jul23 A7C 05906.jpg",
+      "author": "Timothy A. Gonsalves",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adult_Zebra_Side_Luangwa_Jul23_A7C_05906.jpg"
+    },
+    {
+      "title": "File:Burchell's zebra (Equus quagga burchellii) 2.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Burchell%27s_zebra_(Equus_quagga_burchellii)_2.jpg"
+    },
+    {
+      "title": "File:Adult Juvenile Zebra Frontal Luangwa Jul23 A7C 05910.jpg",
+      "author": "Timothy A. Gonsalves",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adult_Juvenile_Zebra_Frontal_Luangwa_Jul23_A7C_05910.jpg"
+    },
+    {
+      "title": "File:Cebra común (Equus quagga), parque nacional del Lago Mburo, Uganda, 2024-02-01, DD 17.jpg",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cebra_com%C3%BAn_(Equus_quagga),_parque_nacional_del_Lago_Mburo,_Uganda,_2024-02-01,_DD_17.jpg"
+    }
+  ],
+  "panda": [
+    {
+      "title": "File:Panda géant (Ailuropoda melanoleuca) (1).jpg",
+      "author": "Gzen92",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Panda_g%C3%A9ant_(Ailuropoda_melanoleuca)_(1).jpg"
+    },
+    {
+      "title": "File:Zooparc de Beauval - Panda - 2016 - 012.jpg",
+      "author": "Thesupermat",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zooparc_de_Beauval_-_Panda_-_2016_-_012.jpg"
+    },
+    {
+      "title": "File:Grosser Panda.JPG",
+      "author": "J. Patrick Fischer",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grosser_Panda.JPG"
+    },
+    {
+      "title": "File:Panda Cub from Wolong, Sichuan, China.JPG",
+      "author": "Sheilalau at English Wikipedia",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Panda_Cub_from_Wolong,_Sichuan,_China.JPG"
+    }
+  ],
+  "koala": [
+    {
+      "title": "File:Koala climbing tree.jpg",
+      "author": "Diliff",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Koala_climbing_tree.jpg"
+    },
+    {
+      "title": "File:Koala in Zoo Duisburg.jpg",
+      "author": "Till Niermann",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Koala_in_Zoo_Duisburg.jpg"
+    },
+    {
+      "title": "File:Phascolarctos cinereus in Tiergarten Schönbrunn 24 July 2020 JM (5).jpg",
+      "author": "Johannes Maximilian",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Phascolarctos_cinereus_in_Tiergarten_Sch%C3%B6nbrunn_24_July_2020_JM_(5).jpg"
+    },
+    {
+      "title": "File:Koalas (Phascolarctos cinereus) female and joey Mount Lofty.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Koalas_(Phascolarctos_cinereus)_female_and_joey_Mount_Lofty.jpg"
+    }
+  ],
+  "kangaroo": [
+    {
+      "title": "File:Female Red Kangaroo (Macropus rufus).jpg",
+      "author": "Bidgee",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Female_Red_Kangaroo_(Macropus_rufus).jpg"
+    },
+    {
+      "title": "File:Osphranter rufus - Tierpark Hagenbeck 01.jpg",
+      "author": "H. Zell",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Osphranter_rufus_-_Tierpark_Hagenbeck_01.jpg"
+    },
+    {
+      "title": "File:Fauna de Australia30.JPG",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fauna_de_Australia30.JPG"
+    },
+    {
+      "title": "File:Fighting red kangaroos 1.jpg",
+      "author": "Dellex",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fighting_red_kangaroos_1.jpg"
+    }
+  ],
+  "capybara": [
+    {
+      "title": "File:Capybaracropped.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Capybaracropped.jpg"
+    },
+    {
+      "title": "File:Hydrochoeris hydrochaeris in Brazil in Petrópolis, Rio de Janeiro, Brazil 09.jpg",
+      "author": "Wilfredor",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hydrochoeris_hydrochaeris_in_Brazil_in_Petr%C3%B3polis,_Rio_de_Janeiro,_Brazil_09.jpg"
+    },
+    {
+      "title": "File:073 Capybara mother and baby in Encontro das Águas State Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:073_Capybara_mother_and_baby_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Capybara at SF Zoo.jpg",
+      "author": "Sanjay Acharya",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Capybara_at_SF_Zoo.jpg"
+    }
+  ],
+  "polar-bear": [
+    {
+      "title": "File:Polar Bear AdF.jpg",
+      "author": "Arturo de Frias Marques",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Polar_Bear_AdF.jpg"
+    },
+    {
+      "title": "File:Polar Bear with its tongue sticking out.jpg",
+      "author": "Christopher Michel",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Polar_Bear_with_its_tongue_sticking_out.jpg"
+    },
+    {
+      "title": "File:Female polar bear (Ursus maritimus) with cub, Svalbard.jpg",
+      "author": "AWeith",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Female_polar_bear_(Ursus_maritimus)_with_cub,_Svalbard.jpg"
+    },
+    {
+      "title": "File:Polar bear near Sjuøyane with a typical gesture assessing the situation.jpg",
+      "author": "Andreas Weith",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Polar_bear_near_Sju%C3%B8yane_with_a_typical_gesture_assessing_the_situation.jpg"
+    }
+  ],
+  "deer": [
+    {
+      "title": "File:Altenfelden Rothirsch Cervus elaphus-2094.jpg",
+      "author": "Isiwal",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Altenfelden_Rothirsch_Cervus_elaphus-2094.jpg"
+    },
+    {
+      "title": "File:Cervus elaphus Luc Viatour 4.jpg",
+      "author": "Lviatour",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cervus_elaphus_Luc_Viatour_4.jpg"
+    },
+    {
+      "title": "File:Cerf élaphe (Cervus elaphus) (Rhodes) (1).jpg",
+      "author": "Gzen92",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cerf_%C3%A9laphe_(Cervus_elaphus)_(Rhodes)_(1).jpg"
+    },
+    {
+      "title": "File:Parnis19Mar12 P Latsoudis (63a).jpg",
+      "author": "PLatsoudis",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Parnis19Mar12_P_Latsoudis_(63a).jpg"
+    }
+  ],
+  "squirrel": [
+    {
+      "title": "File:Eichhörnchen Düsseldorf Hofgarten edit.jpg",
+      "author": "Ray eye",
+      "license": "CC BY-SA 2.0 de",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/de/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eichh%C3%B6rnchen_D%C3%BCsseldorf_Hofgarten_edit.jpg"
+    },
+    {
+      "title": "File:Squirrel posing.jpg",
+      "author": "Peter Trimming",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Squirrel_posing.jpg"
+    },
+    {
+      "title": "File:Red squirrel (21808).jpg",
+      "author": "Rhododendrites",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_squirrel_(21808).jpg"
+    },
+    {
+      "title": "File:Eichhörnchen im Herbst.jpg",
+      "author": "Dellex",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eichh%C3%B6rnchen_im_Herbst.jpg"
+    }
+  ],
+  "penguin": [
+    {
+      "title": "File:Penguins 2 bg 111602.jpg",
+      "author": "Jon Sullivan (PDphoto.org)",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Penguins_2_bg_111602.jpg"
+    },
+    {
+      "title": "File:Penguin in Antarctica jumping out of the water.jpg",
+      "author": "Christopher Michel",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Penguin_in_Antarctica_jumping_out_of_the_water.jpg"
+    },
+    {
+      "title": "File:Kaiserpinguine mit Jungen.jpg",
+      "author": "Giuseppe Zibordi, NOAA Corps Collection. Credit: Michael Van Woert, NOAA NESDIS, ORA",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kaiserpinguine_mit_Jungen.jpg"
+    },
+    {
+      "title": "File:2007 Snow-Hill-Island Luyten-De-Hauwere-Emperor-Penguin-05.jpg",
+      "author": "Denis Luyten",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2007_Snow-Hill-Island_Luyten-De-Hauwere-Emperor-Penguin-05.jpg"
+    }
+  ],
+  "owl": [
+    {
+      "title": "File:Barn Owl, Lancashire.jpg",
+      "author": "Steven Ward",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Barn_Owl,_Lancashire.jpg"
+    },
+    {
+      "title": "File:Tyto alba (Scopoli, 1769).jpg",
+      "author": "Michael Gäbler",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tyto_alba_(Scopoli,_1769).jpg"
+    },
+    {
+      "title": "File:Tyto alba - Cetrería - 02.jpg",
+      "author": "Carlos Delgado",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tyto_alba_-_Cetrer%C3%ADa_-_02.jpg"
+    },
+    {
+      "title": "File:Barn Owl - Tyto alba (50357299072).jpg",
+      "author": "caroline legg",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Barn_Owl_-_Tyto_alba_(50357299072).jpg"
+    }
+  ],
+  "peacock": [
+    {
+      "title": "File:Paonroue.JPG",
+      "author": "Jebulon",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paonroue.JPG"
+    },
+    {
+      "title": "File:099 Indian peafowl in Jim Corbett National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:099_Indian_peafowl_in_Jim_Corbett_National_Park_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:Pavo Real Venezolano.jpg",
+      "author": "Wilfredor",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pavo_Real_Venezolano.jpg"
+    },
+    {
+      "title": "File:023 Indian peafowl in Jim Corbett National Park Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:023_Indian_peafowl_in_Jim_Corbett_National_Park_Photo_by_Giles_Laurent.jpg"
+    }
+  ],
+  "flamingo": [
+    {
+      "title": "File:Flamenco común (Phoenicopterus roseus), Walvis Bay, Namibia, 2018-08-05, DD 30.jpg",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flamenco_com%C3%BAn_(Phoenicopterus_roseus),_Walvis_Bay,_Namibia,_2018-08-05,_DD_30.jpg"
+    },
+    {
+      "title": "File:004 Greater flamingos walking in the Camargue during mating season Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:004_Greater_flamingos_walking_in_the_Camargue_during_mating_season_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:010 Greater flamingos male and female in the Camargue during mating season Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:010_Greater_flamingos_male_and_female_in_the_Camargue_during_mating_season_Photo_by_Giles_Laurent.jpg"
+    },
+    {
+      "title": "File:001 Greater flamingo in flight in the Camargue Photo by Giles Laurent.jpg",
+      "author": "Giles Laurent",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:001_Greater_flamingo_in_flight_in_the_Camargue_Photo_by_Giles_Laurent.jpg"
+    }
+  ],
+  "ostrich": [
+    {
+      "title": "File:Avestruz de cuello azul (Struthio camelus australis), cabo de Buena Esparanza, Sudáfrica, 2018-07-23, DD 87.jpg",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Avestruz_de_cuello_azul_(Struthio_camelus_australis),_cabo_de_Buena_Esparanza,_Sud%C3%A1frica,_2018-07-23,_DD_87.jpg"
+    },
+    {
+      "title": "File:Struthio camelus - male - Rülzheim.jpg",
+      "author": "H. Zell",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Struthio_camelus_-_male_-_R%C3%BClzheim.jpg"
+    },
+    {
+      "title": "File:Autruche à cou rouge 1.jpg",
+      "author": "Slim Alileche",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Autruche_%C3%A0_cou_rouge_1.jpg"
+    },
+    {
+      "title": "File:Avestruces (Struthio camelus), reserva natural Masái Mara, Kenia, 2024-05-20, DD 96.jpg",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Avestruces_(Struthio_camelus),_reserva_natural_Mas%C3%A1i_Mara,_Kenia,_2024-05-20,_DD_96.jpg"
+    }
+  ],
+  "sea-turtle": [
+    {
+      "title": "File:Chelonia mydas is going for the air edit.jpg",
+      "author": "Brocken Inaglory",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chelonia_mydas_is_going_for_the_air_edit.jpg"
+    },
+    {
+      "title": "File:Sea Turtle in Apo Island.jpg",
+      "author": "Anna Varona",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sea_Turtle_in_Apo_Island.jpg"
+    },
+    {
+      "title": "File:Green sea turtle (Chelonia mydas) Moorea.jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Green_sea_turtle_(Chelonia_mydas)_Moorea.jpg"
+    },
+    {
+      "title": "File:Green turtle is using the sand to cool off edit 2.jpg",
+      "author": "Brocken Inaglory",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Green_turtle_is_using_the_sand_to_cool_off_edit_2.jpg"
+    }
+  ],
+  "frog": [
+    {
+      "title": "File:Red eyed tree frog edit2.jpg",
+      "author": "Careyjamesbalboa (Carey James Balboa)",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_eyed_tree_frog_edit2.jpg"
+    },
+    {
+      "title": "File:Red-eyed tree frog in Costa Rica 01.jpg",
+      "author": "Bernard Gagnon",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red-eyed_tree_frog_in_Costa_Rica_01.jpg"
+    },
+    {
+      "title": "File:Red-eyed tree frog (13686).jpg",
+      "author": "Rhododendrites",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red-eyed_tree_frog_(13686).jpg"
+    },
+    {
+      "title": "File:Red-eyed tree frog (03265).jpg",
+      "author": "Rhododendrites",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red-eyed_tree_frog_(03265).jpg"
+    }
+  ],
+  "octopus": [
+    {
+      "title": "File:Octopus vulgaris 02.JPG",
+      "author": "H. Zell",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Octopus_vulgaris_02.JPG"
+    },
+    {
+      "title": "File:Octopus2.jpg",
+      "author": "Albert Kok",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Octopus2.jpg"
+    },
+    {
+      "title": "File:Octopus vulgaris 2.jpg",
+      "author": "Albert Kok",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Octopus_vulgaris_2.jpg"
+    },
+    {
+      "title": "File:Gewöhnlicher Krake Octopus vulgaris 2.jpg",
+      "author": "Holger Krisp",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gew%C3%B6hnlicher_Krake_Octopus_vulgaris_2.jpg"
+    }
+  ],
+  "butterfly": [
+    {
+      "title": "File:Mariposa monarca (Danaus plexippus), Jardín Botánico de Múnich, Alemania, 2013-01-27, DD 01.JPG",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mariposa_monarca_(Danaus_plexippus),_Jard%C3%ADn_Bot%C3%A1nico_de_M%C3%BAnich,_Alemania,_2013-01-27,_DD_01.JPG"
+    },
+    {
+      "title": "File:Monarch butterfly in BBG (84685).jpg",
+      "author": "Rhododendrites",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Monarch_butterfly_in_BBG_(84685).jpg"
+    },
+    {
+      "title": "File:Danaus plexippus (7).jpg",
+      "author": "Thomas Bresson",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Danaus_plexippus_(7).jpg"
+    },
+    {
+      "title": "File:2012-07-20 15-33-07-Danaus plexippus.jpg",
+      "author": "Thomas Bresson",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2012-07-20_15-33-07-Danaus_plexippus.jpg"
+    }
+  ],
+  "crab": [
+    {
+      "title": "File:Zayapa (Grapsus grapsus), Las Bachas, isla Santa Cruz, islas Galápagos, Ecuador, 2015-07-23, DD 30.jpg",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zayapa_(Grapsus_grapsus),_Las_Bachas,_isla_Santa_Cruz,_islas_Gal%C3%A1pagos,_Ecuador,_2015-07-23,_DD_30.jpg"
+    },
+    {
+      "title": "File:Sally Lightfoot Crab.jpg",
+      "author": "Joseph C Boone",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sally_Lightfoot_Crab.jpg"
+    },
+    {
+      "title": "File:Galápagos Sally Lightfoot crab (Grapsus grapsus).jpg",
+      "author": "Charles J. Sharp",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gal%C3%A1pagos_Sally_Lightfoot_crab_(Grapsus_grapsus).jpg"
+    },
+    {
+      "title": "File:Zayapa (Grapsus grapsus), Las Bachas, isla Santa Cruz, islas Galápagos, Ecuador, 2015-07-23, DD 25.jpg",
+      "author": "Diego Delso, delso.photo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zayapa_(Grapsus_grapsus),_Las_Bachas,_isla_Santa_Cruz,_islas_Gal%C3%A1pagos,_Ecuador,_2015-07-23,_DD_25.jpg"
+    }
   ]
 }
